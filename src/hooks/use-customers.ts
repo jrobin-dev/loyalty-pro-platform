@@ -14,6 +14,7 @@ export type Customer = {
     last_visit: string
     status: string
     tier: string
+    rewards?: number // Optional field for rewards earned
 }
 
 export function useCustomers() {

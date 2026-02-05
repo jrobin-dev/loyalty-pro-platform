@@ -8,7 +8,9 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Customer } from "@/hooks/use-customers"
-import { Award, Calendar, Gift } from "lucide-react"
+import { Award, Calendar, Gift, TrendingUp } from "lucide-react"
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
 
 interface CustomerDetailModalProps {
     customer: Customer | null
@@ -84,8 +86,8 @@ export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDe
                                 <div
                                     key={index}
                                     className={`aspect-square rounded-lg flex items-center justify-center ${index < customer.stamps
-                                            ? 'bg-gradient-to-br from-purple-500 to-blue-500'
-                                            : 'bg-white/10'
+                                        ? 'bg-gradient-to-br from-purple-500 to-blue-500'
+                                        : 'bg-white/10'
                                         }`}
                                 >
                                     {index < customer.stamps ? (
