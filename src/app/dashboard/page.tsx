@@ -58,12 +58,17 @@ export default function DashboardPage() {
                                         <ChevronDown size={14} className="ml-2" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuContent align="end" className="w-48 bg-[#0a0a0a] border-transparent">
                                     {months.map((month) => (
                                         <DropdownMenuItem
                                             key={month}
-                                            onClick={() => setSelectedMonth(month)}
-                                            className={selectedMonth === month ? "bg-primary/10 text-primary" : ""}
+                                            onClick={() => {
+                                                setSelectedMonth(month)
+                                                toast.success("Filtro aplicado", {
+                                                    description: `Mostrando datos de ${month}`
+                                                })
+                                            }}
+                                            className={selectedMonth === month ? "bg-primary/10 text-primary" : "hover:bg-white/5"}
                                         >
                                             {month}
                                         </DropdownMenuItem>

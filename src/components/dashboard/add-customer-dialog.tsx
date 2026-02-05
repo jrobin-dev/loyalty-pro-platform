@@ -73,7 +73,7 @@ export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomer
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] bg-[#0a0a0a] border-transparent">
                 <DialogHeader>
                     <DialogTitle>Nuevo Cliente</DialogTitle>
                     <DialogDescription>
