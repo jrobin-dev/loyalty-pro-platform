@@ -6,6 +6,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, CheckCircle2, Sparkles } from "lucide-react"
 import { toast } from "sonner"
+import { getUserId } from "@/lib/user"
 
 export default function Step8Final() {
     const { data, prevStep, reset } = useOnboardingStore()
@@ -18,11 +19,17 @@ export default function Step8Final() {
         setIsLoading(true)
 
         try {
+            // Get unique user ID
+            const userId = getUserId()
+
             // Save business configuration to Supabase
             const response = await fetch('/api/onboarding/complete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify({
+                    ...data,
+                    userId // Include user ID in request
+                })
             })
 
             const result = await response.json()

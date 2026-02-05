@@ -5,9 +5,13 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
 
+        // Get user ID from request (generated client-side for now)
+        // TODO: Replace with Supabase Auth user ID when authentication is implemented
+        const userId = body.userId || `user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+
         // Map wizard data to business table structure
         const businessData = {
-            user_id: 'demo-user-123', // TODO: Replace with real auth when implemented
+            user_id: userId,
             name: body.businessName,
             logo_url: body.logoUrl || null,
             primary_color: body.primaryColor,

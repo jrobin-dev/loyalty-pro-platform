@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
+import { getUserId } from "@/lib/user"
 
 export interface Business {
     id: string
@@ -25,21 +26,21 @@ export function useBusiness() {
         try {
             setLoading(true)
 
-            // For demo purposes, using a mock user_id
-            // In production, get this from auth context
-            const mockUserId = "demo-user-123"
+            // Get unique user ID from localStorage
+            // In production, this will be replaced with Supabase Auth
+            const userId = getUserId()
 
             const { data, error } = await supabase
                 .from('businesses')
                 .select('*')
-                .eq('user_id', mockUserId)
+                .eq('user_id', userId)
                 .single()
 
             if (error) {
                 // If no business exists, create a default one
                 if (error.code === 'PGRST116') {
                     const defaultBusiness = {
-                        user_id: mockUserId,
+                        user_id: userId,
                         name: "Mi Negocio",
                         primary_color: "#8B5CF6",
                         secondary_color: "#3B82F6",
