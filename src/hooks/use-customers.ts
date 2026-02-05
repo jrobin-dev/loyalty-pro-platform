@@ -32,35 +32,43 @@ export function useCustomers() {
             // Check if connection works (fails if keys are missing)
             if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
                 console.log("Using Mock Data (No Supabase URL)")
-                // Use fallback mock data if no env vars
-                setCustomers(MOCK_CUSTOMERS)
+                setCustomers([])
                 return
             }
 
+            // First, get the current user's business
+            const { getUserId } = await import("@/lib/user")
+            const userId = getUserId()
+
+            const { data: businessData, error: businessError } = await supabase
+                .from('businesses')
+                .select('id')
+                .eq('user_id', userId)
+                .single()
+
+            if (businessError || !businessData) {
+                console.error("Business not found:", businessError)
+                setCustomers([])
+                return
+            }
+
+            // Now fetch customers for this business
             const { data, error } = await supabase
                 .from('customers')
                 .select('*')
+                .eq('business_id', businessData.id)
                 .order('last_visit', { ascending: false })
 
             if (error) {
                 console.error("Supabase Error:", error)
-                // Fallback to mock on error (e.g. table doesn't exist yet)
-                setCustomers(MOCK_CUSTOMERS)
-                toast.error("Error cargando clientes. Usando datos demo.")
+                setCustomers([])
+                toast.error("Error cargando clientes.")
             } else {
-                if (data && data.length > 0) {
-                    setCustomers(data)
-                } else {
-                    // Empty table, use empty array
-                    setCustomers([])
-                }
+                setCustomers(data || [])
             }
-            // For now, return empty array if no customers exist
-            // In production, this will be populated as customers are added
-            setCustomers([])
         } catch (err) {
             console.error("Fetch Error:", err)
-            setCustomers([]) // Return empty on fetch error
+            setCustomers([])
         } finally {
             setLoading(false)
         }
