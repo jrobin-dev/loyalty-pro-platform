@@ -2,6 +2,10 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 interface BusinessData {
+    // Authentication
+    email: string
+    password: string
+
     businessName: string
     category: string
     customCategory?: string
@@ -39,8 +43,10 @@ export const useOnboardingStore = create<OnboardingState>()(
     persist(
         (set) => ({
             currentStep: 1,
-            totalSteps: 8,
+            totalSteps: 9,
             data: {
+                email: '',
+                password: '',
                 businessName: '',
                 category: '',
                 ownerName: '',

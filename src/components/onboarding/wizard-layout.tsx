@@ -4,6 +4,7 @@ import { useOnboardingStore } from "@/store/onboarding-store"
 import { motion, AnimatePresence } from "framer-motion"
 import { useEffect, useState } from "react"
 
+import Step0AccountInfo from "./steps/step-0-account-info"
 import Step1BusinessInfo from "./steps/step-1-business-info"
 import Step2StampType from "./steps/step-2-stamp-type"
 import Step3StampsRequired from "./steps/step-3-stamps-required"
@@ -62,14 +63,15 @@ export default function WizardLayout() {
                             exit={{ opacity: 0, x: -20 }}
                             transition={{ duration: 0.3 }}
                         >
-                            {currentStep === 1 && <Step1BusinessInfo />}
-                            {currentStep === 2 && <Step2StampType />}
-                            {currentStep === 3 && <Step3StampsRequired />}
-                            {currentStep === 4 && <Step4RewardDescription />}
-                            {currentStep === 5 && <Step5Branding />}
-                            {currentStep === 6 && <Step6OwnerInfo />}
-                            {currentStep === 7 && <Step7LogoUpload />}
-                            {currentStep === 8 && <Step8Final />}
+                            {currentStep === 1 && <Step0AccountInfo />}
+                            {currentStep === 2 && <Step1BusinessInfo />}
+                            {currentStep === 3 && <Step2StampType />}
+                            {currentStep === 4 && <Step3StampsRequired />}
+                            {currentStep === 5 && <Step4RewardDescription />}
+                            {currentStep === 6 && <Step5Branding />}
+                            {currentStep === 7 && <Step6OwnerInfo />}
+                            {currentStep === 8 && <Step7LogoUpload />}
+                            {currentStep === 9 && <Step8Final />}
                         </motion.div>
                     </AnimatePresence>
                 </div>

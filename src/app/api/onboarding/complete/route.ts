@@ -5,13 +5,38 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
 
-        // Get user ID from request (generated client-side for now)
-        // TODO: Replace with Supabase Auth user ID when authentication is implemented
-        const userId = body.userId || `user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+        // Step 1: Create user with Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: body.email,
+            password: body.password,
+        })
 
-        // Map wizard data to business table structure
+        if (authError) {
+            console.error('Auth error:', authError)
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: authError.message || 'Failed to create account'
+                },
+                { status: 400 }
+            )
+        }
+
+        if (!authData.user) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Failed to create user'
+                },
+                { status: 500 }
+            )
+        }
+
+        // Step 2: Create business record with authenticated user ID
         const businessData = {
-            user_id: userId,
+            user_id: authData.user.id, // Real Supabase Auth UUID
+            email: body.email,
+            phone: body.whatsapp,
             name: body.businessName,
             logo_url: body.logoUrl || null,
             primary_color: body.primaryColor,
@@ -20,48 +45,47 @@ export async function POST(request: NextRequest) {
             reward_description: body.rewardDescription,
         }
 
-        // Check if business already exists for this user
-        const { data: existing } = await supabase
+        const { data: business, error: businessError } = await supabase
             .from('businesses')
-            .select('id')
-            .eq('user_id', businessData.user_id)
+            .insert([businessData])
+            .select()
             .single()
 
-        let result
+        if (businessError) {
+            console.error('Business creation error:', businessError)
+            // If business creation fails, we should ideally delete the auth user
+            // For now, just return error
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: businessError.message || 'Failed to create business'
+                },
+                { status: 500 }
+            )
+        }
 
-        if (existing) {
-            // Update existing business
-            const { data, error } = await supabase
-                .from('businesses')
-                .update(businessData)
-                .eq('user_id', businessData.user_id)
-                .select()
-                .single()
+        // Step 3: Auto-login the user
+        const { data: sessionData, error: sessionError } = await supabase.auth.signInWithPassword({
+            email: body.email,
+            password: body.password,
+        })
 
-            if (error) throw error
-            result = data
-        } else {
-            // Create new business
-            const { data, error } = await supabase
-                .from('businesses')
-                .insert([businessData])
-                .select()
-                .single()
-
-            if (error) throw error
-            result = data
+        if (sessionError) {
+            console.error('Session error:', sessionError)
         }
 
         return NextResponse.json({
             success: true,
-            business: result
+            business,
+            user: authData.user,
+            session: sessionData?.session
         })
     } catch (error: any) {
-        console.error('Error saving business:', error)
+        console.error('Error in onboarding:', error)
         return NextResponse.json(
             {
                 success: false,
-                error: error.message || 'Failed to save business configuration'
+                error: error.message || 'Failed to complete onboarding'
             },
             { status: 500 }
         )
