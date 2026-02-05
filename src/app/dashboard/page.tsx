@@ -126,15 +126,15 @@ export default function DashboardPage() {
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center py-2 border-b-0">
                                     <span className="text-sm text-muted-foreground">Stamps Activos</span>
-                                    <span className="font-mono font-bold font-[family-name:var(--font-sora)]">12</span>
+                                    <span className="font-mono font-bold font-[family-name:var(--font-sora)]">0</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b-0">
                                     <span className="text-sm text-muted-foreground">Por Canjear</span>
-                                    <span className="font-mono font-bold font-[family-name:var(--font-sora)] text-blue-500">36</span>
+                                    <span className="font-mono font-bold font-[family-name:var(--font-sora)] text-blue-500">0</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b-0">
                                     <span className="text-sm text-muted-foreground">En Circulación</span>
-                                    <span className="font-mono font-bold font-[family-name:var(--font-sora)] text-primary">12</span>
+                                    <span className="font-mono font-bold font-[family-name:var(--font-sora)] text-primary">0</span>
                                 </div>
                             </div>
                         </div>

@@ -1,8 +1,8 @@
 "use client"
 
+import DashboardLayout from "@/components/dashboard/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Check, Zap, Crown, Rocket } from "lucide-react"
-import Link from "next/link"
 
 export default function PlansPage() {
     const plans = [
@@ -49,17 +49,13 @@ export default function PlansPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-background p-8">
-            <div className="max-w-6xl mx-auto">
-                <div className="mb-8">
-                    <Link href="/dashboard" className="text-primary hover:underline text-sm">
-                        ← Volver al Dashboard
-                    </Link>
-                </div>
-
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold mb-4">Elige tu Plan</h1>
-                    <p className="text-white/60 max-w-2xl mx-auto">
+        <DashboardLayout>
+            <div className="space-y-6">
+                <div>
+                    <h1 className="text-3xl font-bold font-[family-name:var(--font-funnel-display)]">
+                        Elige tu Plan
+                    </h1>
+                    <p className="text-muted-foreground mt-1">
                         Selecciona el plan que mejor se adapte a las necesidades de tu negocio.
                     </p>
                 </div>
@@ -118,6 +114,6 @@ export default function PlansPage() {
                     Próximamente: Sistema de pagos y gestión de suscripciones
                 </p>
             </div>
-        </div>
+        </DashboardLayout>
     )
 }
