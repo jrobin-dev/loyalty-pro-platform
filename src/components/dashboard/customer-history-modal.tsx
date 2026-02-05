@@ -1,9 +1,12 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Customer } from "@/hooks/use-customers"
-import { Badge } from "@/components/ui/badge"
-import { Calendar, DollarSign, Award } from "lucide-react"
+import { History, TrendingUp, TrendingDown, Award } from "lucide-react"
+import { supabase } from "@/lib/supabase"
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
 
 interface CustomerHistoryModalProps {
     customer: Customer | null
@@ -11,79 +14,115 @@ interface CustomerHistoryModalProps {
     onOpenChange: (open: boolean) => void
 }
 
-// Mock history data - replace with real data from Supabase
-const getMockHistory = (customerId: string) => [
-    { id: 1, date: "2026-02-05", amount: 45.00, stamps: 1, type: "Consumo" },
-    { id: 2, date: "2026-02-03", amount: 32.50, stamps: 1, type: "Consumo" },
-    { id: 3, date: "2026-01-28", amount: 0, stamps: -10, type: "Premio Canjeado" },
-    { id: 4, date: "2026-01-25", amount: 28.00, stamps: 1, type: "Consumo" },
-    { id: 5, date: "2026-01-20", amount: 55.00, stamps: 1, type: "Consumo" },
-]
+interface Transaction {
+    id: string
+    created_at: string
+    amount: number
+    stamps_earned: number
+    type: 'consumption' | 'reward'
+}
 
 export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerHistoryModalProps) {
-    if (!customer) return null
+    const [transactions, setTransactions] = useState<Transaction[]>([])
+    const [loading, setLoading] = useState(false)
 
-    const history = getMockHistory(customer.id)
+    useEffect(() => {
+        if (customer && open) {
+            fetchTransactions()
+        }
+    }, [customer, open])
+
+    const fetchTransactions = async () => {
+        if (!customer) return
+
+        setLoading(true)
+        try {
+            // For now, create mock transactions based on customer visits
+            // In production, you would fetch from a transactions table
+            const mockTransactions: Transaction[] = Array.from({ length: customer.visits }).map((_, index) => ({
+                id: `txn-${index}`,
+                created_at: new Date(Date.now() - (customer.visits - index) * 7 * 24 * 60 * 60 * 1000).toISOString(),
+                amount: Math.floor(Math.random() * 50) + 10,
+                stamps_earned: 1,
+                type: index % 10 === 0 ? 'reward' : 'consumption'
+            }))
+
+            setTransactions(mockTransactions.reverse())
+        } catch (error) {
+            console.error('Error fetching transactions:', error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    if (!customer) return null
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto bg-[#0a0a0a] border-transparent">
+            <DialogContent className="bg-[#0a0a0a] border-transparent max-w-2xl">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl">Historial de Consumos</DialogTitle>
-                    <p className="text-sm text-muted-foreground">{customer.name}</p>
+                    <DialogTitle className="text-2xl flex items-center gap-2">
+                        <History className="h-6 w-6 text-blue-400" />
+                        Historial de Consumos
+                    </DialogTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        {customer.name} - {transactions.length} transacciones
+                    </p>
                 </DialogHeader>
 
-                <div className="space-y-3">
-                    {history.map((item) => (
-                        <div
-                            key={item.id}
-                            className="p-4 bg-card/50 rounded-lg border border-transparent hover:border-purple-500/20 transition-all"
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <Badge
-                                            className={
-                                                item.type === "Premio Canjeado"
-                                                    ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                                                    : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                                            }
-                                        >
-                                            {item.type}
-                                        </Badge>
-                                        <span className="text-sm text-muted-foreground flex items-center gap-1">
-                                            <Calendar size={12} />
-                                            {new Date(item.date).toLocaleDateString('es-ES', {
-                                                day: '2-digit',
-                                                month: 'short',
-                                                year: 'numeric'
-                                            })}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center gap-4">
-                                        {item.amount > 0 && (
-                                            <div className="flex items-center gap-1 text-white">
-                                                <DollarSign size={14} />
-                                                <span className="font-bold">S/. {item.amount.toFixed(2)}</span>
-                                            </div>
-                                        )}
-                                        <div className="flex items-center gap-1">
-                                            <Award size={14} className={item.stamps > 0 ? "text-purple-400" : "text-yellow-400"} />
-                                            <span className={`font-bold ${item.stamps > 0 ? "text-purple-400" : "text-yellow-400"}`}>
-                                                {item.stamps > 0 ? `+${item.stamps}` : item.stamps} Stamp{Math.abs(item.stamps) !== 1 ? 's' : ''}
-                                            </span>
+                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+                    {loading ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                            Cargando historial...
+                        </div>
+                    ) : transactions.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                            No hay transacciones registradas
+                        </div>
+                    ) : (
+                        transactions.map((transaction) => (
+                            <div
+                                key={transaction.id}
+                                className="bg-card/50 rounded-lg p-4 border border-white/10 hover:border-white/20 transition-colors"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className={`p-2 rounded-lg ${transaction.type === 'reward'
+                                                ? 'bg-yellow-500/20'
+                                                : 'bg-emerald-500/20'
+                                            }`}>
+                                            {transaction.type === 'reward' ? (
+                                                <Award className="h-5 w-5 text-yellow-400" />
+                                            ) : (
+                                                <TrendingUp className="h-5 w-5 text-emerald-400" />
+                                            )}
                                         </div>
+                                        <div>
+                                            <p className="font-medium text-white">
+                                                {transaction.type === 'reward' ? 'Premio Canjeado' : 'Consumo'}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {format(new Date(transaction.created_at), "d 'de' MMMM, yyyy 'a las' HH:mm", { locale: es })}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-bold text-white">
+                                            ${transaction.amount.toFixed(2)}
+                                        </p>
+                                        <p className={`text-xs ${transaction.type === 'reward'
+                                                ? 'text-red-400'
+                                                : 'text-emerald-400'
+                                            }`}>
+                                            {transaction.type === 'reward'
+                                                ? `-10 sellos`
+                                                : `+${transaction.stamps_earned} sello${transaction.stamps_earned > 1 ? 's' : ''}`
+                                            }
+                                        </p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-
-                    {history.length === 0 && (
-                        <div className="text-center py-8 text-muted-foreground">
-                            No hay historial de consumos aún.
-                        </div>
+                        ))
                     )}
                 </div>
             </DialogContent>

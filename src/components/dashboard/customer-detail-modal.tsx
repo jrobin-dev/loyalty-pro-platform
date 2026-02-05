@@ -16,76 +16,91 @@ interface CustomerDetailModalProps {
     onOpenChange: (open: boolean) => void
 }
 
-// Mock consumption data - replace with real data from Supabase
-const getMockConsumptions = (customerId: string) => [
-    { id: 1, amount: 150, date: "2026-02-01", time: "12:45 a.m." },
-    { id: 2, amount: 98, date: "2026-02-03", time: "3:20 p.m." },
-    { id: 3, amount: 224, date: "2026-02-05", time: "7:15 p.m." },
-]
-
 export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDetailModalProps) {
-    const [hoveredBar, setHoveredBar] = useState<number | null>(null)
-
     if (!customer) return null
 
-    const consumptions = getMockConsumptions(customer.id)
-    const totalConsumption = consumptions.reduce((sum, c) => sum + c.amount, 0)
-    const maxAmount = Math.max(...consumptions.map(c => c.amount))
+    // Calculate progress percentage
+    const progressPercentage = (customer.stamps / 10) * 100 // Assuming 10 stamps for reward
+    const rewardsEarned = customer.rewards || 0
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[600px] bg-[#0a0a0a] border-transparent">
+            <DialogContent className="bg-[#0a0a0a] border-transparent max-w-2xl">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl">{customer.name}</DialogTitle>
+                    <DialogTitle className="text-2xl flex items-center gap-2">
+                        <Award className="h-6 w-6 text-purple-400" />
+                        Detalle del Cliente
+                    </DialogTitle>
                 </DialogHeader>
 
-                {/* Total Consumption */}
-                <div className="mb-6">
-                    <p className="text-sm text-muted-foreground mb-1">Consumo total</p>
-                    <p className="text-3xl font-bold text-emerald-400">S/. {totalConsumption.toFixed(2)}</p>
-                </div>
+                <div className="space-y-6">
+                    {/* Customer Info */}
+                    <div className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-lg p-4 border border-purple-500/20">
+                        <h3 className="text-lg font-bold text-white mb-2">{customer.name}</h3>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p className="text-muted-foreground">Email</p>
+                                <p className="text-white">{customer.email || 'No registrado'}</p>
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground">Teléfono</p>
+                                <p className="text-white">{customer.phone || 'No registrado'}</p>
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground">Última visita</p>
+                                <p className="text-white flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    {customer.last_visit
+                                        ? format(new Date(customer.last_visit), "d 'de' MMMM, yyyy", { locale: es })
+                                        : 'Nunca'
+                                    }
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground">Total visitas</p>
+                                <p className="text-white">{customer.visits} visitas</p>
+                            </div>
+                        </div>
+                    </div>
 
-                {/* Instructions */}
-                <p className="text-sm text-muted-foreground mb-4">
-                    Pasa el cursor o navega con tab sobre cada barra para ver el monto, fecha y hora del consumo.
-                </p>
+                    {/* Loyalty Progress */}
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                            <h4 className="font-semibold text-white">Progreso de Lealtad</h4>
+                            <span className="text-sm text-purple-400">{customer.stamps}/10 sellos</span>
+                        </div>
 
-                {/* Bar Chart */}
-                <div className="relative h-64 bg-card/30 rounded-lg p-6 mb-6">
-                    <div className="flex items-end justify-around h-full gap-4">
-                        {consumptions.map((consumption, index) => {
-                            const heightPercentage = (consumption.amount / maxAmount) * 100
-                            const isHovered = hoveredBar === index
+                        {/* Progress Bar */}
+                        <div className="bg-white/10 rounded-full h-3 overflow-hidden">
+                            <div
+                                className="bg-gradient-to-r from-purple-500 to-blue-500 h-full transition-all duration-500"
+                                style={{ width: `${progressPercentage}%` }}
+                            />
+                        </div>
 
-                            return (
+                        {/* Stamps Grid */}
+                        <div className="grid grid-cols-10 gap-2">
+                            {Array.from({ length: 10 }).map((_, index) => (
                                 <div
-                                    key={consumption.id}
-                                    className="flex-1 relative flex flex-col items-center justify-end group"
-                                    onMouseEnter={() => setHoveredBar(index)}
-                                    onMouseLeave={() => setHoveredBar(null)}
+                                    key={index}
+                                    className={`aspect-square rounded-lg flex items-center justify-center ${index < customer.stamps
+                                            ? 'bg-gradient-to-br from-purple-500 to-blue-500'
+                                            : 'bg-white/10'
+                                        }`}
                                 >
-                                    {/* Tooltip */}
-                                    {isHovered && (
-                                        <div className="absolute bottom-full mb-2 bg-[#0a0a0a] border border-emerald-500/30 rounded-lg p-3 shadow-xl z-10 min-w-[140px]">
-                                            <p className="text-xs text-muted-foreground mb-1">MONTO</p>
-                                            <p className="text-lg font-bold text-emerald-400 mb-2">S/. {consumption.amount.toFixed(2)}</p>
-                                            <p className="text-xs text-muted-foreground mb-1">FECHA</p>
-                                            <p className="text-sm text-white mb-2">{new Date(consumption.date).toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-                                            <p className="text-xs text-muted-foreground mb-1">HORA</p>
-                                            <p className="text-sm text-white">{consumption.time}</p>
-                                        </div>
-                                    )}
-
-                                    {/* Bar */}
-                                    <div
-                                        className={`w-full rounded-t-lg transition-all duration-300 cursor-pointer ${isHovered
-                                                ? 'bg-gradient-to-t from-emerald-500 to-emerald-300 shadow-lg shadow-emerald-500/50'
-                                                : 'bg-gradient-to-t from-emerald-600 to-emerald-400'
-                                            }`}
-                                        style={{ height: `${heightPercentage}%` }}
-                                    />
                                 </div>
-                            )
+                            )}
+
+                            {/* Bar */}
+                            <div
+                                className={`w-full rounded-t-lg transition-all duration-300 cursor-pointer ${isHovered
+                                    ? 'bg-gradient-to-t from-emerald-500 to-emerald-300 shadow-lg shadow-emerald-500/50'
+                                    : 'bg-gradient-to-t from-emerald-600 to-emerald-400'
+                                    }`}
+                                style={{ height: `${heightPercentage}%` }}
+                            />
+                        </div>
+                        )
                         })}
                     </div>
                 </div>
