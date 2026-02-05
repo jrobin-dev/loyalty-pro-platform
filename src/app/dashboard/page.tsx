@@ -1,3 +1,5 @@
+"use client"
+
 import DashboardLayout from "@/components/dashboard/dashboard-layout"
 import { RecentActivityTable } from "@/components/dashboard/recent-activity"
 import { ScannerQRAccess } from "@/components/dashboard/scanner-qr-access"
@@ -5,12 +7,34 @@ import { DashboardStatsAdvanced } from "@/components/dashboard/dashboard-stats"
 import { DashboardCharts } from "@/components/dashboard/dashboard-charts"
 import { CustomerTableAdvanced } from "@/components/dashboard/customer-table-advanced"
 import { Button } from "@/components/ui/button"
-import { Download, Calendar } from "lucide-react"
+import { Download, Calendar, ChevronDown } from "lucide-react"
 import Link from "next/link"
-import { MarketingSlider } from "@/components/dashboard/marketing-slider"
 import { DashboardHero } from "@/components/dashboard/dashboard-hero"
+import { useState } from "react"
+import { toast } from "sonner"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function DashboardPage() {
+    const [selectedMonth, setSelectedMonth] = useState("Enero 2026")
+
+    const handleDownloadReport = () => {
+        toast.success("Generando reporte...", {
+            description: "Tu reporte se descargará en unos segundos."
+        })
+        // TODO: Implement actual PDF/Excel generation
+    }
+
+    const months = [
+        "Enero 2026", "Febrero 2026", "Marzo 2026", "Abril 2026",
+        "Mayo 2026", "Junio 2026", "Julio 2026", "Agosto 2026",
+        "Septiembre 2026", "Octubre 2026", "Noviembre 2026", "Diciembre 2026"
+    ]
+
     return (
         <DashboardLayout>
             <div className="flex flex-col lg:flex-row gap-6">
@@ -26,10 +50,27 @@ export default function DashboardPage() {
                             <p className="text-muted-foreground">Monitorea en tiempo real el rendimiento de tu programa.</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm" className="bg-background border-border text-foreground hover:bg-secondary">
-                                <Calendar size={14} className="mr-2" /> Enero 2026
-                            </Button>
-                            <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="bg-background border-border text-foreground hover:bg-secondary">
+                                        <Calendar size={14} className="mr-2" />
+                                        {selectedMonth}
+                                        <ChevronDown size={14} className="ml-2" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48">
+                                    {months.map((month) => (
+                                        <DropdownMenuItem
+                                            key={month}
+                                            onClick={() => setSelectedMonth(month)}
+                                            className={selectedMonth === month ? "bg-primary/10 text-primary" : ""}
+                                        >
+                                            {month}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <Button onClick={handleDownloadReport} className="btn-cosmic">
                                 <Download size={14} className="mr-2" /> Descargar
                             </Button>
                         </div>
