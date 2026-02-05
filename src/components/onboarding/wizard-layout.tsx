@@ -7,9 +7,11 @@ import { useEffect, useState } from "react"
 import Step1BusinessInfo from "./steps/step-1-business-info"
 import Step2StampType from "./steps/step-2-stamp-type"
 import Step3StampsRequired from "./steps/step-3-stamps-required"
-import Step4Branding from "./steps/step-4-branding"
-import Step5OwnerInfo from "./steps/step-5-owner-info"
-import Step6LogoUpload from "./steps/step-6-logo-upload"
+import Step4RewardDescription from "./steps/step-4-reward-description"
+import Step5Branding from "./steps/step-4-branding"
+import Step6OwnerInfo from "./steps/step-5-owner-info"
+import Step7LogoUpload from "./steps/step-6-logo-upload"
+import Step8Final from "./steps/step-7-final"
 
 export default function WizardLayout() {
     const { currentStep, totalSteps } = useOnboardingStore()
@@ -63,10 +65,11 @@ export default function WizardLayout() {
                             {currentStep === 1 && <Step1BusinessInfo />}
                             {currentStep === 2 && <Step2StampType />}
                             {currentStep === 3 && <Step3StampsRequired />}
-                            {currentStep === 4 && <Step4Branding />}
-                            {currentStep === 5 && <Step5OwnerInfo />}
-                            {currentStep === 6 && <Step6LogoUpload />}
-                            {/* {currentStep === 7 && <Step7Final />} */}
+                            {currentStep === 4 && <Step4RewardDescription />}
+                            {currentStep === 5 && <Step5Branding />}
+                            {currentStep === 6 && <Step6OwnerInfo />}
+                            {currentStep === 7 && <Step7LogoUpload />}
+                            {currentStep === 8 && <Step8Final />}
                         </motion.div>
                     </AnimatePresence>
                 </div>

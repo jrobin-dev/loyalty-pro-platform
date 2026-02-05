@@ -14,6 +14,7 @@ interface BusinessData {
     // Branding
     stampType: string // e.g., 'coffee', 'pizza', 'star'
     stampsRequired: number
+    rewardDescription: string
     primaryColor: string
     secondaryColor: string
     gradientEnabled: boolean
@@ -47,6 +48,7 @@ export const useOnboardingStore = create<OnboardingState>()(
                 country: '+51', // Default Peru based on user context
                 stampType: 'coffee',
                 stampsRequired: 6,
+                rewardDescription: '¡Premio gratis!',
                 primaryColor: '#00FF94', // Neon Green
                 secondaryColor: '#000000',
                 gradientEnabled: true,
