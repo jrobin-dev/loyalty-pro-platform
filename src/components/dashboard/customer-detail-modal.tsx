@@ -1,9 +1,14 @@
 "use client"
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useState } from "react"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import { Customer } from "@/hooks/use-customers"
-import { Badge } from "@/components/ui/badge"
-import { Calendar, Gift, Award } from "lucide-react"
+import { Award, Calendar, Gift } from "lucide-react"
 
 interface CustomerDetailModalProps {
     customer: Customer | null
@@ -11,88 +16,83 @@ interface CustomerDetailModalProps {
     onOpenChange: (open: boolean) => void
 }
 
+// Mock consumption data - replace with real data from Supabase
+const getMockConsumptions = (customerId: string) => [
+    { id: 1, amount: 150, date: "2026-02-01", time: "12:45 a.m." },
+    { id: 2, amount: 98, date: "2026-02-03", time: "3:20 p.m." },
+    { id: 3, amount: 224, date: "2026-02-05", time: "7:15 p.m." },
+]
+
 export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDetailModalProps) {
+    const [hoveredBar, setHoveredBar] = useState<number | null>(null)
+
     if (!customer) return null
 
-    const totalStamps = customer.stamps || 0
-    const stampsNeeded = 10
-    const completedCards = Math.floor(totalStamps / stampsNeeded)
-    const currentStamps = totalStamps % stampsNeeded
+    const consumptions = getMockConsumptions(customer.id)
+    const totalConsumption = consumptions.reduce((sum, c) => sum + c.amount, 0)
+    const maxAmount = Math.max(...consumptions.map(c => c.amount))
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px] bg-[#0a0a0a] border-transparent">
+            <DialogContent className="sm:max-w-[600px] bg-[#0a0a0a] border-transparent">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl">Tarjeta de Lealtad</DialogTitle>
+                    <DialogTitle className="text-2xl">{customer.name}</DialogTitle>
                 </DialogHeader>
 
-                {/* Customer Info */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-4 p-4 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-xl border border-white/5">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-xl">
-                            {customer.name.substring(0, 2).toUpperCase()}
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="font-bold text-lg text-white">{customer.name}</h3>
-                            <p className="text-sm text-muted-foreground">{customer.email}</p>
-                            <Badge className="mt-1 bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
-                                {customer.status}
-                            </Badge>
-                        </div>
-                    </div>
+                {/* Total Consumption */}
+                <div className="mb-6">
+                    <p className="text-sm text-muted-foreground mb-1">Consumo total</p>
+                    <p className="text-3xl font-bold text-emerald-400">S/. {totalConsumption.toFixed(2)}</p>
+                </div>
 
-                    {/* Stats */}
-                    <div className="grid grid-cols-3 gap-3">
-                        <div className="p-3 bg-card/50 rounded-lg border border-transparent text-center">
-                            <div className="text-2xl font-bold text-purple-400">{totalStamps}</div>
-                            <div className="text-xs text-muted-foreground">Total Stamps</div>
-                        </div>
-                        <div className="p-3 bg-card/50 rounded-lg border border-transparent text-center">
-                            <div className="text-2xl font-bold text-blue-400">{customer.visits}</div>
-                            <div className="text-xs text-muted-foreground">Visitas</div>
-                        </div>
-                        <div className="p-3 bg-card/50 rounded-lg border border-transparent text-center">
-                            <div className="text-2xl font-bold text-yellow-400">{completedCards}</div>
-                            <div className="text-xs text-muted-foreground">Premios</div>
-                        </div>
-                    </div>
+                {/* Instructions */}
+                <p className="text-sm text-muted-foreground mb-4">
+                    Pasa el cursor o navega con tab sobre cada barra para ver el monto, fecha y hora del consumo.
+                </p>
 
-                    {/* Stamp Card Visualization */}
-                    <div className="p-6 bg-gradient-to-br from-purple-900/30 to-blue-900/20 rounded-xl border border-purple-500/20">
-                        <div className="flex items-center justify-between mb-4">
-                            <h4 className="font-bold text-white flex items-center gap-2">
-                                <Gift size={18} className="text-yellow-400" />
-                                Tarjeta Actual
-                            </h4>
-                            <span className="text-sm text-muted-foreground">
-                                {currentStamps}/{stampsNeeded} sellos
-                            </span>
-                        </div>
+                {/* Bar Chart */}
+                <div className="relative h-64 bg-card/30 rounded-lg p-6 mb-6">
+                    <div className="flex items-end justify-around h-full gap-4">
+                        {consumptions.map((consumption, index) => {
+                            const heightPercentage = (consumption.amount / maxAmount) * 100
+                            const isHovered = hoveredBar === index
 
-                        {/* Stamp Grid */}
-                        <div className="grid grid-cols-5 gap-3">
-                            {Array.from({ length: stampsNeeded }).map((_, i) => (
+                            return (
                                 <div
-                                    key={i}
-                                    className={`aspect-square rounded-lg flex items-center justify-center transition-all ${i < currentStamps
-                                        ? 'bg-gradient-to-br from-purple-500 to-blue-500 shadow-lg shadow-purple-500/50'
-                                        : 'bg-white/5 border border-white/10'
-                                        }`}
+                                    key={consumption.id}
+                                    className="flex-1 relative flex flex-col items-center justify-end group"
+                                    onMouseEnter={() => setHoveredBar(index)}
+                                    onMouseLeave={() => setHoveredBar(null)}
                                 >
-                                    {i < currentStamps && (
-                                        <Award size={20} className="text-white" />
+                                    {/* Tooltip */}
+                                    {isHovered && (
+                                        <div className="absolute bottom-full mb-2 bg-[#0a0a0a] border border-emerald-500/30 rounded-lg p-3 shadow-xl z-10 min-w-[140px]">
+                                            <p className="text-xs text-muted-foreground mb-1">MONTO</p>
+                                            <p className="text-lg font-bold text-emerald-400 mb-2">S/. {consumption.amount.toFixed(2)}</p>
+                                            <p className="text-xs text-muted-foreground mb-1">FECHA</p>
+                                            <p className="text-sm text-white mb-2">{new Date(consumption.date).toLocaleDateString('es-PE', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                            <p className="text-xs text-muted-foreground mb-1">HORA</p>
+                                            <p className="text-sm text-white">{consumption.time}</p>
+                                        </div>
                                     )}
-                                </div>
-                            ))}
-                        </div>
 
-                        {currentStamps === stampsNeeded && (
+                                    {/* Bar */}
+                                    <div
+                                        className={`w-full rounded-t-lg transition-all duration-300 cursor-pointer ${
+                                            isHovered 
+                                                ? 'bg-gradient-to-t from-emerald-500 to-emerald-300 shadow-lg shadow-emerald-500/50' 
+                                                : 'bg-gradient-to-t from-emerald-600 to-emerald-400'
+                                        }`}
+                                        style={{ height: `${heightPercentage}%` }}
+                                    />
+                                </div>
                             <div className="mt-4 p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-center">
                                 <p className="text-yellow-400 font-bold text-sm">
                                     🎉 ¡Tarjeta completa! Premio disponible
                                 </p>
                             </div>
-                        )}
+                            )
+                        }
                     </div>
 
                     {/* Last Visit */}
