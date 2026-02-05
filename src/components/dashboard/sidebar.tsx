@@ -125,21 +125,33 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                     )}
 
                     {/* User Profile */}
-                    <div className={cn("flex items-center gap-3", isCollapsed ? "justify-center" : "px-2")}>
-                        <Avatar className="h-8 w-8 border border-transparent ring-2 ring-transparent group-hover:ring-primary/50 transition-all">
-                            <AvatarFallback className="bg-white/5 text-xs text-white/80">JP</AvatarFallback>
-                        </Avatar>
-                        {!isCollapsed && (
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate text-white">Juan Pérez</p>
-                                <p className="text-xs text-muted-foreground truncate">juan@example.com</p>
+                    <div className="mt-auto border-t border-white/10 pt-4">
+                        <div className={cn(
+                            "flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer",
+                            isCollapsed && "justify-center px-0"
+                        )}>
+                            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/20 text-primary font-bold">
+                                {business?.name ? business.name.charAt(0).toUpperCase() : 'U'}
                             </div>
-                        )}
-                        {!isCollapsed && (
-                            <button className="text-muted-foreground hover:text-red-400 transition-colors">
-                                <LogOut size={16} />
-                            </button>
-                        )}
+                            {!isCollapsed && (
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium truncate text-white">
+                                        {business?.name || 'Usuario'}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground truncate">
+                                        Plan Free
+                                    </p>
+                                </div>
+                            )}
+                            {!isCollapsed && (
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            )}
+                            {isCollapsed && (
+                                <button className="text-muted-foreground hover:text-red-400 transition-colors">
+                                    <LogOut size={16} />
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

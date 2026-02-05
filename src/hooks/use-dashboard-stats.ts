@@ -24,10 +24,10 @@ export function useDashboardStats({ dateRange }: UseDashboardStatsProps = {}) {
         totalCustomers: 0,
         totalRewards: 0,
         totalStamps: 0,
-        revenueChange: 5.4,
-        customersChange: 12.3,
-        rewardsChange: 8.1,
-        stampsChange: 15.2,
+        revenueChange: 0,
+        customersChange: 0,
+        rewardsChange: 0,
+        stampsChange: 0,
     })
     const [loading, setLoading] = useState(true)
 
@@ -62,10 +62,10 @@ export function useDashboardStats({ dateRange }: UseDashboardStatsProps = {}) {
                     totalCustomers: customers.length,
                     totalRewards,
                     totalStamps,
-                    revenueChange: 5.4,
-                    customersChange: 12.3,
-                    rewardsChange: 8.1,
-                    stampsChange: 15.2,
+                    revenueChange: 0,
+                    customersChange: 0,
+                    rewardsChange: 0,
+                    stampsChange: 0,
                 })
             }
         } catch (error) {

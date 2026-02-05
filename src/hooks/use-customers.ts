@@ -55,9 +55,12 @@ export function useCustomers() {
                     setCustomers([])
                 }
             }
+            // For now, return empty array if no customers exist
+            // In production, this will be populated as customers are added
+            setCustomers([])
         } catch (err) {
             console.error("Fetch Error:", err)
-            setCustomers(MOCK_CUSTOMERS)
+            setCustomers([]) // Return empty on fetch error
         } finally {
             setLoading(false)
         }
@@ -65,39 +68,3 @@ export function useCustomers() {
 
     return { customers, loading, refresh: fetchCustomers }
 }
-
-const MOCK_CUSTOMERS: Customer[] = [
-    {
-        id: "1",
-        name: "Juan Pérez (Demo)",
-        email: "juan@example.com",
-        phone: "+51 900 000 001",
-        stamps: 4,
-        visits: 12,
-        last_visit: new Date().toISOString(),
-        status: "active",
-        tier: "Silver"
-    },
-    {
-        id: "2",
-        name: "Maria Garcia (Demo)",
-        email: "maria@example.com",
-        phone: "+51 900 000 002",
-        stamps: 8,
-        visits: 24,
-        last_visit: new Date(Date.now() - 86400000 * 2).toISOString(),
-        status: "active",
-        tier: "Gold"
-    },
-    {
-        id: "3",
-        name: "Carlos Lopez (Demo)",
-        email: "carlos@example.com",
-        phone: "+51 900 000 003",
-        stamps: 1,
-        visits: 3,
-        last_visit: new Date(Date.now() - 86400000 * 5).toISOString(),
-        status: "inactive",
-        tier: "Bronze"
-    }
-]
