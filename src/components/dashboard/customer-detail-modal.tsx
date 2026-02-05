@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import {
     Dialog,
     DialogContent,
@@ -8,7 +7,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Customer } from "@/hooks/use-customers"
-import { Award, Calendar, Gift, TrendingUp } from "lucide-react"
+import { Award, Calendar, Gift } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 
@@ -86,8 +85,8 @@ export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDe
                                 <div
                                     key={index}
                                     className={`aspect-square rounded-lg flex items-center justify-center ${index < customer.stamps
-                                        ? 'bg-gradient-to-br from-purple-500 to-blue-500'
-                                        : 'bg-white/10'
+                                            ? 'bg-gradient-to-br from-purple-500 to-blue-500'
+                                            : 'bg-white/10'
                                         }`}
                                 >
                                     {index < customer.stamps ? (
@@ -119,39 +118,6 @@ export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDe
                             </p>
                         </div>
                     </div>
-                </div>
-
-                {/* Customer Stats */}
-                <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-card/30 rounded-lg p-4 text-center">
-                        <div className="flex justify-center mb-2">
-                            <Award className="h-5 w-5 text-purple-400" />
-                        </div>
-                        <p className="text-2xl font-bold">{customer.stamps}</p>
-                        <p className="text-xs text-muted-foreground">Stamps</p>
-                    </div>
-
-                    <div className="bg-card/30 rounded-lg p-4 text-center">
-                        <div className="flex justify-center mb-2">
-                            <Calendar className="h-5 w-5 text-blue-400" />
-                        </div>
-                        <p className="text-2xl font-bold">{customer.visits}</p>
-                        <p className="text-xs text-muted-foreground">Visitas</p>
-                    </div>
-
-                    <div className="bg-card/30 rounded-lg p-4 text-center">
-                        <div className="flex justify-center mb-2">
-                            <Gift className="h-5 w-5 text-emerald-400" />
-                        </div>
-                        <p className="text-2xl font-bold">{Math.floor(customer.stamps / 10)}</p>
-                        <p className="text-xs text-muted-foreground">Premios</p>
-                    </div>
-                </div>
-
-                {/* Last Visit */}
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar size={14} />
-                    Última visita: {new Date(customer.last_visit).toLocaleDateString('es-ES')}
                 </div>
             </DialogContent>
         </Dialog>
