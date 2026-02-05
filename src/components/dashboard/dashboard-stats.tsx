@@ -1,38 +1,37 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Users, DollarSign, Award, Ticket, TrendingUp } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DollarSign, Users, Gift, Award } from "lucide-react"
 import { useDashboardStats } from "@/hooks/use-dashboard-stats"
 
 interface StatCardProps {
     title: string
     value: string
-    change: string
-    icon: any
+    change: number
+    icon: React.ElementType
     iconColor: string
     iconBg: string
 }
 
 function StatCard({ title, value, change, icon: Icon, iconColor, iconBg }: StatCardProps) {
-    return (
-        <Card className="bg-card/50 backdrop-blur-sm border-transparent relative overflow-hidden group hover:border-purple-500/20 transition-all">
-            <CardContent className="p-6">
-                {/* Icon Badge */}
-                <div className={`w-12 h-12 rounded-xl ${iconBg} flex items-center justify-center mb-4 shadow-lg`}>
-                    <Icon size={24} className={iconColor} />
-                </div>
+    const isPositive = change >= 0
+    const formattedChange = `${isPositive ? '+' : ''}${change}%`
 
-                {/* Stats */}
-                <div>
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">{title}</p>
-                    <div className="text-3xl font-bold text-white mb-2 font-display">
-                        {value}
-                    </div>
-                    <p className="text-xs text-emerald-400 flex items-center gap-1 font-medium">
-                        <TrendingUp size={12} />
-                        {change} <span className="text-muted-foreground font-normal">vs mes anterior</span>
-                    </p>
+    return (
+        <Card className="relative overflow-hidden bg-card/50 backdrop-blur-sm border-transparent hover:bg-card/70 transition-all duration-300">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {title}
+                </CardTitle>
+                <div className={`p-2 rounded-lg ${iconBg}`}>
+                    <Icon className={`h-4 w-4 ${iconColor}`} />
                 </div>
+            </CardHeader>
+            <CardContent>
+                <div className="text-3xl font-bold font-sans mb-1">{value}</div>
+                <p className={`text-xs ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {formattedChange} vs mes anterior
+                </p>
             </CardContent>
         </Card>
     )
