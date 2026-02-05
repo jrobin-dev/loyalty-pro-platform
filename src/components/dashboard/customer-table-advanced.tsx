@@ -30,10 +30,10 @@ export function CustomerTableAdvanced() {
     const [isAddConsumptionOpen, setIsAddConsumptionOpen] = useState(false)
     const [isAddCustomerOpen, setIsAddCustomerOpen] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
-    const [isDetailOpen, setIsDetailOpen] = useState(false)
-    const [isHistoryOpen, setIsHistoryOpen] = useState(false)
-    const [detailCustomer, setDetailCustomer] = useState<Customer | null>(null)
-    const [historyCustomer, setHistoryCustomer] = useState<Customer | null>(null)
+    const [detailModalOpen, setDetailModalOpen] = useState(false)
+    const [historyModalOpen, setHistoryModalOpen] = useState(false)
+    const [customerForDetail, setCustomerForDetail] = useState<Customer | null>(null)
+    const [customerForHistory, setCustomerForHistory] = useState<Customer | null>(null)
 
     const handleAddConsumption = async () => {
         if (!selectedCustomer) return
@@ -164,27 +164,28 @@ export function CustomerTableAdvanced() {
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2">
-                                        <Button
-                                            onClick={() => {
-                                                setDetailCustomer(customer)
-                                                setIsDetailOpen(true)
-                                            }}
-                                            className="h-8 px-3 bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 text-xs"
-                                        >
-                                            <Eye size={14} className="mr-1" />
-                                            Ver detalle
-                                        </Button>
-
-                                        <Button
-                                            onClick={() => {
-                                                setHistoryCustomer(customer)
-                                                setIsHistoryOpen(true)
-                                            }}
-                                            className="h-8 px-3 bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30 text-xs"
-                                        >
-                                            <History size={14} className="mr-1" />
-                                            Ver historial
-                                        </Button>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    setCustomerForDetail(customer)
+                                                    setDetailModalOpen(true)
+                                                }}
+                                                className="px-3 py-1.5 text-xs bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-md hover:bg-purple-500/30 transition-colors flex items-center gap-1"
+                                            >
+                                                <Eye size={14} />
+                                                Ver detalle
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setCustomerForHistory(customer)
+                                                    setHistoryModalOpen(true)
+                                                }}
+                                                className="px-3 py-1.5 text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-md hover:bg-blue-500/30 transition-colors flex items-center gap-1"
+                                            >
+                                                <History size={14} />
+                                                Ver historial
+                                            </button>
+                                        </div>
 
                                         <Dialog open={isAddConsumptionOpen && selectedCustomer?.id === customer.id} onOpenChange={(open) => {
                                             setIsAddConsumptionOpen(open)
@@ -266,6 +267,20 @@ export function CustomerTableAdvanced() {
                 open={isAddCustomerOpen}
                 onOpenChange={setIsAddCustomerOpen}
                 onSuccess={refresh}
+            />
+
+            {/* Customer Detail Modal */}
+            <CustomerDetailModal
+                customer={customerForDetail}
+                open={detailModalOpen}
+                onOpenChange={setDetailModalOpen}
+            />
+
+            {/* Customer History Modal */}
+            <CustomerHistoryModal
+                customer={customerForHistory}
+                open={historyModalOpen}
+                onOpenChange={setHistoryModalOpen}
             />
         </div>
     )

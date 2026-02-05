@@ -80,7 +80,7 @@ export function DashboardStatsAdvanced({ dateRange }: { dateRange?: { start: str
                 title="Total Stamps"
                 value={stats.totalStamps.toLocaleString()}
                 change={stats.stampsChange}
-                icon={Ticket}
+                icon={Award}
                 iconColor="text-blue-500"
                 iconBg="bg-blue-500/10"
             />
