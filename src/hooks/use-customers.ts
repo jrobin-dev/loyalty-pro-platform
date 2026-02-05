@@ -6,6 +6,7 @@ import { toast } from "sonner"
 
 export type Customer = {
     id: string
+    business_id: string
     name: string
     email: string
     phone: string
@@ -14,7 +15,7 @@ export type Customer = {
     last_visit: string
     status: string
     tier: string
-    rewards?: number // Optional field for rewards earned
+    rewards?: number
 }
 
 export function useCustomers() {
@@ -29,30 +30,31 @@ export function useCustomers() {
         try {
             setLoading(true)
 
-            // Check if connection works (fails if keys are missing)
-            if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-                console.log("Using Mock Data (No Supabase URL)")
+            // Get authenticated user's session
+            const { data: { session } } = await supabase.auth.getSession()
+
+            if (!session?.user) {
+                console.error('No authenticated user')
                 setCustomers([])
+                setLoading(false)
                 return
             }
 
-            // First, get the current user's business
-            const { getUserId } = await import("@/lib/user")
-            const userId = getUserId()
-
+            // Get user's business first
             const { data: businessData, error: businessError } = await supabase
                 .from('businesses')
                 .select('id')
-                .eq('user_id', userId)
+                .eq('user_id', session.user.id)
                 .single()
 
             if (businessError || !businessData) {
-                console.error("Business not found:", businessError)
+                console.error("Business Error:", businessError)
                 setCustomers([])
+                setLoading(false)
                 return
             }
 
-            // Now fetch customers for this business
+            // Fetch customers for this business
             const { data, error } = await supabase
                 .from('customers')
                 .select('*')
@@ -74,5 +76,9 @@ export function useCustomers() {
         }
     }
 
-    return { customers, loading, refresh: fetchCustomers }
+    return {
+        customers,
+        loading,
+        refresh: fetchCustomers
+    }
 }

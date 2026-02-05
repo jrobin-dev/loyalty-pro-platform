@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
-import { getUserId } from "@/lib/user"
 
 export interface Business {
     id: string
@@ -26,9 +25,16 @@ export function useBusiness() {
         try {
             setLoading(true)
 
-            // Get unique user ID from localStorage
-            // In production, this will be replaced with Supabase Auth
-            const userId = getUserId()
+            // Get authenticated user from Supabase Auth
+            const { data: { session } } = await supabase.auth.getSession()
+
+            if (!session?.user) {
+                console.error('No authenticated user found')
+                setLoading(false)
+                return
+            }
+
+            const userId = session.user.id
 
             const { data, error } = await supabase
                 .from('businesses')
@@ -37,31 +43,11 @@ export function useBusiness() {
                 .single()
 
             if (error) {
-                // If no business exists, create a default one
+                // If no business exists, this shouldn't happen after onboarding
+                // but we handle it gracefully
                 if (error.code === 'PGRST116') {
-                    const defaultBusiness = {
-                        user_id: userId,
-                        name: "Mi Negocio",
-                        primary_color: "#8B5CF6",
-                        secondary_color: "#3B82F6",
-                        stamps_required: 10,
-                        reward_description: "¡Premio gratis!"
-                    }
-
-                    const { data: newBusiness, error: createError } = await supabase
-                        .from('businesses')
-                        .insert([defaultBusiness])
-                        .select()
-                        .single()
-
-                    if (createError) {
-                        console.error('Error creating business:', createError)
-                        toast.error('Error al crear configuración del negocio')
-                        return
-                    }
-
-                    setBusiness(newBusiness)
-                    toast.success('Configuración inicial creada')
+                    console.error('No business found for user:', userId)
+                    toast.error('No se encontró configuración del negocio')
                 } else {
                     console.error('Error fetching business:', error)
                     toast.error('Error al cargar configuración del negocio')
