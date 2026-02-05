@@ -1,3 +1,4 @@
+```
 "use client"
 
 import Link from "next/link"
@@ -17,16 +18,18 @@ import {
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
+import { useState } from "react"
+import { useBusiness } from "@/hooks/use-business"
 
-interface SidebarProps {
-    isOpen: boolean
-    setIsOpen: (open: boolean) => void
-    isCollapsed: boolean
-    toggleCollapse: () => void
-}
-
-export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: SidebarProps) {
+export default function Sidebar() {
     const pathname = usePathname()
+    const [isCollapsed, setIsCollapsed] = useState(false)
+    const [isOpen, setIsOpen] = useState(false) // Assuming isOpen state is now managed internally or removed
+    const { business } = useBusiness()
+
+    const toggleCollapse = () => {
+        setIsCollapsed(!isCollapsed)
+    }
 
     const menuItems = [
         { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
