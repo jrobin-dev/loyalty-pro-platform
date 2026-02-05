@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react"
 
 export function DashboardHero() {
     return (
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-900/40 via-blue-900/30 to-purple-800/40 border border-white/10 p-8 md:p-12">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-900/40 via-blue-900/30 to-purple-800/40 border border-transparent p-8 md:p-12">
             {/* Background Image/Pattern */}
             <div className="absolute right-0 top-0 h-full w-1/2 opacity-20">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-purple-500/20 via-transparent to-transparent" />

@@ -50,7 +50,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
             {/* Sidebar Container */}
             <div className={cn(
                 "fixed top-0 left-0 h-full z-50 transition-all duration-300 ease-in-out flex flex-col",
-                "bg-[#0a0a0a]/50 backdrop-blur-xl border-r border-white/5", // Cosmic Glass
+                "bg-[#0a0a0a]/50 backdrop-blur-xl border-r border-transparent", // Cosmic Glass
                 isOpen ? 'translate-x-0' : '-translate-x-full',
                 "md:translate-x-0",
                 isCollapsed ? "w-20" : "w-64"
@@ -100,17 +100,17 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 {/* Collapse Toggle Button */}
                 <button
                     onClick={toggleCollapse}
-                    className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#0a0a0a] border border-white/10 rounded-full items-center justify-center text-muted-foreground hover:text-white transition-colors z-50 hover:bg-primary/20 hover:border-primary/50"
+                    className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#0a0a0a] border border-transparent rounded-full items-center justify-center text-muted-foreground hover:text-white transition-colors z-50 hover:bg-primary/20 hover:border-primary/50"
                 >
                     {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
                 </button>
 
                 {/* Bottom Actions */}
-                <div className="p-4 border-t border-white/5 space-y-4">
+                <div className="p-4 border-t border-transparent space-y-4">
 
                     {/* Upgrade Box - Cosmic Style */}
                     {!isCollapsed ? (
-                        <div className="rounded-xl p-4 border border-white/5 bg-gradient-to-br from-primary/10 to-transparent">
+                        <div className="rounded-xl p-4 border border-transparent bg-gradient-to-br from-primary/10 to-transparent">
                             <h4 className="font-bold text-sm mb-1 text-white flex items-center gap-2">
                                 <Zap size={14} className="fill-yellow-400 text-yellow-400" /> Plan Free
                             </h4>
@@ -129,7 +129,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
 
                     {/* User Profile */}
                     <div className={cn("flex items-center gap-3", isCollapsed ? "justify-center" : "px-2")}>
-                        <Avatar className="h-8 w-8 border border-white/10 ring-2 ring-transparent group-hover:ring-primary/50 transition-all">
+                        <Avatar className="h-8 w-8 border border-transparent ring-2 ring-transparent group-hover:ring-primary/50 transition-all">
                             <AvatarFallback className="bg-white/5 text-xs text-white/80">JP</AvatarFallback>
                         </Avatar>
                         {!isCollapsed && (

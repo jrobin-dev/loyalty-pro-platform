@@ -15,7 +15,7 @@ interface StatCardProps {
 
 function StatCard({ title, value, change, icon: Icon, iconColor, iconBg }: StatCardProps) {
     return (
-        <Card className="bg-card/50 backdrop-blur-sm border-white/5 relative overflow-hidden group hover:border-white/10 transition-all">
+        <Card className="bg-card/50 backdrop-blur-sm border-transparent relative overflow-hidden group hover:border-purple-500/20 transition-all">
             <CardContent className="p-6">
                 {/* Icon Badge */}
                 <div className={`w-12 h-12 rounded-xl ${iconBg} flex items-center justify-center mb-4 shadow-lg`}>
@@ -45,7 +45,7 @@ export function DashboardStatsAdvanced() {
         return (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-pulse">
                 {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="h-40 bg-card/50 rounded-xl border border-white/5" />
+                    <div key={i} className="h-40 bg-card/50 rounded-xl border border-transparent" />
                 ))}
             </div>
         )
