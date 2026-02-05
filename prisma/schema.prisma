@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite doesn't support Enums, so we'll handle them as Strings in the application layer
+// Role: SUPER_ADMIN, BUSINESS_OWNER, END_USER
+// Plan: FREE, PRO, PLUS
+
+model User {
+  id        String   @id @default(uuid()) // Links to Supabase Auth ID
+  email     String   @unique
+  name      String?
+  role      String   @default("BUSINESS_OWNER")
+  createdAt DateTime @default(now())
+  
+  // Relations
+  tenants   Tenant[] // Businesses owned
+  
+  // As End User
+  memberships Customer[] // Programs joined
+}
+
+model Tenant {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  category    String?
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id])
+  plan        String   @default("FREE")
+  
+  branding    Branding?
+  loyalty     LoyaltyProgram?
+  customers   Customer[]
+  
+  createdAt   DateTime @default(now())
+}
+
+model Branding {
+  id             String @id @default(uuid())
+  tenantId       String @unique
+  tenant         Tenant @relation(fields: [tenantId], references: [id])
+  
+  primaryColor   String @default("#000000") // Neon Green or Custom
+  secondaryColor String @default("#ffffff")
+  logoUrl        String?
+  fontFamily     String @default("Funnel Display")
+  
+  gradient       Boolean @default(false)
+}
+
+model LoyaltyProgram {
+  id             String @id @default(uuid())
+  tenantId       String @unique
+  tenant         Tenant @relation(fields: [tenantId], references: [id])
+  
+  stampIcon      String @default("star") 
+  stampsRequired Int    @default(6)
+  rewardTitle    String @default("Free Reward")
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  
+  userId    String?  
+  user      User?    @relation(fields: [userId], references: [id])
+  
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  
+  totalStamps    Int @default(0)
+  currentStamps  Int @default(0)
+  
+  transactions   StampTransaction[]
+  
+  joinedAt       DateTime @default(now())
+  
+  @@unique([userId, tenantId])
+}
+
+model StampTransaction {
+  id         String   @id @default(uuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  
+  type       String   // EARN, REDEEM
+  amount     Int
+  description String?
+  
+  createdAt  DateTime @default(now())
+}

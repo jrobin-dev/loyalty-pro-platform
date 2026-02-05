@@ -1,0 +1,214 @@
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Search, Filter, MoreHorizontal, MessageCircle, Gift, Plus, CheckCircle2, Loader2, Database } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { useState } from "react"
+import { toast } from "sonner"
+import { useCustomers, Customer } from "@/hooks/use-customers"
+
+export function CustomerTableAdvanced() {
+    const { customers, loading, refresh } = useCustomers()
+    const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+    const [amount, setAmount] = useState("")
+    const [isAddConsumptionOpen, setIsAddConsumptionOpen] = useState(false)
+
+    const handleAddConsumption = () => {
+        // Logic to add consumption would go here (API call)
+        toast.success(`Visita registrada para ${selectedCustomer?.name}`, {
+            description: `Se registró el consumo de S/. ${amount} y se añadió +1 Stamp.`
+        })
+        setIsAddConsumptionOpen(false)
+        setAmount("")
+    }
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground animate-pulse">
+                <Loader2 size={32} className="animate-spin mb-4 text-[#00FF94]" />
+                <p>Cargando clientes...</p>
+            </div>
+        )
+    }
+
+    return (
+        <div className="space-y-4">
+            {/* Data Source Indicator (Dev Only) */}
+            {!process.env.NEXT_PUBLIC_SUPABASE_URL && (
+                <div className="bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-4 py-2 rounded-lg text-xs flex items-center gap-2">
+                    <Database size={12} />
+                    <span>Modo Demo: Configura Supabase para ver datos reales.</span>
+                </div>
+            )}
+
+            <div className="flex items-center justify-between gap-4">
+                <div className="flex flex-1 items-center gap-2 max-w-sm bg-card border border-border p-1 pl-3 rounded-xl focus-within:ring-1 ring-primary/50 transition-all">
+                    <Search size={16} className="text-muted-foreground" />
+                    <Input
+                        placeholder="Buscar por nombre, email o cel..."
+                        className="border-0 bg-transparent h-8 p-0 placeholder:text-muted-foreground/50 focus-visible:ring-0"
+                    />
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" className="hidden sm:flex border-dashed border-border bg-transparent hover:bg-secondary">
+                        <Filter size={14} className="mr-2" />
+                        Filtros
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={refresh} className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
+                        Refrescar
+                    </Button>
+                </div>
+            </div>
+
+            <div className="border border-border rounded-xl overflow-hidden bg-card shadow-sm">
+                <table className="w-full text-sm text-left">
+                    <thead className="bg-secondary/50 text-xs uppercase text-muted-foreground font-medium">
+                        <tr>
+                            <th className="px-6 py-4">Cliente</th>
+                            <th className="px-6 py-4 hidden md:table-cell">Contacto</th>
+                            <th className="px-6 py-4 hidden sm:table-cell text-right">Visitas</th>
+                            <th className="px-6 py-4 text-center">Stamps</th>
+                            <th className="px-6 py-4 text-center hidden lg:table-cell">Status</th>
+                            <th className="px-6 py-4 text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                        {customers.map((customer) => (
+                            <tr key={customer.id} className="group hover:bg-secondary/30 transition-colors">
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-9 w-9 border border-border">
+                                            {/* <AvatarImage src={customer.avatar} /> */}
+                                            <AvatarFallback className="bg-gradient-to-br from-primary to-blue-600 text-[10px] font-bold text-white">
+                                                {customer.name.substring(0, 2).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <div className="font-medium text-foreground group-hover:text-primary transition-colors">{customer.name}</div>
+                                            <div className="text-xs text-muted-foreground">{customer.email}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 hidden md:table-cell">
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                        {customer.phone ? (
+                                            <div className="flex items-center gap-1.5 font-mono text-xs">
+                                                <MessageCircle size={12} className="text-primary" />
+                                                {customer.phone}
+                                            </div>
+                                        ) : (
+                                            <span className="text-muted-foreground/50 italic text-xs">No registrado</span>
+                                        )}
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 hidden sm:table-cell text-right font-mono font-medium text-foreground/90">
+                                    {customer.visits}
+                                </td>
+                                <td className="px-6 py-4 text-center">
+                                    <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 border-blue-500/20 hover:bg-blue-500/20">
+                                        {customer.stamps} Stamps
+                                    </Badge>
+                                </td>
+                                <td className="px-6 py-4 text-center hidden lg:table-cell">
+                                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${customer.status === 'active' ? 'text-[#00FF94] bg-[#00FF94]/10' : 'text-gray-400 bg-gray-400/10'
+                                        }`}>
+                                        {customer.status === 'active' ? 'Activo' : 'Inactivo'}
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
+                                            <MoreHorizontal size={16} />
+                                        </Button>
+
+                                        <Dialog open={isAddConsumptionOpen && selectedCustomer?.id === customer.id} onOpenChange={(open) => {
+                                            setIsAddConsumptionOpen(open)
+                                            if (open) setSelectedCustomer(customer)
+                                            else {
+                                                setSelectedCustomer(null)
+                                                setAmount("")
+                                            }
+                                        }}>
+                                            <DialogTrigger asChild>
+                                                <Button size="sm" className="h-8 bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs">
+                                                    <Plus size={14} className="mr-1" />
+                                                    Consumo
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[425px] bg-card border-border">
+                                                <DialogHeader>
+                                                    <DialogTitle className="text-foreground">Agregar Consumo</DialogTitle>
+                                                    <DialogDescription className="text-muted-foreground">
+                                                        Registra una nueva compra para <span className="text-primary font-bold">{selectedCustomer?.name}</span>. Esto calculará automáticamente los stamps.
+                                                    </DialogDescription>
+                                                </DialogHeader>
+                                                <div className="grid gap-4 py-4">
+                                                    <div className="grid grid-cols-4 items-center gap-4">
+                                                        <Label htmlFor="amount" className="text-right text-foreground">
+                                                            Monto (S/)
+                                                        </Label>
+                                                        <Input
+                                                            id="amount"
+                                                            value={amount}
+                                                            onChange={(e) => setAmount(e.target.value)}
+                                                            className="col-span-3 bg-secondary/50 border-input text-foreground"
+                                                            type="number"
+                                                            placeholder="0.00"
+                                                            autoFocus
+                                                        />
+                                                    </div>
+                                                    <div className="grid grid-cols-4 items-center gap-4">
+                                                        <Label className="text-right text-muted-foreground">
+                                                            Stamps
+                                                        </Label>
+                                                        <div className="col-span-3 flex items-center gap-2">
+                                                            <Badge className="bg-primary/20 text-primary border-primary/50 text-sm px-3 py-1">
+                                                                +1 Stamp
+                                                            </Badge>
+                                                            <span className="text-xs text-muted-foreground">(1 Stamp por Visita/Consumo)</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <DialogFooter>
+                                                    <Button type="submit" onClick={handleAddConsumption} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
+                                                        <CheckCircle2 size={16} className="mr-2" />
+                                                        Confirmar Visita (+1 Stamp)
+                                                    </Button>
+                                                </DialogFooter>
+                                            </DialogContent>
+                                        </Dialog>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                {customers.length === 0 && !loading && (
+                    <div className="p-8 text-center text-muted-foreground">
+                        No hay clientes registrados aún.
+                    </div>
+                )}
+            </div>
+
+            <div className="text-center">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground text-xs">
+                    Cargar más clientes
+                </Button>
+            </div>
+        </div>
+    )
+}
