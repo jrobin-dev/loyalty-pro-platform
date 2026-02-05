@@ -228,7 +228,16 @@ export function CustomerTableAdvanced() {
                                                         disabled={!amount || parseFloat(amount) <= 0 || isProcessing}
                                                         className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/30 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-200 text-lg shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40"
                                                     >
-                                                    </DialogFooter>
+                                                        {isProcessing ? (
+                                                            <span className="flex items-center justify-center gap-2">
+                                                                <Loader2 className="h-5 w-5 animate-spin" />
+                                                                Procesando...
+                                                            </span>
+                                                        ) : (
+                                                            "Validar consumo"
+                                                        )}
+                                                    </button>
+                                                </div>
                                             </DialogContent>
                                         </Dialog>
 

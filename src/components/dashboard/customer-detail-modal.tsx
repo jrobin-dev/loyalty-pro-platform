@@ -78,28 +78,49 @@ export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDe
 
                                     {/* Bar */}
                                     <div
-                                        className={`w-full rounded-t-lg transition-all duration-300 cursor-pointer ${
-                                            isHovered 
-                                                ? 'bg-gradient-to-t from-emerald-500 to-emerald-300 shadow-lg shadow-emerald-500/50' 
+                                        className={`w-full rounded-t-lg transition-all duration-300 cursor-pointer ${isHovered
+                                                ? 'bg-gradient-to-t from-emerald-500 to-emerald-300 shadow-lg shadow-emerald-500/50'
                                                 : 'bg-gradient-to-t from-emerald-600 to-emerald-400'
-                                        }`}
+                                            }`}
                                         style={{ height: `${heightPercentage}%` }}
                                     />
                                 </div>
-                            <div className="mt-4 p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-center">
-                                <p className="text-yellow-400 font-bold text-sm">
-                                    🎉 ¡Tarjeta completa! Premio disponible
-                                </p>
-                            </div>
                             )
-                        }
+                        })}
+                    </div>
+                </div>
+
+                {/* Customer Stats */}
+                <div className="grid grid-cols-3 gap-4">
+                    <div className="bg-card/30 rounded-lg p-4 text-center">
+                        <div className="flex justify-center mb-2">
+                            <Award className="h-5 w-5 text-purple-400" />
+                        </div>
+                        <p className="text-2xl font-bold">{customer.stamps}</p>
+                        <p className="text-xs text-muted-foreground">Stamps</p>
                     </div>
 
-                    {/* Last Visit */}
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar size={14} />
-                        Última visita: {new Date(customer.last_visit).toLocaleDateString('es-ES')}
+                    <div className="bg-card/30 rounded-lg p-4 text-center">
+                        <div className="flex justify-center mb-2">
+                            <Calendar className="h-5 w-5 text-blue-400" />
+                        </div>
+                        <p className="text-2xl font-bold">{customer.visits}</p>
+                        <p className="text-xs text-muted-foreground">Visitas</p>
                     </div>
+
+                    <div className="bg-card/30 rounded-lg p-4 text-center">
+                        <div className="flex justify-center mb-2">
+                            <Gift className="h-5 w-5 text-emerald-400" />
+                        </div>
+                        <p className="text-2xl font-bold">{Math.floor(customer.stamps / 10)}</p>
+                        <p className="text-xs text-muted-foreground">Premios</p>
+                    </div>
+                </div>
+
+                {/* Last Visit */}
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar size={14} />
+                    Última visita: {new Date(customer.last_visit).toLocaleDateString('es-ES')}
                 </div>
             </DialogContent>
         </Dialog>
