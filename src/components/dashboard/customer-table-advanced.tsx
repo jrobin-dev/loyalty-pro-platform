@@ -18,12 +18,14 @@ import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useCustomers, Customer } from "@/hooks/use-customers"
+import { AddCustomerDialog } from "./add-customer-dialog"
 
 export function CustomerTableAdvanced() {
     const { customers, loading, refresh } = useCustomers()
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
     const [amount, setAmount] = useState("")
     const [isAddConsumptionOpen, setIsAddConsumptionOpen] = useState(false)
+    const [isAddCustomerOpen, setIsAddCustomerOpen] = useState(false)
 
     const handleAddConsumption = () => {
         // Logic to add consumption would go here (API call)
@@ -209,6 +211,13 @@ export function CustomerTableAdvanced() {
                     Cargar más clientes
                 </Button>
             </div>
+
+            {/* Add Customer Dialog */}
+            <AddCustomerDialog
+                open={isAddCustomerOpen}
+                onOpenChange={setIsAddCustomerOpen}
+                onSuccess={refresh}
+            />
         </div>
     )
 }

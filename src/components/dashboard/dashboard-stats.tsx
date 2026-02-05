@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Users, DollarSign, Award, Ticket, TrendingUp } from "lucide-react"
+import { useDashboardStats } from "@/hooks/use-dashboard-stats"
 
 interface StatCardProps {
     title: string
@@ -14,7 +15,6 @@ interface StatCardProps {
 function StatCard({ title, value, change, icon: Icon, label }: StatCardProps) {
     return (
         <Card className="bg-card border-border relative overflow-hidden group shadow-sm">
-            {/* Background Glow - Subtle on light, visible on dark */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-16 translate-x-10 pointer-events-none group-hover:bg-primary/10 transition-all duration-500" />
 
             <CardContent className="p-6">
@@ -42,33 +42,45 @@ function StatCard({ title, value, change, icon: Icon, label }: StatCardProps) {
 }
 
 export function DashboardStatsAdvanced() {
+    const { stats, loading } = useDashboardStats()
+
+    if (loading) {
+        return (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-pulse">
+                {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="h-32 bg-card rounded-lg border border-border" />
+                ))}
+            </div>
+        )
+    }
+
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard
                 title="Ingreso Total"
-                value="S/. 596.00"
-                change="+12.5%"
+                value={`S/. ${stats.totalRevenue.toLocaleString()}`}
+                change={stats.revenueChange}
                 icon={DollarSign}
                 label="TOTAL"
             />
             <StatCard
                 title="Total Usuarios"
-                value="2,408"
-                change="+3.2%"
+                value={stats.totalCustomers.toLocaleString()}
+                change={stats.customersChange}
                 icon={Users}
                 label="USUARIOS"
             />
             <StatCard
                 title="Premios Canjeados"
-                value="142"
-                change="+18%"
+                value={stats.totalRewards.toString()}
+                change={stats.rewardsChange}
                 icon={Award}
                 label="PREMIOS"
             />
             <StatCard
                 title="Total Stamps"
-                value="8,920"
-                change="+5.4%"
+                value={stats.totalStamps.toLocaleString()}
+                change={stats.stampsChange}
                 icon={Ticket}
                 label="ACUMULADO"
             />
