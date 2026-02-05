@@ -1,59 +1,57 @@
 "use client"
 
-import DashboardLayout from "@/components/dashboard/dashboard-layout"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Building2, Palette, Shield } from "lucide-react"
+import { useBusiness } from "@/hooks/use-business"
+import { BusinessSettingsForm } from "@/components/dashboard/business-settings-form"
+import { LoyaltyCardEditor } from "@/components/dashboard/loyalty-card-editor"
+import { Loader2, Building2, Award } from "lucide-react"
 
 export default function SettingsPage() {
+    const { business, loading, updateBusiness } = useBusiness()
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+            </div>
+        )
+    }
+
+    if (!business) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <p className="text-muted-foreground">No se pudo cargar la configuración del negocio</p>
+            </div>
+        )
+    }
+
     return (
-        <DashboardLayout>
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold font-sans">Configuración</h1>
-                <p className="text-white/60">Administra los detalles de tu negocio y la apariencia de tu marca.</p>
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-3xl font-bold">Configuración</h1>
+                <p className="text-muted-foreground">Administra tu negocio y tarjeta de lealtad</p>
             </div>
 
-            <Tabs defaultValue="general" className="max-w-4xl">
-                <TabsList className="bg-white/5 border border-white/10 mb-8">
-                    <TabsTrigger value="general" className="data-[state=active]:bg-[#00FF94] data-[state=active]:text-black">
-                        <Building2 size={16} className="mr-2" /> General
+            <Tabs defaultValue="business" className="w-full">
+                <TabsList className="bg-card/50 border border-white/10">
+                    <TabsTrigger value="business" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">
+                        <Building2 className="h-4 w-4 mr-2" />
+                        Negocio
                     </TabsTrigger>
-                    <TabsTrigger value="branding" className="data-[state=active]:bg-[#00FF94] data-[state=active]:text-black">
-                        <Palette size={16} className="mr-2" /> Marca
-                    </TabsTrigger>
-                    <TabsTrigger value="security" className="data-[state=active]:bg-[#00FF94] data-[state=active]:text-black">
-                        <Shield size={16} className="mr-2" /> Seguridad
+                    <TabsTrigger value="loyalty" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
+                        <Award className="h-4 w-4 mr-2" />
+                        Tarjeta de Lealtad
                     </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="general" className="space-y-6">
-                    <div className="glass-card p-6 rounded-xl border border-white/10 bg-white/5">
-                        <h3 className="text-lg font-bold mb-4">Perfil del Negocio</h3>
-                        <div className="grid gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Nombre del Negocio</Label>
-                                <Input id="name" placeholder="Ej. Cafetería Central" className="bg-black/20 border-white/10" defaultValue="Mi Negocio Demo" />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email de Contacto</Label>
-                                <Input id="email" placeholder="contacto@ejemplo.com" className="bg-black/20 border-white/10" defaultValue="admin@loyaltypro.com" />
-                            </div>
-                        </div>
-                        <div className="mt-6 flex justify-end">
-                            <Button className="bg-[#00FF94] text-black hover:bg-[#00cc76] font-bold">Guardar Cambios</Button>
-                        </div>
-                    </div>
+                <TabsContent value="business" className="mt-6">
+                    <BusinessSettingsForm business={business} onSave={updateBusiness} />
                 </TabsContent>
 
-                <TabsContent value="branding">
-                    <div className="glass-card p-6 rounded-xl border border-white/10 bg-white/5 text-center py-12 text-white/60">
-                        <Palette size={48} className="mx-auto mb-4 opacity-50" />
-                        <p>Opciones de personalización de tarjeta y colores próximamente disponibles.</p>
-                    </div>
+                <TabsContent value="loyalty" className="mt-6">
+                    <LoyaltyCardEditor business={business} onSave={updateBusiness} />
                 </TabsContent>
             </Tabs>
-        </DashboardLayout>
+        </div>
     )
 }
