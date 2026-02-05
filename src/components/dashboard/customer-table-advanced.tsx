@@ -189,56 +189,66 @@ export function CustomerTableAdvanced() {
 
                                         <Dialog open={isAddConsumptionOpen && selectedCustomer?.id === customer.id} onOpenChange={(open) => {
                                             setIsAddConsumptionOpen(open)
-                                            if (open) setSelectedCustomer(customer)
-                                            else {
+                                            if (!open) {
                                                 setSelectedCustomer(null)
                                                 setAmount("")
                                             }
                                         }}>
                                             <DialogTrigger asChild>
-                                                <Button className="h-8 px-3 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 font-bold text-xs">
-                                                    <Plus size={14} className="mr-1" />
-                                                    Consumo
-                                                </Button>
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedCustomer(customer)
+                                                        setIsAddConsumptionOpen(true)
+                                                    }}
+                                                    className="px-3 py-1.5 text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-md hover:bg-emerald-500/30 transition-colors flex items-center gap-1"
+                                                >
+                                                    <Plus size={14} />
+                                                    Agregar consumo
+                                                </button>
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[500px] bg-[#0a0a0a] border-transparent">
+                                            <DialogContent className="bg-[#0a0a0a] border-transparent max-w-md">
                                                 <DialogHeader>
-                                                    <DialogTitle className="text-2xl text-white">Agregar Consumo</DialogTitle>
-                                                    <p className="text-sm text-emerald-400 mt-2">
-                                                        Cliente: {selectedCustomer?.name} (@{selectedCustomer?.email?.split('@')[0]})
-                                                    </p>
+                                                    <DialogTitle className="text-xl">Agregar Consumo</DialogTitle>
+                                                    <DialogDescription className="text-emerald-400">
+                                                        Cliente: {customer.name}
+                                                    </DialogDescription>
                                                 </DialogHeader>
 
-                                                <div className="space-y-6 py-6">
-                                                    {/* Amount Input */}
-                                                    <div>
+                                                <div className="space-y-4 py-4">
+                                                    <div className="space-y-2">
+                                                        <Label htmlFor="amount" className="text-sm text-muted-foreground">
+                                                            Monto del consumo
+                                                        </Label>
                                                         <Input
+                                                            id="amount"
                                                             type="number"
                                                             placeholder="0.00"
                                                             value={amount}
                                                             onChange={(e) => setAmount(e.target.value)}
-                                                            className="text-4xl font-bold text-center h-20 bg-card/50 border-white/10 text-white placeholder:text-white/30"
-                                                            step="0.01"
-                                                            min="0"
+                                                            className="bg-card/50 border-white/10 h-10"
                                                         />
                                                     </div>
+                                                </div>
 
-                                                    {/* Confirm Button */}
+                                                <DialogFooter>
                                                     <button
                                                         onClick={handleAddConsumption}
                                                         disabled={!amount || parseFloat(amount) <= 0 || isProcessing}
-                                                        className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/30 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-200 text-lg shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40"
+                                                        className="w-full px-4 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/20 disabled:text-emerald-400/50 text-white rounded-md transition-colors text-sm font-medium flex items-center justify-center gap-2"
                                                     >
                                                         {isProcessing ? (
-                                                            <span className="flex items-center justify-center gap-2">
-                                                                <Loader2 className="h-5 w-5 animate-spin" />
+                                                            <>
+                                                                <Loader2 className="h-4 w-4 animate-spin" />
                                                                 Procesando...
-                                                            </span>
+                                                            </>
                                                         ) : (
-                                                            "Validar consumo"
+                                                            <>
+                                                                <CheckCircle2 className="h-4 w-4" />
+                                                                Validar consumo
+                                                            </>
                                                         )}
                                                     </button>
-                                                </div>
+                                                </DialogFooter>
                                             </DialogContent>
                                         </Dialog>
 
