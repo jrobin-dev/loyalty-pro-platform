@@ -37,7 +37,7 @@ export function useCustomers() {
             }
 
             const { data, error } = await supabase
-                .from('Customer') // Matches Prisma Model Name
+                .from('customers')
                 .select('*')
                 .order('last_visit', { ascending: false })
 
