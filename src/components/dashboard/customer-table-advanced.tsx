@@ -200,7 +200,7 @@ export function CustomerTableAdvanced() {
                                                     Consumo
                                                 </Button>
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[425px] bg-card border-border">
+                                            <DialogContent className="sm:max-w-[425px] bg-[#0a0a0a] border-transparent">
                                                 <DialogHeader>
                                                     <DialogTitle className="text-foreground">Agregar Consumo</DialogTitle>
                                                     <DialogDescription className="text-muted-foreground">

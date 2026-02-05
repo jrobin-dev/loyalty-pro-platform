@@ -27,7 +27,7 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto bg-[#0a0a0a] border-transparent">
                 <DialogHeader>
                     <DialogTitle className="text-2xl">Historial de Consumos</DialogTitle>
                     <p className="text-sm text-muted-foreground">{customer.name}</p>

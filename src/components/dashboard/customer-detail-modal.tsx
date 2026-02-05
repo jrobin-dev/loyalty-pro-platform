@@ -21,7 +21,7 @@ export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDe
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[500px] bg-[#0a0a0a] border-transparent">
                 <DialogHeader>
                     <DialogTitle className="text-2xl">Tarjeta de Lealtad</DialogTitle>
                 </DialogHeader>
@@ -75,8 +75,8 @@ export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDe
                                 <div
                                     key={i}
                                     className={`aspect-square rounded-lg flex items-center justify-center transition-all ${i < currentStamps
-                                            ? 'bg-gradient-to-br from-purple-500 to-blue-500 shadow-lg shadow-purple-500/50'
-                                            : 'bg-white/5 border border-white/10'
+                                        ? 'bg-gradient-to-br from-purple-500 to-blue-500 shadow-lg shadow-purple-500/50'
+                                        : 'bg-white/5 border border-white/10'
                                         }`}
                                 >
                                     {i < currentStamps && (
