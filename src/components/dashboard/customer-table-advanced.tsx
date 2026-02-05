@@ -19,6 +19,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { useCustomers, Customer } from "@/hooks/use-customers"
 import { AddCustomerDialog } from "./add-customer-dialog"
+import { supabase } from "@/lib/supabase"
 
 export function CustomerTableAdvanced() {
     const { customers, loading, refresh } = useCustomers()
@@ -26,14 +27,40 @@ export function CustomerTableAdvanced() {
     const [amount, setAmount] = useState("")
     const [isAddConsumptionOpen, setIsAddConsumptionOpen] = useState(false)
     const [isAddCustomerOpen, setIsAddCustomerOpen] = useState(false)
+    const [isProcessing, setIsProcessing] = useState(false)
 
-    const handleAddConsumption = () => {
-        // Logic to add consumption would go here (API call)
-        toast.success(`Visita registrada para ${selectedCustomer?.name}`, {
-            description: `Se registró el consumo de S/. ${amount} y se añadió +1 Stamp.`
-        })
-        setIsAddConsumptionOpen(false)
-        setAmount("")
+    const handleAddConsumption = async () => {
+        if (!selectedCustomer) return
+
+        setIsProcessing(true)
+        try {
+            // Update customer: increment stamps and visits, update last_visit
+            const { error } = await supabase
+                .from('customers')
+                .update({
+                    stamps: (selectedCustomer.stamps || 0) + 1,
+                    visits: (selectedCustomer.visits || 0) + 1,
+                    last_visit: new Date().toISOString()
+                })
+                .eq('id', selectedCustomer.id)
+
+            if (error) throw error
+
+            toast.success(`Visita registrada para ${selectedCustomer.name}`, {
+                description: `Se registró el consumo de S/. ${amount || '0'} y se añadió +1 Stamp.`
+            })
+
+            setIsAddConsumptionOpen(false)
+            setAmount("")
+            refresh() // Refresh the customer list
+        } catch (error: any) {
+            console.error("Error adding consumption:", error)
+            toast.error("Error al registrar consumo", {
+                description: error.message || "Intenta nuevamente"
+            })
+        } finally {
+            setIsProcessing(false)
+        }
     }
 
     if (loading) {
@@ -184,9 +211,14 @@ export function CustomerTableAdvanced() {
                                                     </div>
                                                 </div>
                                                 <DialogFooter>
-                                                    <Button type="submit" onClick={handleAddConsumption} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
+                                                    <Button
+                                                        type="submit"
+                                                        onClick={handleAddConsumption}
+                                                        disabled={isProcessing}
+                                                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold"
+                                                    >
                                                         <CheckCircle2 size={16} className="mr-2" />
-                                                        Confirmar Visita (+1 Stamp)
+                                                        {isProcessing ? "Procesando..." : "Confirmar Visita (+1 Stamp)"}
                                                     </Button>
                                                 </DialogFooter>
                                             </DialogContent>
