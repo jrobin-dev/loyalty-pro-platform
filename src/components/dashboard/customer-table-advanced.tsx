@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Search, Filter, MoreHorizontal, MessageCircle, Gift, Plus, CheckCircle2, Loader2, Database } from "lucide-react"
+import { Search, Filter, MoreHorizontal, MessageCircle, Gift, Plus, CheckCircle2, Loader2, Database, Eye, History } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import {
     Dialog,
@@ -20,6 +20,8 @@ import { toast } from "sonner"
 import { useCustomers, Customer } from "@/hooks/use-customers"
 import { AddCustomerDialog } from "./add-customer-dialog"
 import { supabase } from "@/lib/supabase"
+import { CustomerDetailModal } from "./customer-detail-modal"
+import { CustomerHistoryModal } from "./customer-history-modal"
 
 export function CustomerTableAdvanced() {
     const { customers, loading, refresh } = useCustomers()
@@ -28,6 +30,10 @@ export function CustomerTableAdvanced() {
     const [isAddConsumptionOpen, setIsAddConsumptionOpen] = useState(false)
     const [isAddCustomerOpen, setIsAddCustomerOpen] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
+    const [isDetailOpen, setIsDetailOpen] = useState(false)
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false)
+    const [detailCustomer, setDetailCustomer] = useState<Customer | null>(null)
+    const [historyCustomer, setHistoryCustomer] = useState<Customer | null>(null)
 
     const handleAddConsumption = async () => {
         if (!selectedCustomer) return
@@ -158,8 +164,26 @@ export function CustomerTableAdvanced() {
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2">
-                                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground">
-                                            <MoreHorizontal size={16} />
+                                        <Button
+                                            onClick={() => {
+                                                setDetailCustomer(customer)
+                                                setIsDetailOpen(true)
+                                            }}
+                                            className="h-8 px-3 bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 text-xs"
+                                        >
+                                            <Eye size={14} className="mr-1" />
+                                            Ver detalle
+                                        </Button>
+
+                                        <Button
+                                            onClick={() => {
+                                                setHistoryCustomer(customer)
+                                                setIsHistoryOpen(true)
+                                            }}
+                                            className="h-8 px-3 bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30 text-xs"
+                                        >
+                                            <History size={14} className="mr-1" />
+                                            Ver historial
                                         </Button>
 
                                         <Dialog open={isAddConsumptionOpen && selectedCustomer?.id === customer.id} onOpenChange={(open) => {
@@ -171,7 +195,7 @@ export function CustomerTableAdvanced() {
                                             }
                                         }}>
                                             <DialogTrigger asChild>
-                                                <Button size="sm" className="h-8 bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs">
+                                                <Button className="h-8 px-3 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 font-bold text-xs">
                                                     <Plus size={14} className="mr-1" />
                                                     Consumo
                                                 </Button>
