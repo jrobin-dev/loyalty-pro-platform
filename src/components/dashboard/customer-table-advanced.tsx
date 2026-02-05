@@ -200,51 +200,35 @@ export function CustomerTableAdvanced() {
                                                     Consumo
                                                 </Button>
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[425px] bg-[#0a0a0a] border-transparent">
+                                            <DialogContent className="sm:max-w-[500px] bg-[#0a0a0a] border-transparent">
                                                 <DialogHeader>
-                                                    <DialogTitle className="text-foreground">Agregar Consumo</DialogTitle>
-                                                    <DialogDescription className="text-muted-foreground">
-                                                        Registra una nueva compra para <span className="text-primary font-bold">{selectedCustomer?.name}</span>. Esto calculará automáticamente los stamps.
-                                                    </DialogDescription>
+                                                    <DialogTitle className="text-2xl text-white">Agregar Consumo</DialogTitle>
+                                                    <p className="text-sm text-emerald-400 mt-2">
+                                                        Cliente: {selectedCustomer?.name} (@{selectedCustomer?.email?.split('@')[0]})
+                                                    </p>
                                                 </DialogHeader>
-                                                <div className="grid gap-4 py-4">
-                                                    <div className="grid grid-cols-4 items-center gap-4">
-                                                        <Label htmlFor="amount" className="text-right text-foreground">
-                                                            Monto (S/)
-                                                        </Label>
+
+                                                <div className="space-y-6 py-6">
+                                                    {/* Amount Input */}
+                                                    <div>
                                                         <Input
-                                                            id="amount"
-                                                            value={amount}
-                                                            onChange={(e) => setAmount(e.target.value)}
-                                                            className="col-span-3 bg-secondary/50 border-input text-foreground"
                                                             type="number"
                                                             placeholder="0.00"
-                                                            autoFocus
+                                                            value={amount}
+                                                            onChange={(e) => setAmount(e.target.value)}
+                                                            className="text-4xl font-bold text-center h-20 bg-card/50 border-white/10 text-white placeholder:text-white/30"
+                                                            step="0.01"
+                                                            min="0"
                                                         />
                                                     </div>
-                                                    <div className="grid grid-cols-4 items-center gap-4">
-                                                        <Label className="text-right text-muted-foreground">
-                                                            Stamps
-                                                        </Label>
-                                                        <div className="col-span-3 flex items-center gap-2">
-                                                            <Badge className="bg-primary/20 text-primary border-primary/50 text-sm px-3 py-1">
-                                                                +1 Stamp
-                                                            </Badge>
-                                                            <span className="text-xs text-muted-foreground">(1 Stamp por Visita/Consumo)</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <DialogFooter>
-                                                    <Button
-                                                        type="submit"
+
+                                                    {/* Confirm Button */}
+                                                    <button
                                                         onClick={handleAddConsumption}
-                                                        disabled={isProcessing}
-                                                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold"
+                                                        disabled={!amount || parseFloat(amount) <= 0 || isProcessing}
+                                                        className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/30 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-all duration-200 text-lg shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40"
                                                     >
-                                                        <CheckCircle2 size={16} className="mr-2" />
-                                                        {isProcessing ? "Procesando..." : "Confirmar Visita (+1 Stamp)"}
-                                                    </Button>
-                                                </DialogFooter>
+                                                    </DialogFooter>
                                             </DialogContent>
                                         </Dialog>
 
