@@ -77,21 +77,18 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                 key={item.href}
                                 href={item.href}
                                 className={cn(
-                                    "flex items-center gap-3 px-3 py-3 rounded-lg transition-all group relative",
+                                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all group relative",
                                     isActive
-                                        ? 'bg-primary/10 text-primary font-medium shadow-[0_0_15px_rgba(139,92,246,0.15)]' // Cosmic Active
-                                        : 'text-muted-foreground hover:text-white hover:bg-white/5',
+                                        ? "bg-lime-500/20 text-lime-400 border-l-4 border-lime-500"
+                                        : "text-muted-foreground hover:text-white hover:bg-white/5",
                                     isCollapsed && "justify-center"
                                 )}
                                 title={isCollapsed ? item.label : undefined}
                             >
-                                <Icon size={20} className={isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-white transition-colors'} />
-                                {!isCollapsed && <span>{item.label}</span>}
+                                <Icon size={20} className={isActive ? 'text-lime-400' : 'text-muted-foreground group-hover:text-white transition-colors'} />
+                                {!isCollapsed && <span className={isActive ? "text-lime-400" : ""}>{item.label}</span>}
 
-                                {/* Active Indicator Dot */}
-                                {isActive && !isCollapsed && (
-                                    <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_5px_currentColor]" />
-                                )}
+                                {/* Active Indicator - removed as we're using left border */}
                             </Link>
                         )
                     })}
