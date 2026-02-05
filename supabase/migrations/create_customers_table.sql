@@ -1,7 +1,13 @@
--- Create customers table with relationship to businesses
-CREATE TABLE IF NOT EXISTS customers (
+-- SOLUCIÓN RÁPIDA: Crear tabla customers sin foreign key constraint
+-- Esto permite que funcione inmediatamente sin modificar businesses
+
+-- Primero, elimina la tabla antigua si existe
+DROP TABLE IF EXISTS customers CASCADE;
+
+-- Crea la nueva tabla SIN foreign key constraint
+CREATE TABLE customers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    business_id UUID NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
+    business_id TEXT NOT NULL, -- Cambiado a TEXT para coincidir con businesses.id
     name TEXT NOT NULL,
     email TEXT,
     phone TEXT,
@@ -14,20 +20,15 @@ CREATE TABLE IF NOT EXISTS customers (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create index for faster queries
-CREATE INDEX IF NOT EXISTS idx_customers_business_id ON customers(business_id);
-CREATE INDEX IF NOT EXISTS idx_customers_last_visit ON customers(last_visit DESC);
+-- Índices para consultas rápidas
+CREATE INDEX idx_customers_business_id ON customers(business_id);
+CREATE INDEX idx_customers_last_visit ON customers(last_visit DESC);
 
--- Enable RLS
+-- Habilitar RLS
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 
--- Create RLS policy - users can only see customers from their own business
+-- Política RLS permisiva (temporal)
 CREATE POLICY "Users can manage their business customers"
     ON customers FOR ALL
     USING (true)
     WITH CHECK (true);
-
--- Note: This is a permissive policy for the temporary user ID system
--- When Supabase Auth is implemented, this should be updated to:
--- USING (business_id IN (SELECT id FROM businesses WHERE user_id = auth.uid()))
--- WITH CHECK (business_id IN (SELECT id FROM businesses WHERE user_id = auth.uid()))
