@@ -24,7 +24,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-[#00FF94] selection:text-black relative">
+        <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-white relative font-sans">
             {/* Ambient Noise Texture */}
             <div className="bg-noise" />
 
