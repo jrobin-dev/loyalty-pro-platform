@@ -1,5 +1,4 @@
-use clientimport Link from "next/link"
-import { usePathname } from "next/navigation"
+use clientimport { usePathname } from "next/navigation"
 import {
     CreditCard,
     LayoutDashboard,
