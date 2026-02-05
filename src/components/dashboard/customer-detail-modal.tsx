@@ -88,20 +88,34 @@ export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDe
                                             : 'bg-white/10'
                                         }`}
                                 >
+                                    {index < customer.stamps ? (
+                                        <Award className="h-4 w-4 text-white" />
+                                    ) : (
+                                        <div className="h-4 w-4 border-2 border-dashed border-white/30 rounded-full" />
+                                    )}
                                 </div>
-                            )}
-
-                            {/* Bar */}
-                            <div
-                                className={`w-full rounded-t-lg transition-all duration-300 cursor-pointer ${isHovered
-                                    ? 'bg-gradient-to-t from-emerald-500 to-emerald-300 shadow-lg shadow-emerald-500/50'
-                                    : 'bg-gradient-to-t from-emerald-600 to-emerald-400'
-                                    }`}
-                                style={{ height: `${heightPercentage}%` }}
-                            />
+                            ))}
                         </div>
-                        )
-                        })}
+                    </div>
+
+                    {/* Stats */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-card/50 rounded-lg p-4 border border-white/10">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Award className="h-5 w-5 text-yellow-400" />
+                                <p className="text-sm text-muted-foreground">Premios Canjeados</p>
+                            </div>
+                            <p className="text-2xl font-bold text-white">{rewardsEarned}</p>
+                        </div>
+                        <div className="bg-card/50 rounded-lg p-4 border border-white/10">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Gift className="h-5 w-5 text-emerald-400" />
+                                <p className="text-sm text-muted-foreground">Estado</p>
+                            </div>
+                            <p className="text-2xl font-bold text-emerald-400">
+                                {customer.status === 'active' ? 'Activo' : 'Inactivo'}
+                            </p>
+                        </div>
                     </div>
                 </div>
 
