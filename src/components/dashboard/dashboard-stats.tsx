@@ -9,32 +9,29 @@ interface StatCardProps {
     value: string
     change: string
     icon: any
-    label: string
+    iconColor: string
+    iconBg: string
 }
 
-function StatCard({ title, value, change, icon: Icon, label }: StatCardProps) {
+function StatCard({ title, value, change, icon: Icon, iconColor, iconBg }: StatCardProps) {
     return (
-        <Card className="bg-card border-border relative overflow-hidden group shadow-sm">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-16 translate-x-10 pointer-events-none group-hover:bg-primary/10 transition-all duration-500" />
-
+        <Card className="bg-card/50 backdrop-blur-sm border-white/5 relative overflow-hidden group hover:border-white/10 transition-all">
             <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <p className="text-xs font-bold text-muted-foreground tracking-wider uppercase">{title}</p>
-                    <div className="bg-secondary p-1.5 rounded-lg border border-border">
-                        <Icon size={14} className="text-primary" />
-                    </div>
+                {/* Icon Badge */}
+                <div className={`w-12 h-12 rounded-xl ${iconBg} flex items-center justify-center mb-4 shadow-lg`}>
+                    <Icon size={24} className={iconColor} />
                 </div>
 
-                <div className="flex items-end justify-between">
-                    <div>
-                        <div className="text-3xl font-bold font-[family-name:var(--font-funnel-display)] text-foreground mb-1">
-                            {value}
-                        </div>
-                        <p className="text-xs text-primary flex items-center gap-1 font-medium">
-                            <TrendingUp size={10} />
-                            {change} <span className="text-muted-foreground font-normal">vs mes anterior</span>
-                        </p>
+                {/* Stats */}
+                <div>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">{title}</p>
+                    <div className="text-3xl font-bold text-white mb-2 font-display">
+                        {value}
                     </div>
+                    <p className="text-xs text-emerald-400 flex items-center gap-1 font-medium">
+                        <TrendingUp size={12} />
+                        {change} <span className="text-muted-foreground font-normal">vs mes anterior</span>
+                    </p>
                 </div>
             </CardContent>
         </Card>
@@ -48,7 +45,7 @@ export function DashboardStatsAdvanced() {
         return (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-pulse">
                 {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="h-32 bg-card rounded-lg border border-border" />
+                    <div key={i} className="h-40 bg-card/50 rounded-xl border border-white/5" />
                 ))}
             </div>
         )
@@ -61,28 +58,32 @@ export function DashboardStatsAdvanced() {
                 value={`S/. ${stats.totalRevenue.toLocaleString()}`}
                 change={stats.revenueChange}
                 icon={DollarSign}
-                label="TOTAL"
+                iconColor="text-orange-500"
+                iconBg="bg-orange-500/10"
             />
             <StatCard
                 title="Total Usuarios"
                 value={stats.totalCustomers.toLocaleString()}
                 change={stats.customersChange}
                 icon={Users}
-                label="USUARIOS"
+                iconColor="text-purple-500"
+                iconBg="bg-purple-500/10"
             />
             <StatCard
                 title="Premios Canjeados"
                 value={stats.totalRewards.toString()}
                 change={stats.rewardsChange}
                 icon={Award}
-                label="PREMIOS"
+                iconColor="text-yellow-500"
+                iconBg="bg-yellow-500/10"
             />
             <StatCard
                 title="Total Stamps"
                 value={stats.totalStamps.toLocaleString()}
                 change={stats.stampsChange}
                 icon={Ticket}
-                label="ACUMULADO"
+                iconColor="text-blue-500"
+                iconBg="bg-blue-500/10"
             />
         </div>
     )

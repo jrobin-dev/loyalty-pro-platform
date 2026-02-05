@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Download, Calendar } from "lucide-react"
 import Link from "next/link"
 import { MarketingSlider } from "@/components/dashboard/marketing-slider"
+import { DashboardHero } from "@/components/dashboard/dashboard-hero"
 
 export default function DashboardPage() {
     return (
@@ -15,8 +16,8 @@ export default function DashboardPage() {
             <div className="flex flex-col lg:flex-row gap-6">
                 {/* Main Content */}
                 <section className="flex-1 space-y-6">
-                    {/* Marketing Banner (Configurable via Admin) */}
-                    <MarketingSlider />
+                    {/* Hero Banner */}
+                    <DashboardHero />
 
                     {/* Header Actions */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
