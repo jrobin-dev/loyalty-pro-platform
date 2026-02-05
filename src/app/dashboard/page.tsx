@@ -35,6 +35,29 @@ export default function DashboardPage() {
         "Septiembre 2026", "Octubre 2026", "Noviembre 2026", "Diciembre 2026"
     ]
 
+    // Calculate date range based on selected month
+    const getDateRange = (monthStr: string) => {
+        const monthMap: { [key: string]: number } = {
+            "Enero": 0, "Febrero": 1, "Marzo": 2, "Abril": 3,
+            "Mayo": 4, "Junio": 5, "Julio": 6, "Agosto": 7,
+            "Septiembre": 8, "Octubre": 9, "Noviembre": 10, "Diciembre": 11
+        }
+
+        const [monthName, year] = monthStr.split(" ")
+        const monthIndex = monthMap[monthName]
+        const yearNum = parseInt(year)
+
+        const start = new Date(yearNum, monthIndex, 1)
+        const end = new Date(yearNum, monthIndex + 1, 0, 23, 59, 59)
+
+        return {
+            start: start.toISOString(),
+            end: end.toISOString()
+        }
+    }
+
+    const dateRange = getDateRange(selectedMonth)
+
     return (
         <DashboardLayout>
             <div className="flex flex-col lg:flex-row gap-6">
@@ -82,7 +105,7 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Dashboard Stats */}
-                    <DashboardStatsAdvanced />
+                    <DashboardStatsAdvanced dateRange={dateRange} />
 
                     {/* Dashboard Charts */}
                     <DashboardCharts />

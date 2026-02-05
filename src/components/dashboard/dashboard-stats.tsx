@@ -38,8 +38,8 @@ function StatCard({ title, value, change, icon: Icon, iconColor, iconBg }: StatC
     )
 }
 
-export function DashboardStatsAdvanced() {
-    const { stats, loading } = useDashboardStats()
+export function DashboardStatsAdvanced({ dateRange }: { dateRange?: { start: string; end: string } }) {
+    const { stats, loading } = useDashboardStats({ dateRange })
 
     if (loading) {
         return (
