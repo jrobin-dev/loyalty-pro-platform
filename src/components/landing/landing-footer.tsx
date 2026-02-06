@@ -57,7 +57,7 @@ export function LandingFooter() {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12">
                     {/* Brand Column */}
                     <div className="col-span-2 md:col-span-3 lg:col-span-2">
-                        <Link href="/" className="flex items-center gap-2 mb-4 group">
+                        <Link href="/" className="flex items-center gap-2 mb-4 group cursor-pointer">
                             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <Zap className="h-6 w-6 text-white fill-white" />
                             </div>

@@ -90,7 +90,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 {/* Header */}
                 <div className="h-16 flex items-center justify-between px-4 border-b border-white/10">
                     {!isCollapsed && (
-                        <Link href="/" className="group">
+                        <Link href="/" className="group cursor-pointer">
                             <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
                                 LoyaltyPro
                             </h1>
