@@ -10,6 +10,7 @@ import { Customer } from "@/hooks/use-customers"
 import { Award, Calendar, Gift } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
+import { useTenantSettings } from "@/hooks/use-tenant-settings"
 
 interface CustomerDetailModalProps {
     customer: Customer | null
@@ -20,8 +21,11 @@ interface CustomerDetailModalProps {
 export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDetailModalProps) {
     if (!customer) return null
 
+    const { loyaltyProgram } = useTenantSettings()
+    const stampsRequired = loyaltyProgram?.stampsRequired || 10
+
     // Calculate progress percentage
-    const progressPercentage = (customer.stamps / 10) * 100 // Assuming 10 stamps for reward
+    const progressPercentage = (customer.stamps / stampsRequired) * 100
     const rewardsEarned = customer.rewards || 0
 
     return (
@@ -68,7 +72,7 @@ export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDe
                     <div className="space-y-3">
                         <div className="flex justify-between items-center">
                             <h4 className="font-semibold text-white">Progreso de Lealtad</h4>
-                            <span className="text-sm text-purple-400">{customer.stamps}/10 sellos</span>
+                            <span className="text-sm text-purple-400">{customer.stamps}/{stampsRequired} sellos</span>
                         </div>
 
                         {/* Progress Bar */}
@@ -80,8 +84,8 @@ export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDe
                         </div>
 
                         {/* Stamps Grid */}
-                        <div className="grid grid-cols-10 gap-2">
-                            {Array.from({ length: 10 }).map((_, index) => (
+                        <div className={`grid gap-2`} style={{ gridTemplateColumns: `repeat(${Math.min(stampsRequired, 10)}, minmax(0, 1fr))` }}>
+                            {Array.from({ length: stampsRequired }).map((_, index) => (
                                 <div
                                     key={index}
                                     className={`aspect-square rounded-lg flex items-center justify-center ${index < customer.stamps
