@@ -11,9 +11,14 @@ export type Customer = {
     totalStamps: number
     currentStamps: number
     joinedAt: string
-    // Extended fields from User relation (if needed)
-    name?: string
-    email?: string
+    // Compatibility fields for existing components
+    name: string
+    email: string
+    phone: string
+    stamps: number
+    visits: number
+    last_visit: string
+    status: string
 }
 
 export function useCustomers() {
@@ -53,10 +58,16 @@ export function useCustomers() {
                 return
             }
 
-            // Fetch customers for this tenant
+            // Fetch customers for this tenant with user data
             const { data, error } = await supabase
                 .from('Customer')
-                .select('*')
+                .select(`
+                    *,
+                    user:User (
+                        name,
+                        email
+                    )
+                `)
                 .eq('tenantId', tenantData.id)
                 .order('joinedAt', { ascending: false })
 
@@ -65,7 +76,24 @@ export function useCustomers() {
                 setCustomers([])
                 toast.error("Error cargando clientes.")
             } else {
-                setCustomers(data || [])
+                // Transform data to match expected format
+                const transformedData = (data || []).map((customer: any) => ({
+                    id: customer.id,
+                    userId: customer.userId,
+                    tenantId: customer.tenantId,
+                    totalStamps: customer.totalStamps,
+                    currentStamps: customer.currentStamps,
+                    joinedAt: customer.joinedAt,
+                    // Compatibility fields
+                    name: customer.user?.name || 'Cliente',
+                    email: customer.user?.email || '',
+                    phone: '', // Not in current schema
+                    stamps: customer.currentStamps,
+                    visits: customer.totalStamps, // Approximate
+                    last_visit: customer.joinedAt,
+                    status: 'active'
+                }))
+                setCustomers(transformedData)
             }
         } catch (err) {
             console.error("Fetch Error:", err)
