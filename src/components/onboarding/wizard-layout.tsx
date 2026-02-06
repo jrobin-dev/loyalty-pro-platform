@@ -31,8 +31,8 @@ export default function WizardLayout() {
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 relative overflow-hidden">
             {/* Background Gradients - Deep Space Vibe */}
-            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-emerald-500/10 dark:bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-green-500/10 dark:bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="w-full max-w-xl z-10">
                 {/* Header */}
@@ -57,7 +57,7 @@ export default function WizardLayout() {
                     </p>
 
                     {/* Progress Bar */}
-                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden mt-4">
+                    <div className="h-2 w-full bg-secondary rounded-full overflow-hidden mt-4">
                         <motion.div
                             className="h-full bg-primary shadow-[0_0_10px_rgba(0,255,148,0.5)]"
                             initial={{ width: 0 }}
@@ -67,8 +67,8 @@ export default function WizardLayout() {
                     </div>
                 </div>
 
-                {/* Card Container - Glassmorphism No Border */}
-                <div className="glass-card rounded-3xl p-8 shadow-2xl relative">
+                {/* Card Container - Standard Card like Login */}
+                <div className="bg-card rounded-3xl p-8 shadow-2xl relative border border-border/50">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentStep}

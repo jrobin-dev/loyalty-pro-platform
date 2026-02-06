@@ -44,8 +44,8 @@ export default function ForgotPasswordPage() {
     return (
         <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 relative overflow-hidden">
             {/* Background Gradients */}
-            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-emerald-500/10 dark:bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-green-500/10 dark:bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="w-full max-w-md z-10">
                 {/* Logo/Brand */}
@@ -59,18 +59,18 @@ export default function ForgotPasswordPage() {
                 </div>
 
                 {/* Card */}
-                <div className="glass-card rounded-3xl p-8 shadow-2xl border border-white/10">
+                <div className="bg-card rounded-3xl p-8 shadow-2xl border border-border/50">
                     {!success ? (
                         <form onSubmit={handleResetPassword} className="space-y-6">
-                            <p className="text-sm text-white/60 text-center mb-4">
+                            <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
                                 Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
                             </p>
 
                             {/* Email */}
                             <div className="space-y-2">
-                                <Label className="text-sm font-medium text-white/80">Email</Label>
+                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</Label>
                                 <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                                     <Input
                                         type="email"
                                         placeholder="tu@email.com"

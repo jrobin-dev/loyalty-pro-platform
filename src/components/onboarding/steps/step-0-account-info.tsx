@@ -57,7 +57,7 @@ export default function Step0AccountInfo() {
                 <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
                     Crea tu Cuenta
                 </h2>
-                <p className="text-white/60 text-sm">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Usarás este email para acceder a tu dashboard.
                 </p>
             </div>
@@ -65,9 +65,9 @@ export default function Step0AccountInfo() {
             <div className="space-y-4">
                 {/* Email */}
                 <div className="space-y-2">
-                    <Label className="text-sm font-medium text-white/80">Email</Label>
+                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</Label>
                     <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                         <Input
                             type="email"
                             placeholder="tu@email.com"
@@ -84,7 +84,7 @@ export default function Step0AccountInfo() {
 
                 {/* Password */}
                 <div className="space-y-2">
-                    <Label className="text-sm font-medium text-white/80">Contraseña</Label>
+                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</Label>
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
                         <Input
@@ -97,7 +97,7 @@ export default function Step0AccountInfo() {
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                         >
                             {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                         </button>
@@ -109,7 +109,7 @@ export default function Step0AccountInfo() {
 
                 {/* Confirm Password */}
                 <div className="space-y-2">
-                    <Label className="text-sm font-medium text-white/80">Confirmar Contraseña</Label>
+                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Confirmar Contraseña</Label>
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
                         <Input
@@ -134,7 +134,7 @@ export default function Step0AccountInfo() {
                 Continuar
             </Button>
 
-            <p className="text-xs text-white/40 text-center">
+            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                 Al continuar, aceptas nuestros Términos de Servicio y Política de Privacidad
             </p>
         </div>
