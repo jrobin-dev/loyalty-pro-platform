@@ -94,7 +94,7 @@ export function FeaturesSection() {
                             transition={{ duration: 0.6, delay: index * 0.1 }}
                             className="group relative"
                         >
-                            <div className="relative h-full p-6 md:p-8 rounded-2xl bg-card hover:bg-card/80 transition-all duration-300 border border-border hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1">
+                            <div className="relative h-full p-6 md:p-8 rounded-2xl bg-card hover:bg-card/80 transition-all duration-300 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1">
                                 {/* Icon */}
                                 <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                                     <feature.icon className="h-6 w-6 md:h-7 md:w-7 text-white" />
