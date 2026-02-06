@@ -16,10 +16,11 @@ import {
     Loader2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useBusiness } from "@/hooks/use-business"
+import { useUserProfile } from "@/hooks/use-user-profile"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 
@@ -33,8 +34,17 @@ interface SidebarProps {
 export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: SidebarProps) {
     const pathname = usePathname()
     const { business } = useBusiness()
+    const { profile } = useUserProfile()
     const router = useRouter()
     const [isLoggingOut, setIsLoggingOut] = useState(false)
+    const [userName, setUserName] = useState("Usuario")
+
+    useEffect(() => {
+        if (profile) {
+            const fullName = [profile.name, profile.lastName].filter(Boolean).join(" ")
+            setUserName(fullName || profile.email?.split("@")[0] || "Usuario")
+        }
+    }, [profile])
 
     const handleLogout = async () => {
         try {
@@ -136,16 +146,19 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                     {/* User Profile */}
                     <div className={cn("flex items-center gap-3", isCollapsed ? "justify-center" : "px-2")}>
                         <Avatar className="h-8 w-8 border border-transparent ring-2 ring-transparent group-hover:ring-primary/50 transition-all">
-                            <AvatarFallback className="bg-white/5 text-xs text-white/80">
-                                {business?.name ? business.name.charAt(0).toUpperCase() : 'U'}
+                            {profile?.avatarUrl && (
+                                <AvatarImage src={profile.avatarUrl} alt={userName} />
+                            )}
+                            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-blue-500/20 text-xs text-white font-semibold">
+                                {userName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)}
                             </AvatarFallback>
                         </Avatar>
                         {!isCollapsed && (
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium truncate text-white">
-                                    {business?.name || 'Usuario'}
+                                    {userName}
                                 </p>
-                                <p className="text-xs text-muted-foreground truncate">Plan Free</p>
+                                <p className="text-xs text-muted-foreground truncate">{business?.name || "Plan Free"}</p>
                             </div>
                         )}
                         {!isCollapsed && (

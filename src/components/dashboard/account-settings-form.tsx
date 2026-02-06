@@ -14,7 +14,7 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 
 export function AccountSettingsForm() {
-    const { profile, loading, updateProfile, uploadAvatar } = useUserProfile()
+    const { profile, loading, updateProfile, uploadAvatar, refetch } = useUserProfile()
     const [saving, setSaving] = useState(false)
     const [changingPassword, setChangingPassword] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -47,11 +47,19 @@ export function AccountSettingsForm() {
     const handleSaveProfile = async () => {
         try {
             setSaving(true)
+
+            // Convert birthday to UTC to avoid timezone issues
+            let birthdayDate = null
+            if (birthday) {
+                const [year, month, day] = birthday.split("-")
+                birthdayDate = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day)))
+            }
+
             const result = await updateProfile({
                 name: name || null,
                 lastName: lastName || null,
                 phone: phone || null,
-                birthday: birthday ? new Date(birthday) : null,
+                birthday: birthdayDate,
             })
 
             if (result.success) {
@@ -120,7 +128,9 @@ export function AccountSettingsForm() {
                 <AvatarUploader
                     currentAvatarUrl={profile?.avatarUrl}
                     userName={profile?.name}
-                    onUploadComplete={(url) => {
+                    onUploadComplete={async (url) => {
+                        // Refresh profile to show new avatar immediately
+                        await refetch()
                         toast.success("Avatar actualizado")
                     }}
                 />
