@@ -6,7 +6,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, CheckCircle2, Sparkles } from "lucide-react"
 import { toast } from "sonner"
-import { getUserId } from "@/lib/user"
+import { createClient } from "@/lib/supabase/client"
 
 export default function Step8Final() {
     const { data, prevStep, reset } = useOnboardingStore()
@@ -39,8 +39,20 @@ export default function Step8Final() {
             // If session is returned, establish it in the browser
             if (result.session) {
                 console.log('🔐 Setting up session for auto-login...')
-                // Store session in localStorage for Supabase client
-                localStorage.setItem('supabase.auth.token', JSON.stringify(result.session))
+
+                // Use Supabase's setSession method to properly establish the session
+                const supabase = createClient()
+                const { error: sessionError } = await supabase.auth.setSession({
+                    access_token: result.session.access_token,
+                    refresh_token: result.session.refresh_token
+                })
+
+                if (sessionError) {
+                    console.error('❌ Error setting session:', sessionError)
+                    throw new Error('Error al establecer sesión')
+                }
+
+                console.log('✅ Session established successfully')
             }
 
             setIsSaved(true)
