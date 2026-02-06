@@ -58,10 +58,10 @@ export function LandingFooter() {
                     {/* Brand Column */}
                     <div className="col-span-2 md:col-span-3 lg:col-span-2">
                         <Link href="/" className="flex items-center gap-2 mb-4 group">
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <Zap className="h-6 w-6 text-white fill-white" />
                             </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+                            <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
                                 LoyaltyPro
                             </span>
                         </Link>

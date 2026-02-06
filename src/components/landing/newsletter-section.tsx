@@ -39,7 +39,7 @@ export function NewsletterSection() {
     return (
         <section className="py-20 md:py-32 relative overflow-hidden">
             {/* Background Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-blue-500/10 to-purple-500/10" />
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-green-500/10 to-emerald-400/10" />
 
             <div className="container mx-auto px-4 relative">
                 <motion.div
@@ -50,13 +50,13 @@ export function NewsletterSection() {
                     className="max-w-3xl mx-auto"
                 >
                     <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary to-blue-500 mb-6">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-green-500 mb-6">
                             <Mail className="h-8 w-8 text-white" />
                         </div>
 
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                             Mantente{" "}
-                            <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
                                 Actualizado
                             </span>
                         </h2>
@@ -81,7 +81,7 @@ export function NewsletterSection() {
                                 type="submit"
                                 size="lg"
                                 disabled={isSubmitting}
-                                className="bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 transition-opacity px-8"
+                                className="bg-gradient-to-r from-emerald-500 to-green-500 hover:opacity-90 transition-opacity px-8"
                             >
                                 {isSubmitting ? "Suscribiendo..." : "Suscribirse"}
                             </Button>

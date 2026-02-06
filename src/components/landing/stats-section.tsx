@@ -35,7 +35,7 @@ function AnimatedStat({ value, label, suffix = "", prefix = "" }: StatProps) {
             className="text-center"
         >
             <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2">
-                <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
                     {prefix}
                     <motion.span>{rounded}</motion.span>
                     {suffix}
@@ -64,7 +64,7 @@ export function StatsSection() {
     return (
         <section className="py-20 md:py-32 relative overflow-hidden">
             {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-blue-500/5 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 via-green-500/5 to-transparent" />
 
             <div className="container mx-auto px-4 relative">
                 <motion.div
@@ -76,7 +76,7 @@ export function StatsSection() {
                 >
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                         Números que{" "}
-                        <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
                             hablan por sí solos
                         </span>
                     </h2>

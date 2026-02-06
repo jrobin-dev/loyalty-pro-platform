@@ -69,7 +69,7 @@ export function LandingHeader() {
                             size="icon"
                             className="text-gray-300 hover:text-emerald-400 hover:bg-white/10"
                         >
-                            <Link href="/onboarding">
+                            <Link href="/login">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="20"

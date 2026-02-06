@@ -8,14 +8,14 @@ import { ArrowRight, Play, CheckCircle2 } from "lucide-react"
 export function HeroSection() {
     return (
         <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-            {/* Premium Green Neon Background */}
-            <div className="absolute inset-0 -z-10 bg-black">
-                {/* Main green glow orb */}
-                <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-emerald-500/30 rounded-full mix-blend-screen filter blur-[120px] animate-pulse" />
-                <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] bg-green-400/20 rounded-full mix-blend-screen filter blur-[100px] animate-pulse" style={{ animationDelay: "1s" }} />
+            {/* Premium Green Neon Background - Dark Mode */}
+            <div className="absolute inset-0 -z-10 dark:bg-black bg-white">
+                {/* Main green glow orb - only visible in dark mode */}
+                <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] dark:bg-emerald-500/30 bg-emerald-500/5 rounded-full mix-blend-screen filter blur-[120px] dark:animate-pulse" />
+                <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] dark:bg-green-400/20 bg-green-400/5 rounded-full mix-blend-screen filter blur-[100px] dark:animate-pulse" style={{ animationDelay: "1s" }} />
 
-                {/* Grid overlay */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#0a0a0a_1px,transparent_1px),linear-gradient(to_bottom,#0a0a0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] opacity-20" />
+                {/* Grid overlay - subtle in light mode */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#0a0a0a_1px,transparent_1px),linear-gradient(to_bottom,#0a0a0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] opacity-20" />
             </div>
 
             <div className="container mx-auto px-4 py-20 relative z-10">
@@ -47,7 +47,7 @@ export function HeroSection() {
                             transition={{ delay: 0.3 }}
                             className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
                         >
-                            <span className="text-white">Fideliza a tus</span>
+                            <span className="text-foreground">Fideliza a tus</span>
                             <br />
                             <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-emerald-500 bg-clip-text text-transparent">
                                 Clientes con IA
@@ -59,10 +59,10 @@ export function HeroSection() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="text-xl md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed"
+                            className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed"
                         >
                             Crea programas de lealtad digitales, gestiona clientes y aumenta tus ventas.
-                            <span className="text-emerald-400 font-semibold"> Todo en una plataforma simple y poderosa.</span>
+                            <span className="text-emerald-600 dark:text-emerald-400 font-semibold"> Todo en una plataforma simple y poderosa.</span>
                         </motion.p>
 
                         {/* CTAs */}
@@ -87,7 +87,7 @@ export function HeroSection() {
                                 asChild
                                 size="lg"
                                 variant="outline"
-                                className="text-lg px-8 py-6 h-auto bg-white/5 backdrop-blur-sm hover:bg-white/10 text-white group"
+                                className="text-lg px-8 py-6 h-auto bg-white/5 dark:bg-white/5 backdrop-blur-sm hover:bg-white/10 dark:hover:bg-white/10 text-foreground group"
                             >
                                 <Link href="#demo">
                                     <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
@@ -108,8 +108,8 @@ export function HeroSection() {
                                 "Configuración en 5 minutos",
                                 "Soporte 24/7",
                             ].map((feature, i) => (
-                                <div key={i} className="flex items-center gap-2 text-gray-300">
-                                    <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                                <div key={i} className="flex items-center gap-2 text-muted-foreground">
+                                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                                     <span>{feature}</span>
                                 </div>
                             ))}
@@ -131,7 +131,7 @@ export function HeroSection() {
                                     <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent mb-2">
                                         {stat.value}
                                     </div>
-                                    <div className="text-sm text-gray-400">{stat.label}</div>
+                                    <div className="text-sm text-muted-foreground">{stat.label}</div>
                                 </div>
                             ))}
                         </motion.div>

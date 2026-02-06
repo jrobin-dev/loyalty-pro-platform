@@ -22,7 +22,7 @@ const features = [
         icon: BarChart3,
         title: "Reportes de Ventas en Tiempo Real",
         description: "Control diario, semanal y mensual de tus ventas. Gráficos interactivos y exportación de datos para tomar mejores decisiones.",
-        gradient: "from-blue-500 to-cyan-500",
+        gradient: "from-emerald-500 to-green-500",
     },
     {
         icon: Users,
@@ -61,7 +61,7 @@ export function FeaturesSection() {
             {/* Background decoration */}
             <div className="absolute inset-0 -z-10 opacity-30">
                 <div className="absolute top-1/4 left-0 w-96 h-96 bg-primary/20 rounded-full filter blur-3xl" />
-                <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-blue-500/20 rounded-full filter blur-3xl" />
+                <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-emerald-500/20 rounded-full filter blur-3xl" />
             </div>
 
             <div className="container mx-auto px-4">
@@ -75,7 +75,7 @@ export function FeaturesSection() {
                 >
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                         Todo lo que necesitas para{" "}
-                        <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
                             hacer crecer tu negocio
                         </span>
                     </h2>

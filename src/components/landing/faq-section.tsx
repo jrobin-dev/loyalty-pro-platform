@@ -90,7 +90,7 @@ export function FAQSection() {
                 >
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                         Preguntas{" "}
-                        <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
                             Frecuentes
                         </span>
                     </h2>
