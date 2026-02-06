@@ -16,8 +16,8 @@ const funnelDisplay = Funnel_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Loyalty SaaS Platform",
-  description: "The premium loyalty platform for your business.",
+  title: "LoyaltyPro - Sistema de Lealtad Digital para tu Negocio",
+  description: "Crea programas de lealtad digitales, gestiona clientes y aumenta tus ventas. Tarjetas en Apple Wallet y Google Wallet. Empieza gratis hoy.",
 };
 
 export default function RootLayout({
