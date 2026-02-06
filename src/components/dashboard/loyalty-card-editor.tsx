@@ -89,53 +89,88 @@ export function LoyaltyCardEditor({ settings, onSave }: LoyaltyCardEditorProps) 
                 </CardContent>
             </Card>
 
-            {/* Live Preview */}
-            <Card className="bg-gradient-to-br from-purple-600 to-blue-600 border-transparent">
+            {/* Live Preview - Mobile Phone Style */}
+            <Card className="bg-card/50 backdrop-blur-sm border-white/10">
                 <CardHeader>
-                    <CardTitle className="text-white">Vista Previa</CardTitle>
+                    <CardTitle>Vista Previa</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-                        <div className="flex justify-between items-center mb-4">
-                            <div>
-                                <p className="text-white/80 text-sm">Progreso</p>
-                                <p className="text-white text-2xl font-bold">
-                                    5/{stampsRequired} Sellos
-                                </p>
-                            </div>
-                            <Award className="h-10 w-10 text-white/90" />
-                        </div>
+                <CardContent className="flex justify-center">
+                    {/* Phone Frame */}
+                    <div className="relative w-[300px] h-[600px] bg-black rounded-[3rem] p-3 shadow-2xl border-8 border-gray-800">
+                        {/* Phone Notch */}
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-b-2xl z-10" />
 
-                        {/* Stamp Grid */}
-                        <div className="grid grid-cols-5 gap-2 mb-4">
-                            {Array.from({ length: stampsRequired }).map((_, index) => (
-                                <div
-                                    key={index}
-                                    className={`aspect-square rounded-lg flex items-center justify-center ${index < 5
-                                        ? 'bg-white text-purple-600'
-                                        : 'bg-white/20 text-white/40'
-                                        }`}
-                                >
-                                    {index < 5 ? (
-                                        <Award className="h-5 w-5" />
-                                    ) : (
-                                        <div className="h-5 w-5 border-2 border-dashed border-current rounded-full" />
-                                    )}
+                        {/* Phone Screen */}
+                        <div className="w-full h-full bg-gradient-to-br from-gray-900 to-black rounded-[2.5rem] overflow-hidden">
+                            {/* Status Bar */}
+                            <div className="h-12 flex items-center justify-between px-6 text-white text-xs">
+                                <span>9:30</span>
+                                <div className="flex gap-1">
+                                    <div className="w-1 h-1 bg-white rounded-full" />
+                                    <div className="w-1 h-1 bg-white rounded-full" />
+                                    <div className="w-1 h-1 bg-white rounded-full" />
                                 </div>
-                            ))}
-                        </div>
+                            </div>
 
-                        {/* Progress Bar */}
-                        <div className="bg-white/20 rounded-full h-2 overflow-hidden mb-4">
-                            <div
-                                className="bg-white h-full transition-all duration-500"
-                                style={{ width: `${(5 / stampsRequired) * 100}%` }}
-                            />
-                        </div>
+                            {/* Card Content */}
+                            <div className="p-6 space-y-4">
+                                {/* Business Header */}
+                                <div
+                                    className="rounded-2xl p-6 text-center"
+                                    style={{
+                                        backgroundColor: settings.branding.primaryColor || '#8b5cf6'
+                                    }}
+                                >
+                                    <div className="w-16 h-16 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center">
+                                        <Award className="h-8 w-8 text-white" />
+                                    </div>
+                                    <h3 className="text-white font-bold text-lg">{settings.tenant.name}</h3>
+                                </div>
 
-                        {/* Reward Description */}
-                        <div className="bg-white/20 rounded-lg p-3 text-center">
-                            <p className="text-white font-bold">{rewardDescription}</p>
+                                {/* Stamps Section */}
+                                <div className="bg-gray-800/50 rounded-2xl p-4 backdrop-blur-sm border border-white/10">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <p className="text-white/80 text-sm">Progreso</p>
+                                        <p className="text-white text-lg font-bold">
+                                            0/{stampsRequired} Sellos
+                                        </p>
+                                    </div>
+
+                                    {/* Stamp Grid */}
+                                    <div
+                                        className="grid gap-2 mb-3"
+                                        style={{
+                                            gridTemplateColumns: `repeat(${Math.min(stampsRequired, 4)}, minmax(0, 1fr))`
+                                        }}
+                                    >
+                                        {Array.from({ length: stampsRequired }).map((_, index) => (
+                                            <div
+                                                key={index}
+                                                className="aspect-square rounded-xl flex items-center justify-center bg-white/10 border-2 border-dashed border-white/20"
+                                            >
+                                                <div className="h-5 w-5 border-2 border-dashed border-white/30 rounded-full" />
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Progress Bar */}
+                                    <div className="bg-white/10 rounded-full h-2 overflow-hidden">
+                                        <div
+                                            className="h-full transition-all duration-500"
+                                            style={{
+                                                width: '0%',
+                                                backgroundColor: settings.branding.primaryColor || '#8b5cf6'
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Reward Section */}
+                                <div className="bg-gray-800/50 rounded-2xl p-4 backdrop-blur-sm border border-white/10 text-center">
+                                    <p className="text-white/60 text-xs mb-1">PREMIO</p>
+                                    <p className="text-white font-bold">{rewardDescription}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </CardContent>
