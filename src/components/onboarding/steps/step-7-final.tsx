@@ -19,23 +19,28 @@ export default function Step8Final() {
         setIsLoading(true)
 
         try {
-            // Get unique user ID
-            const userId = getUserId()
+            console.log('📝 Submitting onboarding data...')
 
-            // Save business configuration to Supabase
+            // Save business configuration to API
             const response = await fetch('/api/onboarding/complete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...data,
-                    userId // Include user ID in request
-                })
+                body: JSON.stringify(data)
             })
 
             const result = await response.json()
 
             if (!response.ok) {
                 throw new Error(result.error || 'Error al guardar configuración')
+            }
+
+            console.log('✅ Onboarding successful:', result)
+
+            // If session is returned, establish it in the browser
+            if (result.session) {
+                console.log('🔐 Setting up session for auto-login...')
+                // Store session in localStorage for Supabase client
+                localStorage.setItem('supabase.auth.token', JSON.stringify(result.session))
             }
 
             setIsSaved(true)
@@ -47,10 +52,11 @@ export default function Step8Final() {
             setTimeout(() => {
                 reset() // Clear wizard data
                 router.push('/dashboard')
+                router.refresh() // Force refresh to load new session
             }, 1500)
 
         } catch (error: any) {
-            console.error('Error saving business:', error)
+            console.error('❌ Error saving business:', error)
             toast.error(error.message || "Error al guardar configuración", {
                 description: "Por favor intenta nuevamente"
             })
