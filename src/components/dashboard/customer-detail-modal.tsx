@@ -21,12 +21,12 @@ interface CustomerDetailModalProps {
 export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDetailModalProps) {
     if (!customer) return null
 
-    const { loyaltyProgram } = useTenantSettings()
-    const stampsRequired = loyaltyProgram?.stampsRequired || 10
+    const { settings } = useTenantSettings()
+    const stampsRequired = settings?.loyaltyProgram?.stampsRequired || 10
 
     // Calculate progress percentage
     const progressPercentage = (customer.stamps / stampsRequired) * 100
-    const rewardsEarned = customer.rewards || 0
+    const rewardsEarned = 0 // TODO: Calculate from redeemed stamps
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -89,8 +89,8 @@ export function CustomerDetailModal({ customer, open, onOpenChange }: CustomerDe
                                 <div
                                     key={index}
                                     className={`aspect-square rounded-lg flex items-center justify-center ${index < customer.stamps
-                                            ? 'bg-gradient-to-br from-purple-500 to-blue-500'
-                                            : 'bg-white/10'
+                                        ? 'bg-gradient-to-br from-purple-500 to-blue-500'
+                                        : 'bg-white/10'
                                         }`}
                                 >
                                     {index < customer.stamps ? (
