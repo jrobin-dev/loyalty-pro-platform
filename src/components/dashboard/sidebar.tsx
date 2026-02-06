@@ -89,25 +89,27 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
             >
                 {/* Header */}
                 <div className="h-16 flex items-center justify-between px-4 border-b border-white/10">
-                    {!isCollapsed && (
-                        <Link href="/" className="group cursor-pointer">
+                    <Link href="/" className={cn("group cursor-pointer", isCollapsed && "mx-auto")}>
+                        {isCollapsed ? (
+                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                                <Zap className="h-6 w-6 text-white fill-white" />
+                            </div>
+                        ) : (
                             <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
                                 LoyaltyPro
                             </h1>
-                        </Link>
-                    )}
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={toggleCollapse}
-                        className="ml-auto hover:bg-white/10"
-                    >
-                        {isCollapsed ? (
-                            <ChevronRight className="h-5 w-5" />
-                        ) : (
-                            <ChevronLeft className="h-5 w-5" />
                         )}
-                    </Button>
+                    </Link>
+                    {!isCollapsed && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={toggleCollapse}
+                            className="ml-auto hover:bg-white/10"
+                        >
+                            <ChevronLeft className="h-5 w-5" />
+                        </Button>
+                    )}
                 </div>
 
                 {/* Navigation */}

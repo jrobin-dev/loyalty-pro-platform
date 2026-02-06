@@ -3,6 +3,8 @@
 import { useOnboardingStore } from "@/store/onboarding-store"
 import { motion, AnimatePresence } from "framer-motion"
 import { useEffect, useState } from "react"
+import Link from "next/link"
+import { Zap } from "lucide-react"
 
 import Step0AccountInfo from "./steps/step-0-account-info"
 import Step1BusinessInfo from "./steps/step-1-business-info"
@@ -35,6 +37,18 @@ export default function WizardLayout() {
             <div className="w-full max-w-xl z-10">
                 {/* Header */}
                 <div className="mb-8 text-center space-y-2">
+                    {/* Logo/Brand */}
+                    <div className="mb-6 flex justify-center">
+                        <Link href="/" className="flex items-center gap-2 group cursor-pointer">
+                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                                <Zap className="h-6 w-6 text-white fill-white" />
+                            </div>
+                            <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
+                                LoyaltyPro
+                            </span>
+                        </Link>
+                    </div>
+
                     <h1 className="text-3xl font-bold font-sans tracking-tight">
                         Configura tu Sistema de Lealtad
                     </h1>

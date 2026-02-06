@@ -55,9 +55,11 @@ export default function LoginPage() {
             <div className="w-full max-w-md z-10">
                 {/* Logo/Brand */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent mb-2">
-                        LoyaltyPro
-                    </h1>
+                    <Link href="/" className="inline-block group cursor-pointer">
+                        <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent mb-2 group-hover:scale-105 transition-transform">
+                            LoyaltyPro
+                        </h1>
+                    </Link>
                     <p className="text-gray-600 dark:text-gray-400">Inicia sesión en tu cuenta</p>
                 </div>
 
