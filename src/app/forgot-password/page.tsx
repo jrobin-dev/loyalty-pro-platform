@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
                                         placeholder="tu@email.com"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="pl-10 h-12 bg-white/5 border-white/10 focus:border-primary/50"
+                                        className="pl-10 h-12"
                                         required
                                         autoFocus
                                     />
