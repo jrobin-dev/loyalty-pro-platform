@@ -1,20 +1,17 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 
 export interface Business {
     id: string
-    user_id: string
+    slug: string
     name: string
-    logo_url?: string
-    primary_color: string
-    secondary_color: string
-    stamps_required: number
-    reward_description: string
-    created_at: string
-    updated_at: string
+    category?: string
+    ownerId: string
+    plan: string
+    createdAt: string
 }
 
 export function useBusiness() {
@@ -24,6 +21,7 @@ export function useBusiness() {
     const fetchBusiness = async () => {
         try {
             setLoading(true)
+            const supabase = createClient()
 
             // Get authenticated user from Supabase Auth
             const { data: { session } } = await supabase.auth.getSession()
@@ -36,20 +34,21 @@ export function useBusiness() {
 
             const userId = session.user.id
 
+            // Query the Tenant table (new schema from Prisma)
             const { data, error } = await supabase
-                .from('businesses')
+                .from('Tenant')
                 .select('*')
-                .eq('user_id', userId)
+                .eq('ownerId', userId)
                 .single()
 
             if (error) {
-                // If no business exists, this shouldn't happen after onboarding
+                // If no tenant exists, this shouldn't happen after onboarding
                 // but we handle it gracefully
                 if (error.code === 'PGRST116') {
-                    console.error('No business found for user:', userId)
+                    console.error('No tenant found for user:', userId)
                     toast.error('No se encontró configuración del negocio')
                 } else {
-                    console.error('Error fetching business:', error)
+                    console.error('Error fetching tenant:', error)
                     toast.error('Error al cargar configuración del negocio')
                 }
             } else {
@@ -67,15 +66,17 @@ export function useBusiness() {
         if (!business) return
 
         try {
+            const supabase = createClient()
+
             const { data, error } = await supabase
-                .from('businesses')
+                .from('Tenant')
                 .update(updates)
                 .eq('id', business.id)
                 .select()
                 .single()
 
             if (error) {
-                console.error('Error updating business:', error)
+                console.error('Error updating tenant:', error)
                 toast.error('Error al actualizar configuración')
                 return false
             }
