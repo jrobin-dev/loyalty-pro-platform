@@ -56,11 +56,13 @@ export function AccountSettingsForm() {
         try {
             setSaving(true)
 
-            // Convert birthday to UTC to avoid timezone issues
+            // Convert birthday to Date with local timezone (Peru UTC-5)
+            // Set time to noon to avoid timezone day shifts
             let birthdayDate = null
             if (birthday) {
-                const [year, month, day] = birthday.split("-")
-                birthdayDate = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day)))
+                const [year, month, day] = birthday.split("-").map(Number)
+                // Create date at noon local time to avoid day shifts
+                birthdayDate = new Date(year, month - 1, day, 12, 0, 0)
             }
 
             const result = await updateProfile({
