@@ -13,8 +13,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     "flex h-12 w-full rounded-xl border border-input px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium",
                     // Dark mode: gray background with contrast, white text
                     "dark:bg-white/10 dark:text-white dark:placeholder:text-gray-400",
-                    // Light mode: white background, dark gray text
-                    "bg-white text-gray-900 placeholder:text-gray-400",
+                    // Light mode: white background, black text
+                    "bg-white text-black placeholder:text-gray-400",
                     "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
                     className
                 )}

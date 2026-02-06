@@ -1,69 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  --background: 142 20% 8%;
-  /* Dark greenish black - like landing */
+  --background: 142 10% 4%;
+  /* Deeper black with minimal green tint */
   --foreground: 0 0% 100%;
-  --card: 142 15% 12%;
-  /* Slightly lighter greenish dark */
+  --card: 142 8% 7%;
+  /* Darker card to match background */
   --card-foreground: 0 0% 98%;
-  --popover: 142 15% 12%;
+  --popover: 142 8% 7%;
   --popover-foreground: 0 0% 98%;
   --primary: 142 76% 50%;
-  /* Emerald Green */
   --primary-foreground: 0 0% 100%;
-  --secondary: 142 20% 15%;
-  /* Dark green tint */
+  --secondary: 142 10% 10%;
   --secondary-foreground: 0 0% 98%;
-  --muted: 142 15% 16%;
-  /* Green-tinted muted for tables */
-  --muted-foreground: 142 10% 60%;
-  /* Green-tinted text */
-  --accent: 142 50% 20%;
-  /* Dark green accent */
+  --muted: 142 5% 12%;
+  --muted-foreground: 142 5% 60%;
+  --accent: 142 20% 15%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
-  --border: 142 15% 20%;
-  /* Subtle greenish border for tables */
-  --input: 142 10% 15%;
+  --border: 142 8% 15%;
+  /* Less green border */
+  --input: 142 5% 12%;
   --ring: 142 76% 50%;
   --radius: 0.75rem;
   --chart-1: 142 76% 50%;
 }
 
 .dark {
-  --background: 142 20% 8%;
-  /* Dark greenish black - like landing */
+  --background: 142 10% 4%;
   --foreground: 0 0% 100%;
-
-  --card: 142 15% 12%;
-  /* Slightly lighter greenish dark */
+  --card: 142 8% 7%;
   --card-foreground: 0 0% 100%;
-
-  --popover: 142 15% 12%;
+  --popover: 142 8% 7%;
   --popover-foreground: 0 0% 100%;
-
   --primary: 142 76% 50%;
-  /* Emerald Green */
   --primary-foreground: 0 0% 100%;
-
-  --secondary: 142 20% 15%;
+  --secondary: 142 10% 10%;
   --secondary-foreground: 0 0% 100%;
-
-  --muted: 142 15% 16%;
-  /* Green-tinted muted for tables */
-  --muted-foreground: 142 10% 60%;
-
-  --accent: 142 50% 20%;
+  --muted: 142 5% 12%;
+  --muted-foreground: 142 5% 60%;
+  --accent: 142 20% 15%;
   --accent-foreground: 0 0% 100%;
-
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 100%;
-
-  --border: 142 15% 20%;
-  /* Subtle greenish border for tables */
-  --input: 142 10% 15%;
+  --border: 142 8% 15%;
+  --input: 142 5% 12%;
   --ring: 142 76% 50%;
 }
 
