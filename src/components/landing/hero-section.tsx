@@ -3,50 +3,54 @@
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Play, Sparkles } from "lucide-react"
+import { ArrowRight, Play, CheckCircle2 } from "lucide-react"
 
 export function HeroSection() {
     return (
         <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-            {/* Animated Background Gradient */}
-            <div className="absolute inset-0 -z-10">
-                <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" />
-                <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-500/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000" />
-                <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000" />
+            {/* Premium Green Neon Background */}
+            <div className="absolute inset-0 -z-10 bg-black">
+                {/* Main green glow orb */}
+                <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-emerald-500/30 rounded-full mix-blend-screen filter blur-[120px] animate-pulse" />
+                <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] bg-green-400/20 rounded-full mix-blend-screen filter blur-[100px] animate-pulse" style={{ animationDelay: "1s" }} />
+
+                {/* Grid overlay */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#0a0a0a_1px,transparent_1px),linear-gradient(to_bottom,#0a0a0a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] opacity-20" />
             </div>
 
-            <div className="container mx-auto px-4 py-20">
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
-                    {/* Left Content */}
+            <div className="container mx-auto px-4 py-20 relative z-10">
+                <div className="max-w-6xl mx-auto">
+                    {/* Content */}
                     <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="text-center lg:text-left"
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="text-center"
                     >
                         {/* Badge */}
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 backdrop-blur-sm mb-8"
                         >
-                            <Sparkles className="h-4 w-4 text-primary" />
-                            <span className="text-sm font-medium text-primary">
+                            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="text-sm font-medium text-emerald-400">
                                 Sistema de Lealtad #1 en Perú
                             </span>
                         </motion.div>
 
-                        {/* Title */}
+                        {/* Main Title */}
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
+                            className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
                         >
-                            Fideliza a tus Clientes con{" "}
-                            <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent">
-                                Tecnología de Vanguardia
+                            <span className="text-white">Fideliza a tus</span>
+                            <br />
+                            <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-emerald-500 bg-clip-text text-transparent">
+                                Clientes con IA
                             </span>
                         </motion.h1>
 
@@ -55,10 +59,10 @@ export function HeroSection() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto lg:mx-0"
+                            className="text-xl md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed"
                         >
                             Crea programas de lealtad digitales, gestiona clientes y aumenta tus ventas.
-                            Todo en una plataforma simple y poderosa. <strong>Empieza gratis hoy.</strong>
+                            <span className="text-emerald-400 font-semibold"> Todo en una plataforma simple y poderosa.</span>
                         </motion.p>
 
                         {/* CTAs */}
@@ -66,12 +70,12 @@ export function HeroSection() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5 }}
-                            className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+                            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
                         >
                             <Button
                                 asChild
                                 size="lg"
-                                className="bg-gradient-to-r from-primary to-blue-500 hover:opacity-90 transition-opacity text-base group"
+                                className="bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white text-lg px-8 py-6 h-auto shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:shadow-[0_0_50px_rgba(16,185,129,0.5)] transition-all group"
                             >
                                 <Link href="/onboarding">
                                     Regístrate Gratis
@@ -83,7 +87,7 @@ export function HeroSection() {
                                 asChild
                                 size="lg"
                                 variant="outline"
-                                className="text-base group border-2"
+                                className="text-lg px-8 py-6 h-auto bg-white/5 backdrop-blur-sm hover:bg-white/10 text-white group"
                             >
                                 <Link href="#demo">
                                     <Play className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
@@ -92,94 +96,82 @@ export function HeroSection() {
                             </Button>
                         </motion.div>
 
-                        {/* Stats */}
+                        {/* Features List */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6 }}
-                            className="grid grid-cols-3 gap-6 mt-12 max-w-md mx-auto lg:mx-0"
+                            className="flex flex-wrap justify-center gap-6 mb-16"
                         >
-                            <div className="text-center lg:text-left">
-                                <div className="text-2xl md:text-3xl font-bold text-primary">10K+</div>
-                                <div className="text-sm text-muted-foreground">Negocios</div>
-                            </div>
-                            <div className="text-center lg:text-left">
-                                <div className="text-2xl md:text-3xl font-bold text-primary">500K+</div>
-                                <div className="text-sm text-muted-foreground">Clientes</div>
-                            </div>
-                            <div className="text-center lg:text-left">
-                                <div className="text-2xl md:text-3xl font-bold text-primary">95%</div>
-                                <div className="text-sm text-muted-foreground">Satisfacción</div>
-                            </div>
+                            {[
+                                "Sin tarjeta de crédito",
+                                "Configuración en 5 minutos",
+                                "Soporte 24/7",
+                            ].map((feature, i) => (
+                                <div key={i} className="flex items-center gap-2 text-gray-300">
+                                    <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                                    <span>{feature}</span>
+                                </div>
+                            ))}
+                        </motion.div>
+
+                        {/* Stats */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.7 }}
+                            className="grid grid-cols-3 gap-8 max-w-2xl mx-auto"
+                        >
+                            {[
+                                { value: "10K+", label: "Negocios" },
+                                { value: "500K+", label: "Clientes" },
+                                { value: "95%", label: "Satisfacción" },
+                            ].map((stat, i) => (
+                                <div key={i} className="text-center">
+                                    <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent mb-2">
+                                        {stat.value}
+                                    </div>
+                                    <div className="text-sm text-gray-400">{stat.label}</div>
+                                </div>
+                            ))}
                         </motion.div>
                     </motion.div>
 
-                    {/* Right Content - Illustration */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                        className="relative hidden lg:block"
-                    >
-                        <div className="relative">
-                            {/* Floating Cards Animation */}
-                            <motion.div
-                                animate={{
-                                    y: [0, -20, 0],
-                                }}
-                                transition={{
-                                    duration: 4,
-                                    repeat: Infinity,
-                                    ease: "easeInOut",
-                                }}
-                                className="absolute top-0 right-0 w-64 h-40 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-2xl backdrop-blur-sm border border-primary/20 p-6 shadow-2xl"
-                            >
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                                        <Sparkles className="h-6 w-6 text-primary" />
-                                    </div>
-                                    <div>
-                                        <div className="font-semibold">Tarjeta Digital</div>
-                                        <div className="text-sm text-muted-foreground">Apple & Google Wallet</div>
-                                    </div>
-                                </div>
-                                <div className="flex gap-2">
-                                    {[...Array(5)].map((_, i) => (
-                                        <div
-                                            key={i}
-                                            className={`w-8 h-8 rounded-lg ${i < 3 ? "bg-primary" : "bg-primary/20"
-                                                }`}
-                                        />
-                                    ))}
-                                </div>
-                            </motion.div>
+                    {/* Floating Elements */}
+                    <div className="absolute top-20 left-10 hidden lg:block">
+                        <motion.div
+                            animate={{
+                                y: [0, -20, 0],
+                                rotate: [0, 5, 0],
+                            }}
+                            transition={{
+                                duration: 6,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                            }}
+                            className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 backdrop-blur-sm flex items-center justify-center"
+                        >
+                            <div className="text-3xl">📱</div>
+                        </motion.div>
+                    </div>
 
-                            <motion.div
-                                animate={{
-                                    y: [0, 20, 0],
-                                }}
-                                transition={{
-                                    duration: 5,
-                                    repeat: Infinity,
-                                    ease: "easeInOut",
-                                    delay: 1,
-                                }}
-                                className="absolute bottom-0 left-0 w-64 h-40 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl backdrop-blur-sm border border-blue-500/20 p-6 shadow-2xl"
-                            >
-                                <div className="text-sm text-muted-foreground mb-2">Ventas del Mes</div>
-                                <div className="text-3xl font-bold mb-4">+245%</div>
-                                <div className="h-16 flex items-end gap-1">
-                                    {[40, 60, 45, 80, 65, 90, 75].map((height, i) => (
-                                        <div
-                                            key={i}
-                                            className="flex-1 bg-gradient-to-t from-primary to-blue-500 rounded-t"
-                                            style={{ height: `${height}%` }}
-                                        />
-                                    ))}
-                                </div>
-                            </motion.div>
-                        </div>
-                    </motion.div>
+                    <div className="absolute bottom-20 right-10 hidden lg:block">
+                        <motion.div
+                            animate={{
+                                y: [0, 20, 0],
+                                rotate: [0, -5, 0],
+                            }}
+                            transition={{
+                                duration: 7,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: 1,
+                            }}
+                            className="w-24 h-24 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm flex items-center justify-center"
+                        >
+                            <div className="text-4xl">🎁</div>
+                        </motion.div>
+                    </div>
                 </div>
             </div>
         </section>

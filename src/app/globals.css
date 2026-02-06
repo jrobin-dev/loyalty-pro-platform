@@ -71,14 +71,13 @@
   background: rgba(20, 20, 35, 0.6);
   /* Semi-transparent dark blue */
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* NO BORDER */
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .glass-card-hover:hover {
   background: rgba(30, 30, 50, 0.8);
-  border-color: rgba(139, 92, 246, 0.3);
-  /* Purple shine */
+  /* NO BORDER */
   transition: all 0.3s ease;
 }
 
@@ -108,6 +107,13 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, sans-serif;
   overflow-x: hidden;
+}
+
+/* CRITICAL: Remove ALL borders from Tailwind */
+.border,
+*[class*="border-"] {
+  border: none !important;
+  border-width: 0 !important;
 }
 
 h1,
