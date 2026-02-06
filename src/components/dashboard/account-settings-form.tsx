@@ -40,7 +40,15 @@ export function AccountSettingsForm() {
             setName(profile.name || "")
             setLastName(profile.lastName || "")
             setPhone(profile.phone || "")
-            setBirthday(profile.birthday ? format(new Date(profile.birthday), "yyyy-MM-dd") : "")
+            if (profile.birthday) {
+                const date = new Date(profile.birthday)
+                const year = date.getFullYear()
+                const month = String(date.getMonth() + 1).padStart(2, "0")
+                const day = String(date.getDate()).padStart(2, "0")
+                setBirthday(`${year}-${month}-${day}`)
+            } else {
+                setBirthday("")
+            }
         }
     }, [profile])
 
