@@ -32,22 +32,31 @@ const faqs = [
     },
 ]
 
-function FAQItem({ faq, index }: { faq: typeof faqs[0]; index: number }) {
-    const [isOpen, setIsOpen] = useState(false)
-
+function FAQItem({
+    faq,
+    index,
+    isOpen,
+    toggleOpen
+}: {
+    faq: typeof faqs[0];
+    index: number;
+    isOpen: boolean;
+    toggleOpen: () => void
+}) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
             viewport={{ once: true }}
-            className="border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-colors"
+            className={`border rounded-xl overflow-hidden transition-colors ${isOpen ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                }`}
         >
             <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-full p-6 text-left flex items-center justify-between gap-4 hover:bg-muted/50 transition-colors"
+                onClick={toggleOpen}
+                className="w-full p-6 text-left flex items-center justify-between gap-4 transition-colors"
             >
-                <span className="font-semibold text-base md:text-lg">
+                <span className={`font-semibold text-base md:text-lg ${isOpen ? "text-primary" : ""}`}>
                     {faq.question}
                 </span>
                 <ChevronDown
@@ -78,6 +87,13 @@ export function FAQSection() {
         threshold: 0.1,
     })
 
+    // State to track which item is open (none or index)
+    const [openIndex, setOpenIndex] = useState<number | null>(null)
+
+    const handleToggle = (index: number) => {
+        setOpenIndex(openIndex === index ? null : index)
+    }
+
     return (
         <section className="py-20 md:py-32 relative overflow-hidden">
             <div className="container mx-auto px-4">
@@ -101,7 +117,13 @@ export function FAQSection() {
 
                 <div className="max-w-3xl mx-auto space-y-4">
                     {faqs.map((faq, index) => (
-                        <FAQItem key={index} faq={faq} index={index} />
+                        <FAQItem
+                            key={index}
+                            faq={faq}
+                            index={index}
+                            isOpen={openIndex === index}
+                            toggleOpen={() => handleToggle(index)}
+                        />
                     ))}
                 </div>
             </div>
