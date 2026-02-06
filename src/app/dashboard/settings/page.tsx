@@ -4,7 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useTenantSettings } from "@/hooks/use-tenant-settings"
 import { BusinessSettingsForm } from "@/components/dashboard/business-settings-form"
 import { LoyaltyCardEditor } from "@/components/dashboard/loyalty-card-editor"
-import { Loader2, Building2, Award } from "lucide-react"
+import { AccountSettingsForm } from "@/components/dashboard/account-settings-form"
+import { Loader2, Building2, Award, User } from "lucide-react"
 import DashboardLayout from "@/components/dashboard/dashboard-layout"
 
 export default function SettingsPage() {
@@ -48,6 +49,10 @@ export default function SettingsPage() {
                             <Award className="h-4 w-4 mr-2" />
                             Tarjeta de Lealtad
                         </TabsTrigger>
+                        <TabsTrigger value="account" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
+                            <User className="h-4 w-4 mr-2" />
+                            Cuenta
+                        </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="business" className="mt-6">
@@ -63,6 +68,10 @@ export default function SettingsPage() {
                             settings={settings}
                             onSave={updateLoyaltyProgram}
                         />
+                    </TabsContent>
+
+                    <TabsContent value="account" className="mt-6">
+                        <AccountSettingsForm />
                     </TabsContent>
                 </Tabs>
             </div>

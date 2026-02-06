@@ -15,8 +15,13 @@ model User {
   id        String   @id @default(uuid()) // Links to Supabase Auth ID
   email     String   @unique
   name      String?
+  lastName  String?
+  phone     String?
+  birthday  DateTime?
+  avatarUrl String?
   role      String   @default("BUSINESS_OWNER")
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
   // Relations
   tenants   Tenant[] // Businesses owned
