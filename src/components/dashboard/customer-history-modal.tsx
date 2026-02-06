@@ -26,7 +26,6 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [loading, setLoading] = useState(false)
 
-    // ... rest of imports
     const { settings } = useTenantSettings()
     const currency = settings?.branding.currency || '$'
 
@@ -35,13 +34,6 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
             fetchTransactions()
         }
     }, [customer, open])
-
-        // ... rest of code
-
-        // In render:
-        < p className = "font-bold text-white" >
-            { currency } { transaction.amount.toFixed(2) }
-                                        </p >
 
     const fetchTransactions = async () => {
         if (!customer) return
