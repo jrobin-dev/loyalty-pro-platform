@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/client"
 
 export interface DashboardStats {
     totalRevenue: number
@@ -37,37 +37,68 @@ export function useDashboardStats({ dateRange }: UseDashboardStatsProps = {}) {
 
     const fetchStats = async () => {
         try {
-            // Build query with optional date filtering
-            let query = supabase.from('customers').select('*')
+            setLoading(true)
+            const supabase = createClient()
 
-            if (dateRange) {
-                query = query
-                    .gte('last_visit', dateRange.start)
-                    .lte('last_visit', dateRange.end)
+            // Get authenticated user
+            const { data: { session } } = await supabase.auth.getSession()
+
+            if (!session?.user) {
+                console.error('No authenticated user')
+                setLoading(false)
+                return
             }
 
-            const { data: customers, error } = await query
+            // Get user's tenant
+            const { data: tenantData, error: tenantError } = await supabase
+                .from('Tenant')
+                .select('id')
+                .eq('ownerId', session.user.id)
+                .single()
 
-            if (error) throw error
-
-            if (customers) {
-                // Calculate stats from customer data
-                const totalStamps = customers.reduce((sum, c) => sum + (c.stamps || 0), 0)
-                const totalVisits = customers.reduce((sum, c) => sum + (c.visits || 0), 0)
-                const totalRewards = Math.floor(totalStamps / 10)
-                const estimatedRevenue = totalVisits * 35 // Assuming average S/. 35 per visit
-
-                setStats({
-                    totalRevenue: estimatedRevenue,
-                    totalCustomers: customers.length,
-                    totalRewards,
-                    totalStamps,
-                    revenueChange: 0,
-                    customersChange: 0,
-                    rewardsChange: 0,
-                    stampsChange: 0,
-                })
+            if (tenantError || !tenantData) {
+                console.error('Tenant error:', tenantError)
+                setLoading(false)
+                return
             }
+
+            // Fetch customers for this tenant
+            const { data: customers, error: customersError } = await supabase
+                .from('Customer')
+                .select('*')
+                .eq('tenantId', tenantData.id)
+
+            if (customersError) {
+                console.error('Customers error:', customersError)
+            }
+
+            // Fetch stamp transactions for revenue calculation
+            const { data: transactions, error: transactionsError } = await supabase
+                .from('StampTransaction')
+                .select('amount, stampsEarned')
+                .eq('tenantId', tenantData.id)
+                .eq('type', 'EARNED')
+
+            if (transactionsError) {
+                console.error('Transactions error:', transactionsError)
+            }
+
+            // Calculate stats
+            const totalCustomers = customers?.length || 0
+            const totalStamps = customers?.reduce((sum, c) => sum + (c.currentStamps || 0), 0) || 0
+            const totalRevenue = transactions?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0
+            const totalRewards = 0 // TODO: Calculate from redeemed stamps
+
+            setStats({
+                totalRevenue,
+                totalCustomers,
+                totalRewards,
+                totalStamps,
+                revenueChange: 0,
+                customersChange: 0,
+                rewardsChange: 0,
+                stampsChange: 0,
+            })
         } catch (error) {
             console.error("Error fetching dashboard stats:", error)
         } finally {

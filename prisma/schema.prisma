@@ -37,8 +37,10 @@ model Tenant {
   branding    Branding?
   loyalty     LoyaltyProgram?
   customers   Customer[]
+  transactions StampTransaction[]
   
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Branding {
@@ -88,8 +90,12 @@ model StampTransaction {
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
   
-  type       String   // EARN, REDEEM
-  amount     Int
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  
+  type       String   // EARNED, REDEEMED
+  amount     Float    @default(0)
+  stampsEarned Int    @default(1)
   description String?
   
   createdAt  DateTime @default(now())

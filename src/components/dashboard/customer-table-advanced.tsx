@@ -19,7 +19,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { useCustomers, Customer } from "@/hooks/use-customers"
 import { AddCustomerDialog } from "./add-customer-dialog"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/client"
 import { CustomerDetailModal } from "./customer-detail-modal"
 import { CustomerHistoryModal } from "./customer-history-modal"
 
@@ -40,20 +40,45 @@ export function CustomerTableAdvanced() {
 
         setIsProcessing(true)
         try {
-            // Update customer: increment stamps and visits, update last_visit
-            const { error } = await supabase
-                .from('customers')
-                .update({
-                    stamps: (selectedCustomer.stamps || 0) + 1,
-                    visits: (selectedCustomer.visits || 0) + 1,
-                    last_visit: new Date().toISOString()
-                })
-                .eq('id', selectedCustomer.id)
+            const supabase = createClient()
 
-            if (error) throw error
+            // Get authenticated user
+            const { data: { session } } = await supabase.auth.getSession()
+
+            if (!session?.user) {
+                throw new Error('No hay sesión activa')
+            }
+
+            // Get user's tenant
+            const { data: tenantData, error: tenantError } = await supabase
+                .from('Tenant')
+                .select('id')
+                .eq('ownerId', session.user.id)
+                .single()
+
+            if (tenantError || !tenantData) {
+                throw new Error('No se encontró el negocio asociado')
+            }
+
+            // Call API to add stamp transaction
+            const response = await fetch('/api/stamps/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customerId: selectedCustomer.id,
+                    amount: parseFloat(amount),
+                    tenantId: tenantData.id
+                })
+            })
+
+            const result = await response.json()
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Error al registrar consumo')
+            }
 
             toast.success(`Visita registrada para ${selectedCustomer.name}`, {
-                description: `Se registró el consumo de S/. ${amount || '0'} y se añadió +1 Stamp.`
+                description: `Se registró el consumo de S/. ${amount} y se añadió +1 Stamp.`
             })
 
             setIsAddConsumptionOpen(false)
