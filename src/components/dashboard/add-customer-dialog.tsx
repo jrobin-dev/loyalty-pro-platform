@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/client"
 
 interface AddCustomerDialogProps {
     open: boolean
@@ -34,24 +34,42 @@ export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomer
         setLoading(true)
 
         try {
-            // Insert new customer into Supabase
-            const { data, error } = await supabase
-                .from('customers')
-                .insert([
-                    {
-                        name: formData.name,
-                        email: formData.email,
-                        phone: formData.phone,
-                        stamps: 0,
-                        visits: 0,
-                        last_visit: new Date().toISOString(),
-                        status: 'active',
-                        tier: 'Bronze'
-                    }
-                ])
-                .select()
+            const supabase = createClient()
 
-            if (error) throw error
+            // Get authenticated user
+            const { data: { session } } = await supabase.auth.getSession()
+
+            if (!session?.user) {
+                throw new Error('No hay sesión activa')
+            }
+
+            // Get user's tenant
+            const { data: tenantData, error: tenantError } = await supabase
+                .from('Tenant')
+                .select('id')
+                .eq('ownerId', session.user.id)
+                .single()
+
+            if (tenantError || !tenantData) {
+                throw new Error('No se encontró el negocio asociado')
+            }
+
+            // Call API to create customer
+            const response = await fetch('/api/customers/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: formData.email,
+                    name: formData.name,
+                    tenantId: tenantData.id
+                })
+            })
+
+            const result = await response.json()
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Error al crear cliente')
+            }
 
             toast.success("Cliente agregado exitosamente", {
                 description: `${formData.name} ha sido registrado en el sistema.`
