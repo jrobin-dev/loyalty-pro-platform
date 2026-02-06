@@ -108,15 +108,13 @@
   --font-display: var(--font-funnel-display);
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
 
+@layer base {
   body {
     @apply bg-background text-foreground;
   }
 }
+
 
 @layer utilities {
   .text-balance {
