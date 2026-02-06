@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DollarSign, Users, Gift, Award } from "lucide-react"
 import { useDashboardStats } from "@/hooks/use-dashboard-stats"
+import { useTenantSettings } from "@/hooks/use-tenant-settings"
 
 interface StatCardProps {
     title: string
@@ -39,6 +40,9 @@ function StatCard({ title, value, change, icon: Icon, iconColor, iconBg }: StatC
 
 export function DashboardStatsAdvanced({ dateRange }: { dateRange?: { start: string; end: string } }) {
     const { stats, loading } = useDashboardStats({ dateRange })
+    const { settings } = useTenantSettings()
+
+    const currency = settings?.branding.currency || '$'
 
     if (loading) {
         return (
@@ -54,7 +58,7 @@ export function DashboardStatsAdvanced({ dateRange }: { dateRange?: { start: str
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard
                 title="Ingreso Total"
-                value={`S/. ${stats.totalRevenue.toLocaleString()}`}
+                value={`${currency} ${stats.totalRevenue.toLocaleString()}`}
                 change={stats.revenueChange}
                 icon={DollarSign}
                 iconColor="text-orange-500"

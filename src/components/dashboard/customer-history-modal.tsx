@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Customer } from "@/hooks/use-customers"
 import { History, TrendingUp, TrendingDown, Award } from "lucide-react"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/client"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 
@@ -26,30 +26,56 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [loading, setLoading] = useState(false)
 
+    // ... rest of imports
+    const { settings } = useTenantSettings()
+    const currency = settings?.branding.currency || '$'
+
     useEffect(() => {
         if (customer && open) {
             fetchTransactions()
         }
     }, [customer, open])
 
+        // ... rest of code
+
+        // In render:
+        < p className = "font-bold text-white" >
+            { currency } { transaction.amount.toFixed(2) }
+                                        </p >
+
     const fetchTransactions = async () => {
         if (!customer) return
 
         setLoading(true)
         try {
-            // For now, create mock transactions based on customer visits
-            // In production, you would fetch from a transactions table
-            const mockTransactions: Transaction[] = Array.from({ length: customer.visits }).map((_, index) => ({
-                id: `txn-${index}`,
-                created_at: new Date(Date.now() - (customer.visits - index) * 7 * 24 * 60 * 60 * 1000).toISOString(),
-                amount: Math.floor(Math.random() * 50) + 10,
-                stamps_earned: 1,
-                type: index % 10 === 0 ? 'reward' : 'consumption'
+            const supabase = createClient()
+
+            // Fetch real transactions from StampTransaction table
+            const { data, error } = await supabase
+                .from('StampTransaction')
+                .select('*')
+                .eq('customerId', customer.id)
+                .order('createdAt', { ascending: false })
+
+            if (error) {
+                console.error('Error fetching transactions:', error)
+                setTransactions([])
+                return
+            }
+
+            // Transform data to match Transaction interface
+            const transformedTransactions: Transaction[] = (data || []).map((txn: any) => ({
+                id: txn.id,
+                created_at: txn.createdAt,
+                amount: txn.amount || 0,
+                stamps_earned: txn.stampsEarned || 1,
+                type: txn.type === 'REDEEMED' ? 'reward' : 'consumption'
             }))
 
-            setTransactions(mockTransactions.reverse())
+            setTransactions(transformedTransactions)
         } catch (error) {
             console.error('Error fetching transactions:', error)
+            setTransactions([])
         } finally {
             setLoading(false)
         }
@@ -88,8 +114,8 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className={`p-2 rounded-lg ${transaction.type === 'reward'
-                                                ? 'bg-yellow-500/20'
-                                                : 'bg-emerald-500/20'
+                                            ? 'bg-yellow-500/20'
+                                            : 'bg-emerald-500/20'
                                             }`}>
                                             {transaction.type === 'reward' ? (
                                                 <Award className="h-5 w-5 text-yellow-400" />
@@ -108,11 +134,11 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
                                     </div>
                                     <div className="text-right">
                                         <p className="font-bold text-white">
-                                            ${transaction.amount.toFixed(2)}
+                                            {currency} {transaction.amount.toFixed(2)}
                                         </p>
                                         <p className={`text-xs ${transaction.type === 'reward'
-                                                ? 'text-red-400'
-                                                : 'text-emerald-400'
+                                            ? 'text-red-400'
+                                            : 'text-emerald-400'
                                             }`}>
                                             {transaction.type === 'reward'
                                                 ? `-10 sellos`

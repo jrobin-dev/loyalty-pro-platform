@@ -21,6 +21,7 @@ export interface TenantSettings {
         logoUrl?: string
         fontFamily: string
         gradient: boolean
+        currency: string
     }
     // Loyalty Program data
     loyaltyProgram: {
@@ -100,7 +101,8 @@ export function useTenantSettings() {
                     secondaryColor: '#000000',
                     logoUrl: null,
                     fontFamily: 'Funnel Display',
-                    gradient: false
+                    gradient: false,
+                    currency: '$'
                 },
                 loyaltyProgram: loyaltyData || {
                     id: '',

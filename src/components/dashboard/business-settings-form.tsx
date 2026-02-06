@@ -18,6 +18,7 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
     const [name, setName] = useState(settings.tenant.name)
     const [primaryColor, setPrimaryColor] = useState(settings.branding.primaryColor)
     const [secondaryColor, setSecondaryColor] = useState(settings.branding.secondaryColor)
+    const [currency, setCurrency] = useState(settings.branding.currency || '$')
     const [isSaving, setIsSaving] = useState(false)
 
     const handleSave = async () => {
@@ -26,10 +27,11 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
         // Update tenant name
         await onSaveTenant({ name })
 
-        // Update branding colors
+        // Update branding colors and currency
         await onSaveBranding({
             primaryColor,
-            secondaryColor
+            secondaryColor,
+            currency
         })
 
         setIsSaving(false)
@@ -45,15 +47,28 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
             </CardHeader>
             <CardContent className="space-y-6">
                 {/* Business Name */}
-                <div className="space-y-2">
-                    <Label htmlFor="name">Nombre del negocio</Label>
-                    <Input
-                        id="name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Mi Negocio"
-                        className="bg-card/50 border-white/10"
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="name">Nombre del negocio</Label>
+                        <Input
+                            id="name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Mi Negocio"
+                            className="bg-card/50 border-white/10"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="currency">Moneda (Símbolo)</Label>
+                        <Input
+                            id="currency"
+                            value={currency}
+                            onChange={(e) => setCurrency(e.target.value)}
+                            placeholder="$"
+                            className="bg-card/50 border-white/10"
+                            maxLength={3}
+                        />
+                    </div>
                 </div>
 
                 {/* Colors */}
