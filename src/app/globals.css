@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: 0 0% 5%;
-  /* Dark background */
+  --background: 142 20% 8%;
+  /* Dark greenish black - like landing */
   --foreground: 0 0% 100%;
-  --card: 0 0% 8%;
+  --card: 142 15% 12%;
+  /* Slightly lighter greenish dark */
   --card-foreground: 0 0% 98%;
-  --popover: 0 0% 8%;
+  --popover: 142 15% 12%;
   --popover-foreground: 0 0% 98%;
   --primary: 142 76% 50%;
   /* Emerald Green */
@@ -14,8 +15,8 @@
   --secondary: 142 20% 15%;
   /* Dark green tint */
   --secondary-foreground: 0 0% 98%;
-  --muted: 142 10% 15%;
-  /* Green-tinted muted */
+  --muted: 142 15% 16%;
+  /* Green-tinted muted for tables */
   --muted-foreground: 142 10% 60%;
   /* Green-tinted text */
   --accent: 142 50% 20%;
@@ -23,8 +24,8 @@
   --accent-foreground: 0 0% 100%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 0% / 0;
-  /* Transparent - NO MORE WHITE BORDERS */
+  --border: 142 15% 20%;
+  /* Subtle greenish border for tables */
   --input: 142 10% 15%;
   --ring: 142 76% 50%;
   --radius: 0.75rem;
@@ -32,14 +33,15 @@
 }
 
 .dark {
-  --background: 0 0% 5%;
-  /* Pure dark */
+  --background: 142 20% 8%;
+  /* Dark greenish black - like landing */
   --foreground: 0 0% 100%;
 
-  --card: 0 0% 8%;
+  --card: 142 15% 12%;
+  /* Slightly lighter greenish dark */
   --card-foreground: 0 0% 100%;
 
-  --popover: 0 0% 8%;
+  --popover: 142 15% 12%;
   --popover-foreground: 0 0% 100%;
 
   --primary: 142 76% 50%;
@@ -49,7 +51,8 @@
   --secondary: 142 20% 15%;
   --secondary-foreground: 0 0% 100%;
 
-  --muted: 142 10% 15%;
+  --muted: 142 15% 16%;
+  /* Green-tinted muted for tables */
   --muted-foreground: 142 10% 60%;
 
   --accent: 142 50% 20%;
@@ -58,8 +61,8 @@
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 0 0% 0% / 0;
-  /* Transparent - NO MORE WHITE BORDERS */
+  --border: 142 15% 20%;
+  /* Subtle greenish border for tables */
   --input: 142 10% 15%;
   --ring: 142 76% 50%;
 }
@@ -167,12 +170,12 @@ html {
 
 /* Light mode overrides */
 .light {
-  --background: 0 0% 100%;
-  /* Pure white */
+  --background: 0 0% 98%;
+  /* Very light gray background */
   --foreground: 0 0% 10%;
   /* Almost black */
-  --card: 0 0% 96%;
-  /* Light gray for better contrast */
+  --card: 0 0% 100%;
+  /* Pure white cards for better contrast */
   --card-foreground: 0 0% 10%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 10%;
@@ -182,8 +185,8 @@ html {
   --secondary: 142 30% 95%;
   /* Very light mint */
   --secondary-foreground: 142 76% 30%;
-  --muted: 142 20% 96%;
-  /* Light mint background */
+  --muted: 142 20% 97%;
+  /* Very light mint background for tables */
   --muted-foreground: 142 20% 35%;
   /* Darker mint text for better contrast */
   --accent: 142 40% 90%;
@@ -191,8 +194,8 @@ html {
   --accent-foreground: 142 76% 30%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 0% / 0;
-  /* Transparent - NO MORE BORDERS */
+  --border: 142 20% 90%;
+  /* Subtle mint border for tables - like SureCart */
   --input: 0 0% 100%;
   /* White input background for better contrast */
   --ring: 142 76% 45%;
