@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
 import { useBusiness } from "@/hooks/use-business"
@@ -162,14 +163,17 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                             </div>
                         )}
                         {!isCollapsed && (
-                            <button
-                                onClick={handleLogout}
-                                disabled={isLoggingOut}
-                                className="text-muted-foreground hover:text-red-400 transition-colors disabled:opacity-50"
-                                title="Cerrar Sesión"
-                            >
-                                {isLoggingOut ? <Loader2 size={16} className="animate-spin" /> : <LogOut size={16} />}
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <ThemeToggle />
+                                <button
+                                    onClick={handleLogout}
+                                    disabled={isLoggingOut}
+                                    className="text-muted-foreground hover:text-red-400 transition-colors disabled:opacity-50"
+                                    title="Cerrar Sesión"
+                                >
+                                    {isLoggingOut ? <Loader2 size={16} className="animate-spin" /> : <LogOut size={16} />}
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
