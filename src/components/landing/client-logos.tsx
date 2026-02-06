@@ -6,28 +6,36 @@ import { motion } from "framer-motion"
 // Lista de logos de clientes
 const logos = [
     {
-        name: "Starbucks",
-        image: "/assets/images/clientes/starbucks.png",
+        name: "Binance",
+        image: "/assets/images/clientes/Logo APP - Binance.png",
     },
     {
-        name: "McDonald's",
-        image: "/assets/images/clientes/mcdonalds.png",
+        name: "Meta",
+        image: "/assets/images/clientes/Logo APP - Meta.png",
     },
     {
-        name: "Subway",
-        image: "/assets/images/clientes/subway.png",
+        name: "Shopify",
+        image: "/assets/images/clientes/Logo APP - Shopyfi.png",
     },
     {
-        name: "KFC",
-        image: "/assets/images/clientes/kfc.png",
+        name: "Twitter",
+        image: "/assets/images/clientes/Logo APP - TW.png",
     },
     {
-        name: "Domino's",
-        image: "/assets/images/clientes/dominos.png",
+        name: "Hikvision",
+        image: "/assets/images/clientes/hikvision-logo.png",
     },
     {
-        name: "Pizza Hut",
-        image: "/assets/images/clientes/pizzahut.png",
+        name: "EZVIZ",
+        image: "/assets/images/clientes/cropped-EZVIZ-Logo_Color-Horizontalslogan.png",
+    },
+    {
+        name: "Fuxion",
+        image: "/assets/images/clientes/fuxion_logo.png",
+    },
+    {
+        name: "FIFA",
+        image: "/assets/images/clientes/FIFA_logo_without_slogan.svg.png",
     },
 ]
 

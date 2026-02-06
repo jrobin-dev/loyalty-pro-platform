@@ -35,12 +35,8 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
-    // If logged in and trying to access landing page, redirect to dashboard
-    if (pathname === "/" && isAuthenticated) {
-        const url = request.nextUrl.clone()
-        url.pathname = "/dashboard"
-        return NextResponse.redirect(url)
-    }
+    // If logged in and trying to access landing page, let them in!
+    // Removed redirect for root path based on user request "me tiene que dejar sin problema"
 
     return NextResponse.next()
 }
