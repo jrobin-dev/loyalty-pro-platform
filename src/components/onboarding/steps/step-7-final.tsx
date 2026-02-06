@@ -88,37 +88,37 @@ export default function Step8Final() {
                 <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
                     ¡Todo Listo!
                 </h2>
-                <p className="text-white/60 text-sm">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Revisa tu configuración antes de continuar
                 </p>
             </div>
 
             {/* Summary Card */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4">
+            <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-6 space-y-4">
                 <div className="flex justify-between items-center">
-                    <span className="text-white/60 text-sm">Negocio:</span>
-                    <span className="font-bold">{data.businessName}</span>
+                    <span className="text-gray-600 dark:text-white/60 text-sm">Negocio:</span>
+                    <span className="font-bold text-foreground">{data.businessName}</span>
                 </div>
 
                 <div className="flex justify-between items-center">
-                    <span className="text-white/60 text-sm">Sellos requeridos:</span>
-                    <span className="font-bold">{data.stampsRequired}</span>
+                    <span className="text-gray-600 dark:text-white/60 text-sm">Sellos requeridos:</span>
+                    <span className="font-bold text-foreground">{data.stampsRequired}</span>
                 </div>
 
                 <div className="flex justify-between items-center">
-                    <span className="text-white/60 text-sm">Premio:</span>
-                    <span className="font-bold text-purple-400">{data.rewardDescription}</span>
+                    <span className="text-gray-600 dark:text-white/60 text-sm">Premio:</span>
+                    <span className="font-bold text-purple-600 dark:text-purple-400">{data.rewardDescription}</span>
                 </div>
 
                 <div className="flex justify-between items-center">
-                    <span className="text-white/60 text-sm">Colores:</span>
+                    <span className="text-gray-600 dark:text-white/60 text-sm">Colores:</span>
                     <div className="flex gap-2">
                         <div
-                            className="w-6 h-6 rounded-full border-2 border-white/20"
+                            className="w-6 h-6 rounded-full border-2 border-gray-200 dark:border-white/20"
                             style={{ backgroundColor: data.primaryColor }}
                         />
                         <div
-                            className="w-6 h-6 rounded-full border-2 border-white/20"
+                            className="w-6 h-6 rounded-full border-2 border-gray-200 dark:border-white/20"
                             style={{ backgroundColor: data.secondaryColor }}
                         />
                     </div>
@@ -126,8 +126,8 @@ export default function Step8Final() {
 
                 {data.logoUrl && (
                     <div className="flex justify-between items-center">
-                        <span className="text-white/60 text-sm">Logo:</span>
-                        <CheckCircle2 className="h-5 w-5 text-green-400" />
+                        <span className="text-gray-600 dark:text-white/60 text-sm">Logo:</span>
+                        <CheckCircle2 className="h-5 w-5 text-green-500 dark:text-green-400" />
                     </div>
                 )}
             </div>

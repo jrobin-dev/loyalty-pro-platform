@@ -21,14 +21,14 @@ export default function Step1BusinessInfo() {
                 <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
                     Hablemos de tu Negocio
                 </h2>
-                <p className="text-white/60 text-sm">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Esta información aparecerá en la tarjeta de tus clientes.
                 </p>
             </div>
 
             <div className="space-y-4">
                 <div className="space-y-2">
-                    <Label className="text-sm font-medium text-white/80">Nombre del Negocio</Label>
+                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del Negocio</Label>
                     <Input
                         placeholder="Ej: Cafetería Central"
                         value={data.businessName}
@@ -38,24 +38,24 @@ export default function Step1BusinessInfo() {
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="text-sm font-medium text-white/80">Categoría</Label>
+                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Categoría</Label>
                     <select
-                        className="flex h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00FF94] focus-visible:ring-offset-2 hover:bg-white/10"
+                        className="flex h-12 w-full rounded-xl border border-input px-4 py-2 text-sm text-foreground bg-white dark:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                         value={data.category}
                         onChange={(e) => updateData({ category: e.target.value })}
                     >
-                        <option value="" disabled className="bg-black">Selecciona una categoría</option>
-                        <option value="coffee" className="bg-black">Cafetería</option>
-                        <option value="restaurant" className="bg-black">Restaurante</option>
-                        <option value="beauty" className="bg-black">Belleza / Spa</option>
-                        <option value="retail" className="bg-black">Tienda / Retail</option>
-                        <option value="other" className="bg-black">Otro</option>
+                        <option value="" disabled className="bg-background text-foreground">Selecciona una categoría</option>
+                        <option value="coffee" className="bg-background text-foreground">Cafetería</option>
+                        <option value="restaurant" className="bg-background text-foreground">Restaurante</option>
+                        <option value="beauty" className="bg-background text-foreground">Belleza / Spa</option>
+                        <option value="retail" className="bg-background text-foreground">Tienda / Retail</option>
+                        <option value="other" className="bg-background text-foreground">Otro</option>
                     </select>
                 </div>
 
                 {data.category === 'other' && (
                     <div className="space-y-2">
-                        <Label className="text-sm font-medium text-white/80">Especifique Categoría</Label>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Especifique Categoría</Label>
                         <Input
                             placeholder="Ej: Gimnasio"
                             value={data.customCategory || ''}

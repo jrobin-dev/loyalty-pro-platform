@@ -39,7 +39,7 @@ export default function Step6LogoUpload() {
                 <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
                     Sube tu Logo
                 </h2>
-                <p className="text-white/60 text-sm">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Lo mostraremos en la cabecera de la tarjeta.
                 </p>
             </div>
@@ -48,7 +48,7 @@ export default function Step6LogoUpload() {
                 <div
                     className={`
                 relative w-40 h-40 rounded-full border-2 border-dashed flex items-center justify-center overflow-hidden transition-all group
-                ${data.logoUrl ? 'border-[#00FF94]' : 'border-white/20 hover:border-white/40 hover:bg-white/5'}
+                ${data.logoUrl ? 'border-primary' : 'border-gray-300 dark:border-white/20 hover:border-gray-400 dark:hover:border-white/40 hover:bg-gray-50 dark:hover:bg-white/5'}
             `}
                 >
                     {data.logoUrl ? (
@@ -69,7 +69,7 @@ export default function Step6LogoUpload() {
                     ) : (
                         <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="flex flex-col items-center gap-2 text-white/50 group-hover:text-[#00FF94] transition-colors"
+                            className="flex flex-col items-center gap-2 text-gray-400 dark:text-white/50 group-hover:text-primary transition-colors"
                         >
                             <Upload size={32} />
                             <span className="text-xs font-medium">Subir Imagen</span>
@@ -84,7 +84,7 @@ export default function Step6LogoUpload() {
                     className="hidden"
                 />
 
-                <p className="text-xs text-white/40 text-center max-w-[200px]">
+                <p className="text-xs text-gray-500 dark:text-white/40 text-center max-w-[200px]">
                     Recomendado: 500x500px <br /> PNG transparente o JPG
                 </p>
             </div>

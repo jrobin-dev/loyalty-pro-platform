@@ -14,7 +14,7 @@ export default function Step3StampsRequired() {
                 <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
                     Meta de Sellos
                 </h2>
-                <p className="text-white/60 text-sm">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
                     ¿Cuántos sellos debe juntar el cliente para ganar su premio?
                 </p>
             </div>
@@ -29,15 +29,15 @@ export default function Step3StampsRequired() {
                             className={`
                         relative flex flex-col items-center justify-center p-6 rounded-3xl border transition-all duration-300
                         ${isSelected
-                                    ? 'bg-[#00FF94]/20 border-[#00FF94] shadow-[0_0_20px_rgba(0,255,148,0.3)] scale-105'
-                                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                                    ? 'bg-primary/20 border-primary shadow-[0_0_20px_rgba(16,185,129,0.3)] scale-105'
+                                    : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10 hover:border-primary/50'
                                 }
                     `}
                         >
-                            <span className={`text-5xl font-bold tracking-tighter ${isSelected ? 'text-[#00FF94]' : 'text-white'}`}>
+                            <span className={`text-5xl font-bold tracking-tighter ${isSelected ? 'text-primary' : 'text-gray-900 dark:text-white'}`}>
                                 {num}
                             </span>
-                            <span className={`text-xs mt-2 uppercase tracking-widest font-medium ${isSelected ? 'text-[#00FF94]' : 'text-white/40'}`}>
+                            <span className={`text-xs mt-2 uppercase tracking-widest font-medium ${isSelected ? 'text-primary' : 'text-gray-500 dark:text-white/40'}`}>
                                 Sellos
                             </span>
                         </button>

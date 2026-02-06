@@ -15,7 +15,7 @@ export default function Step4Branding() {
                 <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
                     Dale color a tu Marca
                 </h2>
-                <p className="text-white/60 text-sm">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Personaliza los colores de tu tarjeta digital.
                 </p>
             </div>
@@ -24,37 +24,37 @@ export default function Step4Branding() {
                 {/* Colors Grid */}
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label className="text-xs font-medium text-white/60 uppercase tracking-widest">Color Principal</Label>
-                        <div className="flex items-center gap-3 bg-white/5 p-2 rounded-xl border border-white/10">
+                        <Label className="text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-widest">Color Principal</Label>
+                        <div className="flex items-center gap-3 bg-white dark:bg-white/5 p-2 rounded-xl border border-gray-200 dark:border-white/10">
                             <input
                                 type="color"
                                 value={data.primaryColor}
                                 onChange={(e) => updateData({ primaryColor: e.target.value })}
                                 className="h-10 w-10 rounded-lg bg-transparent border-0 cursor-pointer"
                             />
-                            <span className="text-sm font-mono text-white/80">{data.primaryColor}</span>
+                            <span className="text-sm font-mono text-gray-700 dark:text-white/80">{data.primaryColor}</span>
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-xs font-medium text-white/60 uppercase tracking-widest">Color Secundario</Label>
-                        <div className="flex items-center gap-3 bg-white/5 p-2 rounded-xl border border-white/10">
+                        <Label className="text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-widest">Color Secundario</Label>
+                        <div className="flex items-center gap-3 bg-white dark:bg-white/5 p-2 rounded-xl border border-gray-200 dark:border-white/10">
                             <input
                                 type="color"
                                 value={data.secondaryColor}
                                 onChange={(e) => updateData({ secondaryColor: e.target.value })}
                                 className="h-10 w-10 rounded-lg bg-transparent border-0 cursor-pointer"
                             />
-                            <span className="text-sm font-mono text-white/80">{data.secondaryColor}</span>
+                            <span className="text-sm font-mono text-gray-700 dark:text-white/80">{data.secondaryColor}</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Preview Box */}
                 <div className="space-y-3">
-                    <Label className="text-xs font-medium text-white/60 uppercase tracking-widest">Vista Previa (Mini)</Label>
+                    <Label className="text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-widest">Vista Previa (Mini)</Label>
                     <div
-                        className="w-full h-32 rounded-2xl flex items-center justify-center shadow-2xl border border-white/10 relative overflow-hidden"
+                        className="w-full h-32 rounded-2xl flex items-center justify-center shadow-2xl border border-gray-200 dark:border-white/10 relative overflow-hidden"
                         style={{
                             background: data.gradientEnabled
                                 ? `linear-gradient(135deg, ${data.primaryColor} 0%, ${data.secondaryColor} 100%)`
@@ -74,7 +74,7 @@ export default function Step4Branding() {
                             onChange={(e) => updateData({ gradientEnabled: e.target.checked })}
                             className="w-5 h-5 rounded border-gray-300 text-[#00FF94] focus:ring-[#00FF94]"
                         />
-                        <Label htmlFor="gradient" className="text-sm text-white/80">Activar Gradiente</Label>
+                        <Label htmlFor="gradient" className="text-sm text-gray-700 dark:text-white/80">Activar Gradiente</Label>
                     </div>
                 </div>
             </div>

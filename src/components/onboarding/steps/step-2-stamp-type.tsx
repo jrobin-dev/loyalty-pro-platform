@@ -22,7 +22,7 @@ export default function Step2StampType() {
                 <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
                     Elige tu Icono de Sello
                 </h2>
-                <p className="text-white/60 text-sm">
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Este icono aparecerá en la tarjeta digital de tus clientes.
                 </p>
             </div>
@@ -38,18 +38,18 @@ export default function Step2StampType() {
                             className={`
                         relative flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border transition-all duration-300
                         ${isSelected
-                                    ? 'bg-[#00FF94]/20 border-[#00FF94] shadow-[0_0_20px_rgba(0,255,148,0.3)]'
-                                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
+                                    ? 'bg-primary/20 border-primary shadow-[0_0_20px_rgba(16,185,129,0.3)]'
+                                    : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10 hover:border-primary/50'
                                 }
                     `}
                         >
                             <div className={`
                         p-3 rounded-full transition-colors
-                        ${isSelected ? 'bg-[#00FF94] text-black' : 'bg-white/10 text-white'}
+                        ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white'}
                     `}>
                                 <Icon size={24} />
                             </div>
-                            <span className={`text-sm font-medium ${isSelected ? 'text-[#00FF94]' : 'text-white/80'}`}>
+                            <span className={`text-sm font-medium ${isSelected ? 'text-primary' : 'text-gray-700 dark:text-white/80'}`}>
                                 {option.label}
                             </span>
                         </button>
