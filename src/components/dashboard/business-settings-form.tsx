@@ -5,27 +5,33 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Business } from "@/hooks/use-business"
+import { TenantSettings } from "@/hooks/use-tenant-settings"
 import { Building2, Palette } from "lucide-react"
 
 interface BusinessSettingsFormProps {
-    business: Business
-    onSave: (updates: Partial<Business>) => Promise<boolean>
+    settings: TenantSettings
+    onSaveTenant: (updates: Partial<TenantSettings['tenant']>) => Promise<boolean>
+    onSaveBranding: (updates: Partial<TenantSettings['branding']>) => Promise<boolean>
 }
 
-export function BusinessSettingsForm({ business, onSave }: BusinessSettingsFormProps) {
-    const [name, setName] = useState(business.name)
-    const [primaryColor, setPrimaryColor] = useState(business.primary_color)
-    const [secondaryColor, setSecondaryColor] = useState(business.secondary_color)
+export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }: BusinessSettingsFormProps) {
+    const [name, setName] = useState(settings.tenant.name)
+    const [primaryColor, setPrimaryColor] = useState(settings.branding.primaryColor)
+    const [secondaryColor, setSecondaryColor] = useState(settings.branding.secondaryColor)
     const [isSaving, setIsSaving] = useState(false)
 
     const handleSave = async () => {
         setIsSaving(true)
-        await onSave({
-            name,
-            primary_color: primaryColor,
-            secondary_color: secondaryColor
+
+        // Update tenant name
+        await onSaveTenant({ name })
+
+        // Update branding colors
+        await onSaveBranding({
+            primaryColor,
+            secondaryColor
         })
+
         setIsSaving(false)
     }
 

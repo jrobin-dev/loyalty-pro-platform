@@ -7,24 +7,24 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Textarea } from "@/components/ui/textarea"
-import { Business } from "@/hooks/use-business"
+import { TenantSettings } from "@/hooks/use-tenant-settings"
 import { Award, Sparkles } from "lucide-react"
 
 interface LoyaltyCardEditorProps {
-    business: Business
-    onSave: (updates: Partial<Business>) => Promise<boolean>
+    settings: TenantSettings
+    onSave: (updates: Partial<TenantSettings['loyaltyProgram']>) => Promise<boolean>
 }
 
-export function LoyaltyCardEditor({ business, onSave }: LoyaltyCardEditorProps) {
-    const [stampsRequired, setStampsRequired] = useState(business.stamps_required)
-    const [rewardDescription, setRewardDescription] = useState(business.reward_description)
+export function LoyaltyCardEditor({ settings, onSave }: LoyaltyCardEditorProps) {
+    const [stampsRequired, setStampsRequired] = useState(settings.loyaltyProgram.stampsRequired)
+    const [rewardDescription, setRewardDescription] = useState(settings.loyaltyProgram.rewardTitle)
     const [isSaving, setIsSaving] = useState(false)
 
     const handleSave = async () => {
         setIsSaving(true)
         await onSave({
-            stamps_required: stampsRequired,
-            reward_description: rewardDescription
+            stampsRequired,
+            rewardTitle: rewardDescription
         })
         setIsSaving(false)
     }
@@ -112,8 +112,8 @@ export function LoyaltyCardEditor({ business, onSave }: LoyaltyCardEditorProps) 
                                 <div
                                     key={index}
                                     className={`aspect-square rounded-lg flex items-center justify-center ${index < 5
-                                            ? 'bg-white text-purple-600'
-                                            : 'bg-white/20 text-white/40'
+                                        ? 'bg-white text-purple-600'
+                                        : 'bg-white/20 text-white/40'
                                         }`}
                                 >
                                     {index < 5 ? (

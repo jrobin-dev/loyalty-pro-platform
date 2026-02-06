@@ -1,14 +1,14 @@
 "use client"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useBusiness } from "@/hooks/use-business"
+import { useTenantSettings } from "@/hooks/use-tenant-settings"
 import { BusinessSettingsForm } from "@/components/dashboard/business-settings-form"
 import { LoyaltyCardEditor } from "@/components/dashboard/loyalty-card-editor"
 import { Loader2, Building2, Award } from "lucide-react"
 import DashboardLayout from "@/components/dashboard/dashboard-layout"
 
 export default function SettingsPage() {
-    const { business, loading, updateBusiness } = useBusiness()
+    const { settings, loading, updateTenant, updateBranding, updateLoyaltyProgram } = useTenantSettings()
 
     if (loading) {
         return (
@@ -20,7 +20,7 @@ export default function SettingsPage() {
         )
     }
 
-    if (!business) {
+    if (!settings) {
         return (
             <DashboardLayout>
                 <div className="flex items-center justify-center h-96">
@@ -51,11 +51,18 @@ export default function SettingsPage() {
                     </TabsList>
 
                     <TabsContent value="business" className="mt-6">
-                        <BusinessSettingsForm business={business} onSave={updateBusiness} />
+                        <BusinessSettingsForm
+                            settings={settings}
+                            onSaveTenant={updateTenant}
+                            onSaveBranding={updateBranding}
+                        />
                     </TabsContent>
 
                     <TabsContent value="loyalty" className="mt-6">
-                        <LoyaltyCardEditor business={business} onSave={updateBusiness} />
+                        <LoyaltyCardEditor
+                            settings={settings}
+                            onSave={updateLoyaltyProgram}
+                        />
                     </TabsContent>
                 </Tabs>
             </div>

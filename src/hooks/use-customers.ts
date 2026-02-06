@@ -1,21 +1,19 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { supabase } from "@/lib/supabase"
+import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 
 export type Customer = {
     id: string
-    business_id: string
-    name: string
-    email: string
-    phone: string
-    stamps: number
-    visits: number
-    last_visit: string
-    status: string
-    tier: string
-    rewards?: number
+    userId?: string
+    tenantId: string
+    totalStamps: number
+    currentStamps: number
+    joinedAt: string
+    // Extended fields from User relation (if needed)
+    name?: string
+    email?: string
 }
 
 export function useCustomers() {
@@ -29,6 +27,7 @@ export function useCustomers() {
     const fetchCustomers = async () => {
         try {
             setLoading(true)
+            const supabase = createClient()
 
             // Get authenticated user's session
             const { data: { session } } = await supabase.auth.getSession()
@@ -40,26 +39,26 @@ export function useCustomers() {
                 return
             }
 
-            // Get user's business first
-            const { data: businessData, error: businessError } = await supabase
-                .from('businesses')
+            // Get user's tenant first
+            const { data: tenantData, error: tenantError } = await supabase
+                .from('Tenant')
                 .select('id')
-                .eq('user_id', session.user.id)
+                .eq('ownerId', session.user.id)
                 .single()
 
-            if (businessError || !businessData) {
-                console.error("Business Error:", businessError)
+            if (tenantError || !tenantData) {
+                console.error("Tenant Error:", tenantError)
                 setCustomers([])
                 setLoading(false)
                 return
             }
 
-            // Fetch customers for this business
+            // Fetch customers for this tenant
             const { data, error } = await supabase
-                .from('customers')
+                .from('Customer')
                 .select('*')
-                .eq('business_id', businessData.id)
-                .order('last_visit', { ascending: false })
+                .eq('tenantId', tenantData.id)
+                .order('joinedAt', { ascending: false })
 
             if (error) {
                 console.error("Supabase Error:", error)
