@@ -49,32 +49,32 @@ export default function LoginPage() {
     return (
         <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 relative overflow-hidden">
             {/* Background Gradients */}
-            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-emerald-500/10 dark:bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-green-500/10 dark:bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="w-full max-w-md z-10">
                 {/* Logo/Brand */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent mb-2">
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent mb-2">
                         LoyaltyPro
                     </h1>
-                    <p className="text-white/60">Inicia sesión en tu cuenta</p>
+                    <p className="text-gray-600 dark:text-gray-400">Inicia sesión en tu cuenta</p>
                 </div>
 
                 {/* Login Card */}
-                <div className="glass-card rounded-3xl p-8 shadow-2xl">
+                <div className="bg-card rounded-3xl p-8 shadow-2xl border border-border/50">
                     <form onSubmit={handleLogin} className="space-y-6">
                         {/* Email */}
                         <div className="space-y-2">
-                            <Label className="text-sm font-medium text-white/80">Email</Label>
+                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</Label>
                             <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                                 <Input
                                     type="email"
                                     placeholder="tu@email.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="pl-10"
+                                    className="pl-10 bg-white dark:bg-input text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                     required
                                     autoFocus
                                 />
@@ -83,21 +83,21 @@ export default function LoginPage() {
 
                         {/* Password */}
                         <div className="space-y-2">
-                            <Label className="text-sm font-medium text-white/80">Contraseña</Label>
+                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</Label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                                 <Input
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Tu contraseña"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="pl-10 pr-10"
+                                    className="pl-10 pr-10 bg-white dark:bg-input text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                                     required
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                                 >
                                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
@@ -106,7 +106,7 @@ export default function LoginPage() {
 
                         {/* Error Message */}
                         {error && (
-                            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-sm text-red-400">
+                            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-sm text-red-600 dark:text-red-400">
                                 {error}
                             </div>
                         )}
@@ -130,7 +130,7 @@ export default function LoginPage() {
 
                         {/* Forgot Password */}
                         <div className="text-center">
-                            <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                            <Link href="/forgot-password" className="text-sm text-emerald-600 dark:text-emerald-400 hover:underline">
                                 ¿Olvidaste tu contraseña?
                             </Link>
                         </div>
@@ -138,18 +138,18 @@ export default function LoginPage() {
                         {/* Divider */}
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-white/10"></div>
+                                <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
                             </div>
                             <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-background px-2 text-white/40">O</span>
+                                <span className="bg-card px-2 text-gray-500 dark:text-gray-400">O</span>
                             </div>
                         </div>
 
                         {/* Sign Up Link */}
                         <div className="text-center">
-                            <p className="text-sm text-white/60">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
                                 ¿No tienes una cuenta?{" "}
-                                <Link href="/onboarding" className="text-primary hover:underline font-medium">
+                                <Link href="/onboarding" className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">
                                     Regístrate gratis
                                 </Link>
                             </p>

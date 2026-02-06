@@ -4,32 +4,39 @@ import type { NextRequest } from "next/server"
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl
 
-    // Get the session token from cookies
-    const sessionToken = request.cookies.get("next-auth.session-token")?.value ||
-        request.cookies.get("__Secure-next-auth.session-token")?.value
+    // Get Supabase session tokens (not next-auth!)
+    const supabaseAuthToken = request.cookies.get("sb-access-token")?.value ||
+        request.cookies.get("sb-refresh-token")?.value
+
+    // Alternative: check for any supabase cookie
+    const hasSupabaseSession = Array.from(request.cookies.getAll()).some(
+        cookie => cookie.name.startsWith("sb-") && cookie.name.includes("auth-token")
+    )
+
+    const isAuthenticated = supabaseAuthToken || hasSupabaseSession
 
     // Protected routes that require authentication
     const isProtectedRoute = pathname.startsWith("/dashboard")
 
     // Auth routes that should redirect to dashboard if logged in
-    const isAuthRoute = pathname === "/login" || pathname === "/onboarding" || pathname === "/forgot-password" || pathname.startsWith("/dashboard/reset-password")
+    const isAuthRoute = pathname === "/login" || pathname === "/onboarding" || pathname === "/forgot-password" || pathname.startsWith("/reset-password")
 
     // If trying to access protected route without session
-    if (isProtectedRoute && !sessionToken) {
+    if (isProtectedRoute && !isAuthenticated) {
         const url = request.nextUrl.clone()
         url.pathname = "/login"
         return NextResponse.redirect(url)
     }
 
     // If logged in and trying to access auth routes, redirect to dashboard
-    if (isAuthRoute && sessionToken) {
+    if (isAuthRoute && isAuthenticated) {
         const url = request.nextUrl.clone()
         url.pathname = "/dashboard"
         return NextResponse.redirect(url)
     }
 
     // If logged in and trying to access landing page, redirect to dashboard
-    if (pathname === "/" && sessionToken) {
+    if (pathname === "/" && isAuthenticated) {
         const url = request.nextUrl.clone()
         url.pathname = "/dashboard"
         return NextResponse.redirect(url)
