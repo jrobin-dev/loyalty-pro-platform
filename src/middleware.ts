@@ -11,18 +11,25 @@ export async function middleware(request: NextRequest) {
     // Protected routes that require authentication
     const isProtectedRoute = pathname.startsWith("/dashboard")
 
-    // Public routes that should redirect to dashboard if logged in
-    const isPublicRoute = pathname === "/" || pathname === "/onboarding"
+    // Auth routes that should redirect to dashboard if logged in
+    const isAuthRoute = pathname === "/login" || pathname === "/onboarding" || pathname === "/forgot-password" || pathname.startsWith("/dashboard/reset-password")
 
     // If trying to access protected route without session
     if (isProtectedRoute && !sessionToken) {
         const url = request.nextUrl.clone()
-        url.pathname = "/onboarding"
+        url.pathname = "/login"
+        return NextResponse.redirect(url)
+    }
+
+    // If logged in and trying to access auth routes, redirect to dashboard
+    if (isAuthRoute && sessionToken) {
+        const url = request.nextUrl.clone()
+        url.pathname = "/dashboard"
         return NextResponse.redirect(url)
     }
 
     // If logged in and trying to access landing page, redirect to dashboard
-    if (isPublicRoute && sessionToken && pathname === "/") {
+    if (pathname === "/" && sessionToken) {
         const url = request.nextUrl.clone()
         url.pathname = "/dashboard"
         return NextResponse.redirect(url)

@@ -47,9 +47,9 @@ export function HeroSection() {
                             transition={{ delay: 0.3 }}
                             className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
                         >
-                            <span className="text-foreground">Fideliza a tus</span>
+                            <span className="text-gray-900 dark:text-white">Fideliza a tus</span>
                             <br />
-                            <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-emerald-500 bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-600 dark:from-emerald-400 dark:via-green-400 dark:to-emerald-500 bg-clip-text text-transparent">
                                 Clientes con IA
                             </span>
                         </motion.h1>
@@ -59,10 +59,10 @@ export function HeroSection() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed"
+                            className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed"
                         >
                             Crea programas de lealtad digitales, gestiona clientes y aumenta tus ventas.
-                            <span className="text-emerald-600 dark:text-emerald-400 font-semibold"> Todo en una plataforma simple y poderosa.</span>
+                            <span className="text-emerald-700 dark:text-emerald-400 font-semibold"> Todo en una plataforma simple y poderosa.</span>
                         </motion.p>
 
                         {/* CTAs */}
@@ -108,8 +108,8 @@ export function HeroSection() {
                                 "Configuración en 5 minutos",
                                 "Soporte 24/7",
                             ].map((feature, i) => (
-                                <div key={i} className="flex items-center gap-2 text-muted-foreground">
-                                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                                <div key={i} className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                                    <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-500" />
                                     <span>{feature}</span>
                                 </div>
                             ))}
@@ -128,10 +128,10 @@ export function HeroSection() {
                                 { value: "95%", label: "Satisfacción" },
                             ].map((stat, i) => (
                                 <div key={i} className="text-center">
-                                    <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent mb-2">
+                                    <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent mb-2">
                                         {stat.value}
                                     </div>
-                                    <div className="text-sm text-muted-foreground">{stat.label}</div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</div>
                                 </div>
                             ))}
                         </motion.div>
