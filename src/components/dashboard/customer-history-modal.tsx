@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Customer } from "@/hooks/use-customers"
 import { History, TrendingUp, TrendingDown, Award } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
+import { useTenantSettings } from "@/hooks/use-tenant-settings"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 
