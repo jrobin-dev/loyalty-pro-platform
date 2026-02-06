@@ -108,64 +108,53 @@
   --font-display: var(--font-funnel-display);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, sans-serif;
-  overflow-x: hidden;
-}
-
-/* CRITICAL: Remove ALL borders from Tailwind */
-.border,
-*[class*="border-"] {
-  border: none !important;
-  border-width: 0 !important;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-funnel-display), sans-serif;
-  letter-spacing: -0.01em;
-}
-
-/* Landing Page Animations */
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
+@layer base {
+  * {
+    @apply border-border;
   }
 
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-
-  100% {
-    transform: translate(0px, 0px) scale(1);
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
-.animate-blob {
-  animation: blob 7s infinite;
-}
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
+  /* Scrollbar Styling */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
 
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+    border-radius: 10px;
+  }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 10px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.8);
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
 }
 
 /* Light mode overrides */
@@ -199,4 +188,17 @@ html {
   --input: 0 0% 100%;
   /* White input background for better contrast */
   --ring: 142 76% 45%;
+}
+
+/* Text Selection - Green Mint Highlight */
+::selection {
+  background-color: rgba(16, 185, 129, 0.3);
+  /* Emerald green with transparency */
+  color: inherit;
+}
+
+::-moz-selection {
+  background-color: rgba(16, 185, 129, 0.3);
+  /* Emerald green with transparency */
+  color: inherit;
 }
