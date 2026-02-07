@@ -20,7 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
-import { useBusiness } from "@/hooks/use-business"
+import { useTenantSettings } from "@/hooks/use-tenant-settings"
 import { useUserProfile } from "@/hooks/use-user-profile"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
@@ -34,7 +34,7 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: SidebarProps) {
     const pathname = usePathname()
-    const { business } = useBusiness()
+    const { settings } = useTenantSettings()
     const { profile } = useUserProfile()
     const router = useRouter()
     const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -253,7 +253,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                 <p className="text-sm font-medium truncate text-[hsl(var(--sidebar-foreground))]">
                                     {userName}
                                 </p>
-                                <p className="text-xs text-[hsl(var(--sidebar-foreground))/0.6] truncate">{business?.name || "Plan Free"}</p>
+                                <p className="text-xs text-[hsl(var(--sidebar-foreground))/0.6] truncate">{settings?.tenant.name || "Plan Free"}</p>
                             </div>
                         )}
                         {!isCollapsed && (

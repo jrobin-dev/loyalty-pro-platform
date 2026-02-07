@@ -1,16 +1,22 @@
-"use client"
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Store, Users, DollarSign, TrendingUp, ArrowUpRight, Activity } from "lucide-react"
+import { Store, Users, DollarSign, TrendingUp, Activity } from "lucide-react"
+import { getAdminStats } from "@/app/actions/admin-stats"
+import { getTenants } from "@/app/actions/admin-tenants"
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+    const statsResult = await getAdminStats()
+    const stats = statsResult.success && statsResult.data ? statsResult.data : {
+        totalTenants: 0,
+        totalUsers: 0,
+        activeRate: 0,
+        mrr: 0
+    }
 
-    // Mock Data for Admin Dashboard - These would come from API later
     const metrics = [
         {
             title: "Total Tenants (Negocios)",
-            value: "124",
-            change: "+12%",
+            value: stats.totalTenants.toString(),
+            change: "+12%", // TODO: implementation for historical comparison
             trend: "up",
             icon: Store,
             color: "text-blue-500",
@@ -18,7 +24,7 @@ export default function AdminDashboardPage() {
         },
         {
             title: "Ingresos Recurrentes (MRR)",
-            value: "$4,250",
+            value: `$${stats.mrr}`,
             change: "+8.5%",
             trend: "up",
             icon: DollarSign,
@@ -27,7 +33,7 @@ export default function AdminDashboardPage() {
         },
         {
             title: "Usuarios Totales",
-            value: "15.3k",
+            value: stats.totalUsers >= 1000 ? `${(stats.totalUsers / 1000).toFixed(1)}k` : stats.totalUsers.toString(),
             change: "+24%",
             trend: "up",
             icon: Users,
@@ -36,7 +42,7 @@ export default function AdminDashboardPage() {
         },
         {
             title: "Tasa de Actividad",
-            value: "89%",
+            value: `${stats.activeRate}%`,
             change: "+2%",
             trend: "up",
             icon: Activity,
@@ -45,13 +51,17 @@ export default function AdminDashboardPage() {
         },
     ]
 
-    const recentSignups = [
-        { name: "Café de la Esquina", plan: "Free", date: "Hace 2 mins", status: "Active" },
-        { name: "Burger House Lima", plan: "Pro", date: "Hace 15 mins", status: "Active" },
-        { name: "Spa & Wellness", plan: "Free", date: "Hace 1 hora", status: "Active" },
-        { name: "Barbería El Bigote", plan: "Pro", date: "Hace 3 horas", status: "Pending" },
-        { name: "Sushi Express", plan: "Pro", date: "Ayer", status: "Active" },
-    ]
+    // Fetch recent tenants
+    const tenantsResult = await getTenants()
+    const recentTenants = tenantsResult.success && tenantsResult.data
+        ? tenantsResult.data.slice(0, 5).map(t => ({
+            name: t.name,
+            plan: t.plan,
+            date: new Date(t.createdAt).toLocaleDateString(),
+            // @ts-ignore
+            status: t.status || "active"
+        }))
+        : []
 
     return (
         <div className="space-y-8">
@@ -109,27 +119,31 @@ export default function AdminDashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-6">
-                            {recentSignups.map((tenant, i) => (
-                                <div key={i} className="flex items-center justify-between group">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/10 flex items-center justify-center font-bold text-xs text-muted-foreground group-hover:text-white group-hover:border-primary/50 transition-all">
-                                            {tenant.name.substring(0, 2).toUpperCase()}
+                            {recentTenants.length === 0 ? (
+                                <p className="text-sm text-muted-foreground py-4 text-center">No hay registros recientes</p>
+                            ) : (
+                                recentTenants.map((tenant, i) => (
+                                    <div key={i} className="flex items-center justify-between group">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/10 flex items-center justify-center font-bold text-xs text-muted-foreground group-hover:text-white group-hover:border-primary/50 transition-all">
+                                                {tenant.name.substring(0, 2).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">{tenant.name}</p>
+                                                <p className="text-xs text-muted-foreground mt-1">{tenant.date}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">{tenant.name}</p>
-                                            <p className="text-xs text-muted-foreground mt-1">{tenant.date}</p>
+                                        <div className="flex flex-col items-end">
+                                            <div className={`text-xs font-bold px-2 py-0.5 rounded-full ${tenant.plan === 'PRO' || tenant.plan === 'PLUS'
+                                                ? 'bg-[#00FF94]/10 text-[#00FF94] border border-[#00FF94]/20'
+                                                : 'bg-white/5 text-white/40'
+                                                }`}>
+                                                {tenant.plan}
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col items-end">
-                                        <div className={`text-xs font-bold px-2 py-0.5 rounded-full ${tenant.plan === 'Pro'
-                                            ? 'bg-[#00FF94]/10 text-[#00FF94] border border-[#00FF94]/20'
-                                            : 'bg-white/5 text-white/40'
-                                            }`}>
-                                            {tenant.plan}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </CardContent>
                 </Card>

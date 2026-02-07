@@ -42,7 +42,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
 
     const menuItems = [
         { icon: LayoutDashboard, label: "Overview", href: "/admin" },
-        { icon: Store, label: "Tenants / Negocios", href: "/admin/tenants" },
+        { icon: Store, label: "Negocios", href: "/admin/tenants" },
         { icon: Users, label: "Usuarios Globales", href: "/admin/users" },
         { icon: Megaphone, label: "Marketing Banners", href: "/admin/banners" },
         { icon: BarChart3, label: "Revenue", href: "/admin/revenue" },
