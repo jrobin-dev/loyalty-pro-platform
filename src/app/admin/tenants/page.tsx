@@ -142,13 +142,14 @@ export default function TenantsPage() {
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <Badge variant="outline" className={`
-                                        ${tenant.plan === 'Pro'
-                                            ? 'bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-500 border-indigo-500/20'
-                                            : 'bg-muted text-muted-foreground'}
-                                    `}>
+                                    <span className={cn(
+                                        "font-mono text-xs px-2 py-1 rounded-md border",
+                                        tenant.plan === 'Pro'
+                                            ? 'bg-primary/10 text-primary border-primary/20'
+                                            : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                                    )}>
                                         {tenant.plan}
-                                    </Badge>
+                                    </span>
                                 </TableCell>
                                 <TableCell>
                                     <Badge variant="secondary" className={`

@@ -29,8 +29,8 @@ export default function UsersPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="h-[300px] flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-xl bg-white/5 gap-4">
-                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
+                    <div className="h-[300px] flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl bg-card/50 gap-4">
+                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                             <Users className="w-8 h-8 text-muted-foreground" />
                         </div>
                         <p className="text-muted-foreground">Listado de usuarios en desarrollo...</p>

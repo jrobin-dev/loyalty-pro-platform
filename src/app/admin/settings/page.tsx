@@ -26,19 +26,19 @@ export default function SettingsPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5">
+                    <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-card">
                         <div>
-                            <p className="font-medium text-foreground">Modo Mantenimiento</p>
-                            <p className="text-sm text-muted-foreground">Desactivar temporalmente el acceso a tenants.</p>
+                            <h3 className="font-medium text-white">Mantenimiento</h3>
+                            <p className="text-sm text-muted-foreground">Poner la plataforma en modo mantenimiento</p>
                         </div>
-                        <Button variant="outline" className="border-white/10">Activar</Button>
+                        <Button variant="outline" className="border-border">Activar</Button>
                     </div>
-                    <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/5">
+                    <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-card">
                         <div>
-                            <p className="font-medium text-foreground">Registros Públicos</p>
-                            <p className="text-sm text-muted-foreground">Permitir que nuevos negocios se registren automáticamente.</p>
+                            <h3 className="font-medium text-white">Notificaciones Globales</h3>
+                            <p className="text-sm text-muted-foreground">Enviar mensaje a todos los tenants</p>
                         </div>
-                        <Button variant="outline" className="border-white/10">Configurar</Button>
+                        <Button variant="outline" className="border-border">Configurar</Button>
                     </div>
                 </CardContent>
             </Card>

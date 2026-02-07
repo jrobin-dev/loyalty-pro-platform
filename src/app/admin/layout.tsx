@@ -58,7 +58,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
 
             {/* Sidebar Container */}
             <div className={`
-          fixed top-0 left-0 h-full w-64 bg-card/50 backdrop-blur-xl border-r border-white/5 z-50 transition-transform duration-300 ease-in-out
+          fixed top-0 left-0 h-full w-64 bg-card/50 backdrop-blur-xl border-r border-border z-50 transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         md:translate-x-0
       `}>
@@ -129,26 +129,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     return (
         <div className="min-h-screen bg-background text-foreground selection:bg-[#FF00E5]/30 selection:text-[#FF00E5] relative overflow-hidden">
-            {/* Ambient Background Gradient */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-purple-500/5 rounded-full blur-[100px] pointer-events-none" />
-
-            <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+            {/* Background elements */}
+            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
             {/* Main Content */}
             <div className="md:ml-64 min-h-screen flex flex-col">
                 {/* Header */}
-                <header className="flex items-center justify-between p-4 glass-header sticky top-0 z-30 transition-all">
+                <header className="h-16 border-b border-border bg-card/50 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-40">
                     <div className="flex items-center gap-4">
                         <button onClick={() => setSidebarOpen(true)} className="md:hidden">
                             <Menu className="text-foreground" />
                         </button>
-                        {/* Global Search */}
-                        <div className="hidden md:flex items-center gap-2 max-w-sm bg-white/5 border border-white/5 p-1 pl-3 rounded-xl focus-within:ring-1 focus-within:ring-[#00FF94]/50 focus-within:bg-white/10 transition-all w-64 lg:w-96 shadow-inner">
-                            <Search size={16} className="text-muted-foreground" />
-                            <Input
-                                placeholder="Buscar en todo el SaaS..."
-                                className="border-0 bg-transparent h-8 p-0 placeholder:text-muted-foreground focus-visible:ring-0 text-sm"
+                        <h2 className="text-xl font-bold text-foreground">Dashboard</h2>
+                        {/* Search Bar */}
+                        <div className="hidden md:flex items-center gap-2 max-w-sm bg-card border border-border p-1 pl-3 rounded-xl focus-within:ring-1 focus-within:ring-primary/50 focus-within:bg-card/80 transition-all w-64 lg:w-96 shadow-inner">
+                            <Search className="w-4 h-4 text-muted-foreground" />
+                            <input
+                                type="text"
+                                placeholder="Buscar..."
+                                className="bg-transparent border-none outline-none text-sm text-foreground w-full placeholder:text-muted-foreground"
                             />
                         </div>
                     </div>

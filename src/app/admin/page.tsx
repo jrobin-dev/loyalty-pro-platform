@@ -116,7 +116,7 @@ export default function AdminDashboardPage() {
                                             {tenant.name.substring(0, 2).toUpperCase()}
                                         </div>
                                         <div>
-                                            <p className="text-sm font-medium leading-none group-hover:text-[#FF00E5] transition-colors">{tenant.name}</p>
+                                            <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">{tenant.name}</p>
                                             <p className="text-xs text-muted-foreground mt-1">{tenant.date}</p>
                                         </div>
                                     </div>
