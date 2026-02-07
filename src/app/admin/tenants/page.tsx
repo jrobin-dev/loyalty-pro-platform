@@ -32,8 +32,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Search, Filter, MoreVertical, Edit, Trash2, Ban, CheckCircle2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-// Server Actions imports (dynamic import in function or standard if possible, but for client component using standard import of server action is fine in Next.js 14 if 'use server' is in file)
-import { getTenants, createTenant } from "@/app/actions/admin-tenants"
+import { getTenants, createTenant, updateTenantPlan, updateTenantStatus } from "@/app/actions/admin-tenants"
 
 export default function TenantsPage() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -79,12 +78,11 @@ export default function TenantsPage() {
             const result = await createTenant(formData)
 
             if (result.success) {
-                // Success
                 setIsCreateOpen(false)
                 setNewName("")
                 setNewSlug("")
                 setNewOwnerEmail("")
-                fetchTenants() // Refresh list
+                fetchTenants()
             } else {
                 alert(result.error || "Error al crear cliente")
             }
@@ -93,6 +91,20 @@ export default function TenantsPage() {
             alert("Ocurrió un error inesperado")
         } finally {
             setIsSubmitting(false)
+        }
+    }
+
+    const handleStatusChange = async (tenantId: string, newStatus: string) => {
+        if (!confirm(`¿Estás seguro de cambiar el estado a ${newStatus}?`)) return
+        try {
+            const result = await updateTenantStatus(tenantId, newStatus)
+            if (result.success) {
+                fetchTenants()
+            } else {
+                alert("Error al actualizar estado")
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
 
@@ -132,7 +144,6 @@ export default function TenantsPage() {
                                     value={newName}
                                     onChange={(e) => {
                                         setNewName(e.target.value)
-                                        // Auto-slug
                                         setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'))
                                     }}
                                     required
@@ -170,6 +181,7 @@ export default function TenantsPage() {
                                 >
                                     <option value="FREE" className="bg-card text-foreground">Free</option>
                                     <option value="PRO" className="bg-card text-foreground">Pro</option>
+                                    <option value="PLUS" className="bg-card text-foreground">Plus</option>
                                 </select>
                             </div>
 
@@ -251,14 +263,23 @@ export default function TenantsPage() {
                                             "font-mono text-xs px-2 py-1 rounded-md border",
                                             tenant.plan === 'PRO'
                                                 ? 'bg-primary/10 text-primary border-primary/20'
-                                                : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                                                : tenant.plan === 'PLUS'
+                                                    ? 'bg-purple-500/10 text-purple-500 border-purple-500/20'
+                                                    : 'bg-zinc-800 text-zinc-400 border-zinc-700'
                                         )}>
                                             {tenant.plan}
                                         </span>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant="secondary" className="bg-green-500/10 text-green-500 hover:bg-green-500/20">
-                                            Activo
+                                        <Badge variant="secondary" className={`
+                                            ${tenant.status === 'ACTIVE' ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20' : ''}
+                                            ${tenant.status === 'SUSPENDED' ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20' : ''}
+                                            ${tenant.status === 'PENDING' ? 'bg-orange-500/10 text-orange-500 hover:bg-orange-500/20' : ''}
+                                        `}>
+                                            {tenant.status === 'ACTIVE' && 'Activo'}
+                                            {tenant.status === 'SUSPENDED' && 'Suspendido'}
+                                            {tenant.status === 'PENDING' && 'Pendiente'}
+                                            {!tenant.status && 'Activo'} {/* Fallback */}
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right text-xs text-muted-foreground">
@@ -277,13 +298,23 @@ export default function TenantsPage() {
                                                 <DropdownMenuItem className="gap-2 cursor-pointer">
                                                     <Edit size={14} /> Editar Detalles
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2 cursor-pointer">
-                                                    <CheckCircle2 size={14} /> Verificar Manualmente
-                                                </DropdownMenuItem>
+                                                {tenant.status !== 'ACTIVE' && (
+                                                    <DropdownMenuItem
+                                                        className="gap-2 cursor-pointer text-green-500 focus:text-green-500 focus:bg-green-500/10"
+                                                        onClick={() => handleStatusChange(tenant.id, 'ACTIVE')}
+                                                    >
+                                                        <CheckCircle2 size={14} /> Activar / Verificar
+                                                    </DropdownMenuItem>
+                                                )}
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem className="gap-2 text-destructive cursor-pointer">
-                                                    <Ban size={14} /> Suspender Servicio
-                                                </DropdownMenuItem>
+                                                {tenant.status !== 'SUSPENDED' && (
+                                                    <DropdownMenuItem
+                                                        className="gap-2 text-destructive cursor-pointer focus:text-destructive focus:bg-destructive/10"
+                                                        onClick={() => handleStatusChange(tenant.id, 'SUSPENDED')}
+                                                    >
+                                                        <Ban size={14} /> Suspender Servicio
+                                                    </DropdownMenuItem>
+                                                )}
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

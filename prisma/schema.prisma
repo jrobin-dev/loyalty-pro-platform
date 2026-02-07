@@ -38,6 +38,7 @@ model Tenant {
   ownerId     String
   owner       User     @relation(fields: [ownerId], references: [id])
   plan        String   @default("FREE")
+  status      String   @default("ACTIVE") // ACTIVE, SUSPENDED, PENDING
   
   branding    Branding?
   loyalty     LoyaltyProgram?

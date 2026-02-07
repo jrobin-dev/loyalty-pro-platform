@@ -37,7 +37,6 @@ export async function createTenant(formData: FormData) {
             return { success: false, error: "Faltan campos requeridos" }
         }
 
-        // Find owner by email
         const owner = await prisma.user.findUnique({
             where: { email: ownerEmail }
         })
@@ -52,14 +51,7 @@ export async function createTenant(formData: FormData) {
                 slug,
                 ownerId: owner.id,
                 plan,
-                status: "ACTIVE" // Assuming you might add this field or handle it via logic, but model didn't show it. Checking model...
-                // Model Tenant doesn't have status active/suspended. It just has plan.
-                // I will omit status for now or add it to schema if needed. 
-                // Wait, the previous mock data had 'status'. 
-                // Let's check schema again.
-                // Schema:
-                // model Tenant { ... plan String @default("FREE") ... }
-                // No status field. I'll skip status for now or assume active.
+                status: 'ACTIVE'
             }
         })
 
@@ -68,5 +60,33 @@ export async function createTenant(formData: FormData) {
     } catch (error) {
         console.error("Error creating tenant:", error)
         return { success: false, error: "Error al crear cliente" }
+    }
+}
+
+export async function updateTenantStatus(tenantId: string, status: string) {
+    try {
+        await prisma.tenant.update({
+            where: { id: tenantId },
+            data: { status }
+        })
+        revalidatePath("/admin/tenants")
+        return { success: true }
+    } catch (error) {
+        console.error("Error updating tenant status:", error)
+        return { success: false, error: "Error al actualizar estado" }
+    }
+}
+
+export async function updateTenantPlan(tenantId: string, plan: string) {
+    try {
+        await prisma.tenant.update({
+            where: { id: tenantId },
+            data: { plan }
+        })
+        revalidatePath("/admin/tenants")
+        revalidatePath("/admin")
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "Error updating plan" }
     }
 }
