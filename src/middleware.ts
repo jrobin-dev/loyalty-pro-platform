@@ -16,7 +16,7 @@ export async function middleware(request: NextRequest) {
     const isAuthenticated = supabaseAuthToken || hasSupabaseSession
 
     // Protected routes that require authentication
-    const isProtectedRoute = pathname.startsWith("/dashboard")
+    const isProtectedRoute = pathname.startsWith("/dashboard") || pathname.startsWith("/admin")
 
     // Auth routes that should redirect to dashboard if logged in
     const isAuthRoute = pathname === "/login" || pathname === "/onboarding" || pathname === "/forgot-password" || pathname.startsWith("/reset-password")
