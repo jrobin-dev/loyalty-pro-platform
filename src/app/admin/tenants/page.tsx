@@ -214,8 +214,8 @@ export default function TenantsPage() {
             </div>
 
             {/* Table */}
-            <div className="rounded-xl bg-card overflow-hidden shadow-sm">
-                <Table>
+            <div className="rounded-xl bg-card overflow-hidden shadow-sm border border-border">
+                <Table className="min-w-[800px]">
                     <TableHeader className="bg-muted/50">
                         <TableRow>
                             <TableHead>Negocio / Slug</TableHead>
