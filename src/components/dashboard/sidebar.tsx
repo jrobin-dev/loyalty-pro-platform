@@ -42,6 +42,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
 
     useEffect(() => {
         if (profile) {
+            console.log("Dashboard Sidebar Profile:", profile) // Debugging
             const fullName = [profile.name, profile.lastName].filter(Boolean).join(" ")
             setUserName(fullName || profile.email?.split("@")[0] || "Usuario")
         }
