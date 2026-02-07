@@ -13,7 +13,8 @@ import {
     ChevronLeft,
     ChevronRight,
     Zap,
-    Loader2
+    Loader2,
+    GraduationCap
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -67,6 +68,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
         { icon: QrCode, label: "Escanear", href: "/dashboard/scan" },
         { icon: Gift, label: "Premios", href: "/dashboard/rewards" },
         { icon: CreditCard, label: "Planes", href: "/dashboard/plans" },
+        { icon: GraduationCap, label: "Academia", href: "/dashboard/academy" },
         { icon: Settings, label: "Configuración", href: "/dashboard/settings" },
     ]
 
