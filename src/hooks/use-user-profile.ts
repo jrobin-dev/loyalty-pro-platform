@@ -12,6 +12,12 @@ export interface UserProfile {
     birthday: Date | null
     avatarUrl: string | null
     role: "SUPER_ADMIN" | "BUSINESS_OWNER" | "END_USER"
+    tenants?: {
+        id: string
+        name: string
+        slug: string
+        status: string
+    }[]
 }
 
 export function useUserProfile() {

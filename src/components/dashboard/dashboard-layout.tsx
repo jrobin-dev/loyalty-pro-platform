@@ -5,9 +5,13 @@ import { Menu } from "lucide-react"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { cn } from "@/lib/utils"
 
+import { useUserProfile } from "@/hooks/use-user-profile"
+import { SuspendedScreen } from "@/components/dashboard/suspended-alert"
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [isCollapsed, setIsCollapsed] = useState(false)
+    const { profile, loading } = useUserProfile()
 
     // Load collapsed state from local storage on mount (optional, nice to have)
     useEffect(() => {
@@ -21,6 +25,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         const newState = !isCollapsed
         setIsCollapsed(newState)
         localStorage.setItem("sidebarCollapsed", JSON.stringify(newState))
+    }
+
+    // Suspension Check
+    if (!loading && profile?.tenants && profile.tenants.length > 0) {
+        const currentTenant = profile.tenants[0]
+        if (currentTenant.status === 'SUSPENDED') {
+            return <SuspendedScreen />
+        }
     }
 
     return (

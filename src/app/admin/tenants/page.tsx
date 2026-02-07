@@ -32,7 +32,9 @@ import {
 import { Label } from "@/components/ui/label"
 import { Search, Filter, MoreVertical, Edit, Trash2, Ban, CheckCircle2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getTenants, createTenant, updateTenantPlan, updateTenantStatus } from "@/app/actions/admin-tenants"
+import { getTenants, createTenant, updateTenantPlan, updateTenantStatus, updateTenant, deleteTenant } from "@/app/actions/admin-tenants"
+import { toast } from "sonner"
+
 
 export default function TenantsPage() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -40,6 +42,10 @@ export default function TenantsPage() {
     const [isLoading, setIsLoading] = useState(true)
     const [isCreateOpen, setIsCreateOpen] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    // Edit Logic
+    const [isEditOpen, setIsEditOpen] = useState(false)
+    const [editingTenant, setEditingTenant] = useState<{ id: string, name: string, slug: string } | null>(null)
 
     // Form States
     const [newName, setNewName] = useState("")
@@ -106,6 +112,51 @@ export default function TenantsPage() {
             }
         } catch (error) {
             console.error(error)
+        }
+    }
+
+    // Delete Logic
+    const handleDeleteTenant = async (tenantId: string) => {
+        if (!confirm("PELIGRO: ¿Estás seguro de eliminar este negocio y TODOS sus datos? Esta acción no se puede deshacer.")) return
+        if (!confirm("¿De verdad? Se borrarán clientes, stamps y configuraciones.")) return
+
+        try {
+            const result = await deleteTenant(tenantId)
+            if (result.success) {
+                toast.success("Negocio eliminado correctamente")
+                fetchTenants()
+            } else {
+                toast.error(result.error || "Error al eliminar")
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error("Error inesperado")
+        }
+    }
+
+    const handleEditTenant = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!editingTenant) return
+        setIsSubmitting(true)
+        try {
+            const result = await updateTenant(editingTenant.id, {
+                name: editingTenant.name,
+                slug: editingTenant.slug
+            })
+
+            if (result.success) {
+                setIsEditOpen(false)
+                setEditingTenant(null)
+                fetchTenants()
+                toast.success("Negocio actualizado")
+            } else {
+                toast.error(result.error || "Error al actualizar")
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error("Error inesperado")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -296,7 +347,17 @@ export default function TenantsPage() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
-                                                <DropdownMenuItem className="gap-2 cursor-pointer">
+                                                <DropdownMenuItem
+                                                    className="gap-2 cursor-pointer"
+                                                    onClick={() => {
+                                                        setEditingTenant({
+                                                            id: tenant.id,
+                                                            name: tenant.name,
+                                                            slug: tenant.slug
+                                                        })
+                                                        setIsEditOpen(true)
+                                                    }}
+                                                >
                                                     <Edit size={14} /> Editar Detalles
                                                 </DropdownMenuItem>
                                                 {tenant.status !== 'ACTIVE' && (
@@ -316,6 +377,13 @@ export default function TenantsPage() {
                                                         <Ban size={14} /> Suspender Servicio
                                                     </DropdownMenuItem>
                                                 )}
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem
+                                                    className="gap-2 text-destructive cursor-pointer focus:text-destructive focus:bg-destructive/10"
+                                                    onClick={() => handleDeleteTenant(tenant.id)}
+                                                >
+                                                    <Trash2 size={14} /> Eliminar Cuenta
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>
@@ -325,6 +393,43 @@ export default function TenantsPage() {
                     </TableBody>
                 </Table>
             </div>
+
+            {/* Edit Dialog */}
+            <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+                <DialogContent className="bg-card border-border">
+                    <DialogHeader>
+                        <DialogTitle>Editar Negocio</DialogTitle>
+                        <DialogDescription>
+                            Modifica los detalles principales del negocio.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleEditTenant} className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="edit-name">Nombre del Negocio</Label>
+                            <Input
+                                id="edit-name"
+                                value={editingTenant?.name || ""}
+                                onChange={(e) => setEditingTenant(prev => prev ? { ...prev, name: e.target.value } : null)}
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="edit-slug">Slug (URL)</Label>
+                            <Input
+                                id="edit-slug"
+                                value={editingTenant?.slug || ""}
+                                onChange={(e) => setEditingTenant(prev => prev ? { ...prev, slug: e.target.value } : null)}
+                                required
+                            />
+                        </div>
+                        <DialogFooter className="pt-4">
+                            <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                                {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

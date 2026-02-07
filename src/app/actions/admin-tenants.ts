@@ -91,3 +91,42 @@ export async function updateTenantPlan(tenantId: string, plan: string) {
         return { success: false, error: "Error updating plan" }
     }
 }
+
+export async function updateTenant(tenantId: string, data: { name?: string, slug?: string, plan?: string, status?: string }) {
+    try {
+        await prisma.tenant.update({
+            where: { id: tenantId },
+            data
+        })
+        revalidatePath("/admin/tenants")
+        return { success: true }
+    } catch (error) {
+        console.error("Error updating tenant:", error)
+        return { success: false, error: "Error actualizando negocio" }
+    }
+}
+
+export async function deleteTenant(tenantId: string) {
+    try {
+        // Optional: Check if tenant has critical data before deleting?
+        // For now, hard delete. Cascading deletes might be needed if schema doesn't handle it.
+        // Prisma usually needs explicit cascade or manual delete of related records.
+        // Assuming schema has some cascades or we delete related first.
+        // Let's delete related records manually to be safe if not cascaded.
+
+        // Transaction to delete everything
+        await prisma.$transaction(async (tx) => {
+            await tx.stampTransaction.deleteMany({ where: { tenantId } })
+            await tx.customer.deleteMany({ where: { tenantId } })
+            await tx.loyaltyProgram.deleteMany({ where: { tenantId } })
+            await tx.branding.deleteMany({ where: { tenantId } })
+            await tx.tenant.delete({ where: { id: tenantId } })
+        })
+
+        revalidatePath("/admin/tenants")
+        return { success: true }
+    } catch (error) {
+        console.error("Error deleting tenant:", error)
+        return { success: false, error: "Error eliminando negocio" }
+    }
+}
