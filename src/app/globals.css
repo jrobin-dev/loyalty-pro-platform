@@ -134,6 +134,13 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Improve Input visibility in Light Mode */
+  .light input,
+  .light textarea,
+  .light select {
+    @apply border-border shadow-sm;
+  }
 }
 
 
@@ -202,11 +209,14 @@
   --accent-foreground: 142 76% 30%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
-  --border: 142 20% 90%;
+  --border: 240 5.9% 90%;
   /* Subtle mint border for tables - like SureCart */
   --input: 0 0% 100%;
   /* White input background for better contrast */
   --ring: 142 76% 45%;
+
+  /* Shadow for better depth in Light Mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 
   /* Sidebar Variables - Light Mode */
   --sidebar: 240 5% 96%;
