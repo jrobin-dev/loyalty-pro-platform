@@ -188,6 +188,25 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                             </Link>
                         )
                     })}
+
+                    {/* Super Admin Link - Rendered Explicitly */}
+                    {profile?.role === "SUPER_ADMIN" && (
+                        <Link
+                            href="/admin"
+                            className={cn(
+                                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 mt-2 border border-primary/20",
+                                pathname.startsWith('/admin')
+                                    ? "bg-primary/20 text-primary shadow-[0_0_15px_rgba(0,255,148,0.3)]"
+                                    : "text-primary hover:bg-primary/10",
+                                isCollapsed && "justify-center"
+                            )}
+                        >
+                            <Zap className="h-5 w-5 flex-shrink-0" />
+                            {!isCollapsed && (
+                                <span className="font-medium">Super Admin</span>
+                            )}
+                        </Link>
+                    )}
                 </nav>
 
                 {/* Footer - User Profile */}

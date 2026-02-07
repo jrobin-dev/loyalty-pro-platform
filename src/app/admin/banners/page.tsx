@@ -72,7 +72,7 @@ export default function BannersPage() {
 
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogTrigger asChild>
-                        <Button className="bg-[#FF00E5] hover:bg-[#D600C0] text-white font-medium">
+                        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
                             <Plus className="mr-2 h-4 w-4" /> Nuevo Banner
                         </Button>
                     </DialogTrigger>
@@ -104,7 +104,7 @@ export default function BannersPage() {
                                 {/* Desktop Asset */}
                                 <div className="space-y-3 p-4 border border-border rounded-xl bg-muted/20">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <Monitor size={18} className="text-[#00FF94]" />
+                                        <Monitor size={18} className="text-primary" />
                                         <Label className="font-bold">Versión Desktop</Label>
                                     </div>
                                     <div className="text-xs text-muted-foreground mb-2">Recomendado: 1920x400px (Panorámico)</div>
@@ -115,7 +115,7 @@ export default function BannersPage() {
                                 {/* Mobile Asset */}
                                 <div className="space-y-3 p-4 border border-border rounded-xl bg-muted/20">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <Smartphone size={18} className="text-[#FF00E5]" />
+                                        <Smartphone size={18} className="text-primary" />
                                         <Label className="font-bold">Versión Mobile</Label>
                                     </div>
                                     <div className="text-xs text-muted-foreground mb-2">Recomendado: 1080x1080px (Cuadrado)</div>
@@ -150,7 +150,7 @@ export default function BannersPage() {
 
                         <DialogFooter>
                             <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancelar</Button>
-                            <Button className="bg-[#FF00E5] hover:bg-[#D600C0] text-white">Publicar Campaña</Button>
+                            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">Publicar Campaña</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
@@ -170,13 +170,13 @@ export default function BannersPage() {
                                 <div className="flex bg-muted rounded-lg p-0.5">
                                     <button
                                         onClick={() => togglePreview(banner.id, 'desktop')}
-                                        className={`p-1.5 rounded-md transition-all ${mode === 'desktop' ? 'bg-background text-[#00FF94] shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                                        className={`p-1.5 rounded-md transition-all ${mode === 'desktop' ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                                     >
                                         <Monitor size={14} />
                                     </button>
                                     <button
                                         onClick={() => togglePreview(banner.id, 'mobile')}
-                                        className={`p-1.5 rounded-md transition-all ${mode === 'mobile' ? 'bg-background text-[#FF00E5] shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                                        className={`p-1.5 rounded-md transition-all ${mode === 'mobile' ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                                     >
                                         <Smartphone size={14} />
                                     </button>
@@ -229,11 +229,11 @@ export default function BannersPage() {
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div className="flex flex-col">
                                         <span className="text-muted-foreground text-xs uppercase tracking-wider">Vistas</span>
-                                        <span className="font-bold flex items-center gap-1"><Eye size={12} className="text-[#FF00E5]" /> {banner.views}</span>
+                                        <span className="font-bold flex items-center gap-1"><Eye size={12} className="text-primary" /> {banner.views}</span>
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-muted-foreground text-xs uppercase tracking-wider">Clicks</span>
-                                        <span className="font-bold text-[#00FF94]">{banner.clicks}</span>
+                                        <span className="font-bold text-primary">{banner.clicks}</span>
                                     </div>
                                 </div>
                             </CardContent>
