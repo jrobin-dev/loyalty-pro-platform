@@ -69,6 +69,15 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
         { icon: Settings, label: "Configuración", href: "/dashboard/settings" },
     ]
 
+    // Add Admin link if user is SUPER_ADMIN
+    if (profile?.role === "SUPER_ADMIN") {
+        menuItems.push({
+            icon: Zap,
+            label: "Super Admin",
+            href: "/admin"
+        })
+    }
+
     return (
         <>
             {/* Mobile Overlay */}

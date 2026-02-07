@@ -11,6 +11,7 @@ export interface UserProfile {
     phone: string | null
     birthday: Date | null
     avatarUrl: string | null
+    role: "SUPER_ADMIN" | "BUSINESS_OWNER" | "END_USER"
 }
 
 export function useUserProfile() {
