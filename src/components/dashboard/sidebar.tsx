@@ -204,7 +204,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 {/* Footer - Admin Link & User Profile */}
                 <div className="p-4 border-t border-[hsl(var(--sidebar-border))] space-y-2">
                     {/* Super Admin Link - Moved here for visibility */}
-                    {(profile?.role === "SUPER_ADMIN" || profile?.email === "admin@saas.com") && (
+                    {profile?.role === "SUPER_ADMIN" && (
                         <Link
                             href="/admin"
                             className={cn(

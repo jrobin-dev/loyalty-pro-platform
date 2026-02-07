@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import {
     BarChart3,
     LayoutDashboard,
@@ -144,6 +144,31 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const { profile, loading } = useUserProfile()
+    const router = useRouter() // Import useRouter from next/navigation
+
+    useEffect(() => {
+        if (!loading && profile) {
+            if (profile.role !== "SUPER_ADMIN") {
+                router.replace("/dashboard")
+            }
+        } else if (!loading && !profile) {
+            // Not logged in? Middleware should handle this, but safe to redirect
+            router.replace("/login")
+        }
+    }, [profile, loading, router])
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        )
+    }
+
+    if (profile?.role !== "SUPER_ADMIN") {
+        return null // Don't render anything while redirecting
+    }
 
     return (
         <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
