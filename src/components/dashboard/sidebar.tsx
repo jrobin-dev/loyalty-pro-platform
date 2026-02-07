@@ -72,14 +72,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
         { icon: Settings, label: "Configuración", href: "/dashboard/settings" },
     ]
 
-    // Add Admin link if user is SUPER_ADMIN
-    if (profile?.role === "SUPER_ADMIN") {
-        menuItems.push({
-            icon: Zap,
-            label: "Super Admin",
-            href: "/admin"
-        })
-    }
+
 
 
     return (
@@ -183,52 +176,28 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                         )
                     })}
 
-                    {/* Super Admin Link - Rendered Explicitly */}
-                    {profile?.role === "SUPER_ADMIN" && (
-                        <Link
-                            href="/admin"
-                            className={cn(
-                                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 mt-2 border border-primary/20",
-                                pathname.startsWith('/admin')
-                                    ? "bg-primary/20 text-primary shadow-[0_0_15px_rgba(0,255,148,0.3)]"
-                                    : "text-primary hover:bg-primary/10",
-                                isCollapsed && "justify-center"
-                            )}
-                        >
-                            <Zap className="h-5 w-5 flex-shrink-0" />
-                            {!isCollapsed && (
-                                <span className="font-medium">Super Admin</span>
-                            )}
-                        </Link>
-                    )}
+
                 </nav>
 
                 {/* Footer - Admin Link & User Profile */}
                 <div className="p-4 border-t border-[hsl(var(--sidebar-border))] space-y-2">
-                    {/* Super Admin Link - Moved here for visibility */}
-                    {profile?.role === "SUPER_ADMIN" && (
-                        <Link
-                            href="/admin"
-                            className={cn(
-                                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 border border-primary/20",
-                                pathname.startsWith('/admin')
-                                    ? "bg-primary/20 text-primary shadow-[0_0_15px_rgba(0,255,148,0.3)]"
-                                    : "text-primary hover:bg-primary/10",
-                                isCollapsed && "justify-center"
-                            )}
-                        >
-                            <Zap className="h-5 w-5 flex-shrink-0" />
-                            {!isCollapsed && (
-                                <span className="font-medium">Panel Admin</span>
-                            )}
-                        </Link>
-                    )}
-
                     {!isCollapsed && (
-                        <div className="flex justify-center mb-4">
+                        <div className="flex justify-center gap-2 mb-4">
+                            {/* Existing Branding/Status Icon */}
                             <div className="w-10 h-10 rounded-lg bg-[hsl(var(--sidebar-primary))/0.1] flex items-center justify-center border border-[hsl(var(--sidebar-primary))/0.2]">
                                 <Zap size={18} className="fill-yellow-400 text-yellow-400" />
                             </div>
+
+                            {/* Super Admin Link - Square & Green */}
+                            {profile?.role === "SUPER_ADMIN" && (
+                                <Link
+                                    href="/admin"
+                                    className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center border border-green-500/20 hover:bg-green-500/20 transition-colors group"
+                                    title="Panel Super Admin"
+                                >
+                                    <Zap size={18} className="text-green-500 fill-green-500 group-hover:scale-110 transition-transform" />
+                                </Link>
+                            )}
                         </div>
                     )}
 
