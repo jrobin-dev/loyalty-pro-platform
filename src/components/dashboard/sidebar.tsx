@@ -209,8 +209,27 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                     )}
                 </nav>
 
-                {/* Footer - User Profile */}
-                <div className="p-4 border-t border-[hsl(var(--sidebar-border))]">
+                {/* Footer - Admin Link & User Profile */}
+                <div className="p-4 border-t border-[hsl(var(--sidebar-border))] space-y-2">
+                    {/* Super Admin Link - Moved here for visibility */}
+                    {(profile?.role === "SUPER_ADMIN" || profile?.email === "admin@saas.com") && (
+                        <Link
+                            href="/admin"
+                            className={cn(
+                                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 border border-primary/20",
+                                pathname.startsWith('/admin')
+                                    ? "bg-primary/20 text-primary shadow-[0_0_15px_rgba(0,255,148,0.3)]"
+                                    : "text-primary hover:bg-primary/10",
+                                isCollapsed && "justify-center"
+                            )}
+                        >
+                            <Zap className="h-5 w-5 flex-shrink-0" />
+                            {!isCollapsed && (
+                                <span className="font-medium">Panel Admin</span>
+                            )}
+                        </Link>
+                    )}
+
                     {!isCollapsed && (
                         <div className="flex justify-center mb-4">
                             <div className="w-10 h-10 rounded-lg bg-[hsl(var(--sidebar-primary))/0.1] flex items-center justify-center border border-[hsl(var(--sidebar-primary))/0.2]">
