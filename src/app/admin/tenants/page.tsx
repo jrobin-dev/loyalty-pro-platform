@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,75 +20,167 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 import { Search, Filter, MoreVertical, Edit, Trash2, Ban, CheckCircle2 } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { cn } from "@/lib/utils" // Utility for tailwind class merging
-
-// Mock Data for Tenants
-const tenants = [
-    {
-        id: "1",
-        name: "Café de la Esquina",
-        slug: "cafe-esquina",
-        owner: "Juan Pérez",
-        email: "juan@cafe.com",
-        plan: "Free",
-        status: "active",
-        createdAt: "2024-01-15",
-        lastActive: "Hace 2 mins",
-        revenue: "$0.00"
-    },
-    {
-        id: "2",
-        name: "Burger House Lima",
-        slug: "burger-house",
-        owner: "Maria Lopez",
-        email: "maria@burger.com",
-        plan: "Pro",
-        status: "active",
-        createdAt: "2024-01-10",
-        lastActive: "Hace 15 mins",
-        revenue: "$50.00"
-    },
-    {
-        id: "3",
-        name: "Spa & Wellness Center",
-        slug: "spa-wellness",
-        owner: "Sofia Rodriguez",
-        email: "sofia@spa.com",
-        plan: "Pro",
-        status: "suspended",
-        createdAt: "2024-01-05",
-        lastActive: "Hace 2 días",
-        revenue: "$50.00"
-    },
-    {
-        id: "4",
-        name: "Barbería El Bigote",
-        slug: "barberia-bigote",
-        owner: "Carlos Ruiz",
-        email: "carlos@barber.com",
-        plan: "Free",
-        status: "pending_verification",
-        createdAt: "2024-02-01",
-        lastActive: "Hace 5 horas",
-        revenue: "$0.00"
-    },
-]
+import { cn } from "@/lib/utils"
+// Server Actions imports (dynamic import in function or standard if possible, but for client component using standard import of server action is fine in Next.js 14 if 'use server' is in file)
+import { getTenants, createTenant } from "@/app/actions/admin-tenants"
 
 export default function TenantsPage() {
     const [searchTerm, setSearchTerm] = useState("")
+    const [tenants, setTenants] = useState<any[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [isCreateOpen, setIsCreateOpen] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    // Form States
+    const [newName, setNewName] = useState("")
+    const [newSlug, setNewSlug] = useState("")
+    const [newOwnerEmail, setNewOwnerEmail] = useState("")
+    const [newPlan, setNewPlan] = useState("FREE")
+
+    useEffect(() => {
+        fetchTenants()
+    }, [])
+
+    const fetchTenants = async () => {
+        setIsLoading(true)
+        try {
+            const result = await getTenants()
+            if (result.success && result.data) {
+                setTenants(result.data)
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleCreateClient = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setIsSubmitting(true)
+        try {
+            const formData = new FormData()
+            formData.append("name", newName)
+            formData.append("slug", newSlug)
+            formData.append("ownerEmail", newOwnerEmail)
+            formData.append("plan", newPlan)
+
+            const result = await createTenant(formData)
+
+            if (result.success) {
+                // Success
+                setIsCreateOpen(false)
+                setNewName("")
+                setNewSlug("")
+                setNewOwnerEmail("")
+                fetchTenants() // Refresh list
+            } else {
+                alert(result.error || "Error al crear cliente")
+            }
+        } catch (error) {
+            console.error(error)
+            alert("Ocurrió un error inesperado")
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    const filteredTenants = tenants.filter(tenant =>
+        tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tenant.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tenant.owner?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
 
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold font-[family-name:var(--font-funnel-display)] tracking-tight">Gestión de Tenants</h1>
+                    <h1 className="text-3xl font-bold font-[family-name:var(--font-funnel-display)] tracking-tight">Gestión de Clientes</h1>
                     <p className="text-muted-foreground mt-1">Administra todos los negocios registrados en la plataforma.</p>
                 </div>
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
-                    + Nuevo Tenant Manual
-                </Button>
+
+                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                    <DialogTrigger asChild>
+                        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
+                            + Nuevo Cliente
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-card border-border">
+                        <DialogHeader>
+                            <DialogTitle>Registrar Nuevo Cliente SaaS</DialogTitle>
+                            <DialogDescription>
+                                Crea un nuevo espacio de trabajo (Tenant) asignado a un usuario existente.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleCreateClient} className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Nombre del Negocio</Label>
+                                <Input
+                                    id="name"
+                                    placeholder="Ej: Cafetería Central"
+                                    value={newName}
+                                    onChange={(e) => {
+                                        setNewName(e.target.value)
+                                        // Auto-slug
+                                        setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'))
+                                    }}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="slug">Slug (URL)</Label>
+                                <Input
+                                    id="slug"
+                                    placeholder="cafeteria-central"
+                                    value={newSlug}
+                                    onChange={(e) => setNewSlug(e.target.value)}
+                                    required
+                                />
+                                <p className="text-xs text-muted-foreground">URL: loyalty.app/{newSlug}</p>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="email">Email del Dueño (Usuario Existente)</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="usuario@email.com"
+                                    value={newOwnerEmail}
+                                    onChange={(e) => setNewOwnerEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="plan">Plan Inicial</Label>
+                                <select
+                                    id="plan"
+                                    className="w-full h-10 rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                                    value={newPlan}
+                                    onChange={(e) => setNewPlan(e.target.value)}
+                                >
+                                    <option value="FREE" className="bg-card text-foreground">Free</option>
+                                    <option value="PRO" className="bg-card text-foreground">Pro</option>
+                                </select>
+                            </div>
+
+                            <DialogFooter className="pt-4">
+                                <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                                    {isSubmitting ? "Creando..." : "Crear Cliente"}
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </DialogContent>
+                </Dialog>
             </div>
 
             {/* Filters */}
@@ -117,83 +209,87 @@ export default function TenantsPage() {
                             <TableHead>Dueño</TableHead>
                             <TableHead>Plan</TableHead>
                             <TableHead>Estado</TableHead>
-                            <TableHead className="text-right">Revenue (LTV)</TableHead>
-                            <TableHead className="text-right">Última Act.</TableHead>
+                            <TableHead className="text-right">Creado</TableHead>
                             <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {tenants.map((tenant) => (
-                            <TableRow key={tenant.id} className="group hover:bg-muted/30 transition-colors">
-                                <TableCell>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center font-bold text-xs text-muted-foreground">
-                                            {tenant.name.substring(0, 2).toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <div className="font-medium">{tenant.name}</div>
-                                            <div className="text-xs text-muted-foreground font-mono">/{tenant.slug}</div>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex flex-col">
-                                        <span className="text-sm">{tenant.owner}</span>
-                                        <span className="text-xs text-muted-foreground">{tenant.email}</span>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <span className={cn(
-                                        "font-mono text-xs px-2 py-1 rounded-md border",
-                                        tenant.plan === 'Pro'
-                                            ? 'bg-primary/10 text-primary border-primary/20'
-                                            : 'bg-zinc-800 text-zinc-400 border-zinc-700'
-                                    )}>
-                                        {tenant.plan}
-                                    </span>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge variant="secondary" className={`
-                                        ${tenant.status === 'active' ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20' : ''}
-                                        ${tenant.status === 'suspended' ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20' : ''}
-                                        ${tenant.status === 'pending_verification' ? 'bg-orange-500/10 text-orange-500 hover:bg-orange-500/20' : ''}
-                                    `}>
-                                        {tenant.status === 'active' && 'Activo'}
-                                        {tenant.status === 'suspended' && 'Suspendido'}
-                                        {tenant.status === 'pending_verification' && 'Pendiente'}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-right font-mono">
-                                    {tenant.revenue}
-                                </TableCell>
-                                <TableCell className="text-right text-xs text-muted-foreground">
-                                    {tenant.lastActive}
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                                                <MoreVertical size={16} />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem className="gap-2 cursor-pointer">
-                                                <Edit size={14} /> Editar Detalles
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem className="gap-2 cursor-pointer">
-                                                <CheckCircle2 size={14} /> Verificar Manualmente
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem className="gap-2 text-destructive cursor-pointer">
-                                                <Ban size={14} /> Suspender Servicio
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                        {isLoading ? (
+                            <TableRow>
+                                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                                    Cargando datos...
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ) : filteredTenants.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                                    No se encontraron clientes registrados.
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            filteredTenants.map((tenant) => (
+                                <TableRow key={tenant.id} className="group hover:bg-muted/30 transition-colors">
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center font-bold text-xs text-muted-foreground">
+                                                {tenant.name.substring(0, 2).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <div className="font-medium">{tenant.name}</div>
+                                                <div className="text-xs text-muted-foreground font-mono">/{tenant.slug}</div>
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm">{tenant.owner?.name} {tenant.owner?.lastName}</span>
+                                            <span className="text-xs text-muted-foreground">{tenant.owner?.email}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <span className={cn(
+                                            "font-mono text-xs px-2 py-1 rounded-md border",
+                                            tenant.plan === 'PRO'
+                                                ? 'bg-primary/10 text-primary border-primary/20'
+                                                : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                                        )}>
+                                            {tenant.plan}
+                                        </span>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant="secondary" className="bg-green-500/10 text-green-500 hover:bg-green-500/20">
+                                            Activo
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right text-xs text-muted-foreground">
+                                        {new Date(tenant.createdAt).toLocaleDateString()}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                                                    <MoreVertical size={16} />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem className="gap-2 cursor-pointer">
+                                                    <Edit size={14} /> Editar Detalles
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem className="gap-2 cursor-pointer">
+                                                    <CheckCircle2 size={14} /> Verificar Manualmente
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem className="gap-2 text-destructive cursor-pointer">
+                                                    <Ban size={14} /> Suspender Servicio
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </div>
