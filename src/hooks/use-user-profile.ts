@@ -25,18 +25,25 @@ export function useUserProfile() {
             const supabase = createClient()
 
             const { data: { session } } = await supabase.auth.getSession()
+            console.log("[useUserProfile] Session:", session?.user?.email) // Debug
+
             if (!session) {
+                console.log("[useUserProfile] No session found") // Debug
                 throw new Error("No active session")
             }
 
+            console.log("[useUserProfile] Fetching profile API...") // Debug
             const response = await fetch("/api/user/profile")
             if (!response.ok) {
+                console.error("[useUserProfile] API Error:", response.status) // Debug
                 throw new Error("Failed to fetch profile")
             }
 
             const data = await response.json()
+            console.log("[useUserProfile] Profile Data Received:", data.user) // Debug
             setProfile(data.user)
         } catch (err: any) {
+            console.error("[useUserProfile] Error:", err) // Debug
             setError(err.message)
         } finally {
             setLoading(false)

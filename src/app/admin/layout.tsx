@@ -148,11 +148,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const router = useRouter() // Import useRouter from next/navigation
 
     useEffect(() => {
+        console.log("[AdminLayout] Checking access...", { loading, profile }) // Debug
+
         if (!loading && profile) {
+            console.log("[AdminLayout] User Role:", profile.role) // Debug
             if (profile.role !== "SUPER_ADMIN") {
+                console.warn("[AdminLayout] Access Denied. Redirecting to dashboard.") // Debug
                 router.replace("/dashboard")
+            } else {
+                console.log("[AdminLayout] Access Granted.") // Debug
             }
         } else if (!loading && !profile) {
+            console.warn("[AdminLayout] No profile found. Redirecting to login.") // Debug
             // Not logged in? Middleware should handle this, but safe to redirect
             router.replace("/login")
         }
