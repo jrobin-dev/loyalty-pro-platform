@@ -21,20 +21,22 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { Trash2, Video, Plus, ExternalLink } from "lucide-react"
+import { BookOpen, FolderPlus, Plus, Calendar, MoreHorizontal, Settings, Trash2 } from "lucide-react"
 import { toast } from "sonner"
-import { createVideo, deleteVideo, getAdminVideos } from "@/app/actions/admin-academy"
+import { createCourse, deleteCourse, getAdminCourses } from "@/app/actions/admin-academy"
+import Link from "next/link"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
-export default function AdminAcademyPage() {
-    const [videos, setVideos] = useState<any[]>([])
+export default function AdminAcademyCoursesPage() {
+    const [courses, setCourses] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [isCreateOpen, setIsCreateOpen] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -42,46 +44,44 @@ export default function AdminAcademyPage() {
     // Form States
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
-    const [provider, setProvider] = useState("YOUTUBE")
-    const [url, setUrl] = useState("")
+    const [imageUrl, setImageUrl] = useState("")
 
     useEffect(() => {
-        fetchVideos()
+        fetchCourses()
     }, [])
 
-    const fetchVideos = async () => {
+    const fetchCourses = async () => {
         setIsLoading(true)
         try {
-            const result = await getAdminVideos()
+            const result = await getAdminCourses()
             if (result.success && result.data) {
-                setVideos(result.data)
+                setCourses(result.data)
             }
         } catch (error) {
-            toast.error("Error al cargar videos")
+            toast.error("Error al cargar cursos")
         } finally {
             setIsLoading(false)
         }
     }
 
-    const handleCreateVideo = async (e: React.FormEvent) => {
+    const handleCreateCourse = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
         try {
             const formData = new FormData()
             formData.append("title", title)
             formData.append("description", description)
-            formData.append("provider", provider)
-            formData.append("url", url) // ID or full URL depending on provider
+            formData.append("imageUrl", imageUrl)
 
-            const result = await createVideo(formData)
+            const result = await createCourse(formData)
 
             if (result.success) {
-                toast.success("Video agregado correctamente")
+                toast.success("Curso creado correctamente")
                 setIsCreateOpen(false)
                 resetForm()
-                fetchVideos()
+                fetchCourses()
             } else {
-                toast.error(result.error || "Error al crear video")
+                toast.error(result.error || "Error al crear curso")
             }
         } catch (error) {
             toast.error("Error inesperado")
@@ -90,13 +90,13 @@ export default function AdminAcademyPage() {
         }
     }
 
-    const handleDeleteVideo = async (id: string) => {
-        if (!confirm("¿Estás seguro de eliminar este video?")) return
+    const handleDeleteCourse = async (id: string) => {
+        if (!confirm("¿Estás seguro? Se eliminarán todas las lecciones y comentarios.")) return
         try {
-            const result = await deleteVideo(id)
+            const result = await deleteCourse(id)
             if (result.success) {
-                toast.success("Video eliminado")
-                fetchVideos()
+                toast.success("Curso eliminado")
+                fetchCourses()
             } else {
                 toast.error("Error al eliminar")
             }
@@ -108,74 +108,44 @@ export default function AdminAcademyPage() {
     const resetForm = () => {
         setTitle("")
         setDescription("")
-        setProvider("YOUTUBE")
-        setUrl("")
+        setImageUrl("")
     }
 
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold font-[family-name:var(--font-funnel-display)] tracking-tight">Academia (Tutoriales)</h1>
-                    <p className="text-muted-foreground mt-1">Sube y gestiona los videos tutoriales para tus clientes.</p>
+                    <h1 className="text-3xl font-bold font-[family-name:var(--font-funnel-display)] tracking-tight">Academia (Cursos)</h1>
+                    <p className="text-muted-foreground mt-1">Gestiona los cursos y tutoriales para tus clientes.</p>
                 </div>
 
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogTrigger asChild>
                         <Button className="bg-primary hover:bg-primary/90 gap-2">
-                            <Plus size={18} /> Agregar Video
+                            <FolderPlus size={18} /> Crear Curso
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="bg-card border-border sm:max-w-[500px]">
                         <DialogHeader>
-                            <DialogTitle>Agregar Nuevo Tutorial</DialogTitle>
+                            <DialogTitle>Crear Nuevo Curso</DialogTitle>
                             <DialogDescription>
-                                Los videos aparecerán en la sección "Academia" de todos los clientes.
+                                Un curso agrupa varias lecciones de video.
                             </DialogDescription>
                         </DialogHeader>
-                        <form onSubmit={handleCreateVideo} className="space-y-4 py-4">
+                        <form onSubmit={handleCreateCourse} className="space-y-4 py-4">
                             <div className="space-y-2">
-                                <Label htmlFor="title">Título del Video</Label>
+                                <Label htmlFor="title">Título del Curso</Label>
                                 <Input
                                     id="title"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="Ej: Cómo crear tu primer programa"
+                                    placeholder="Ej: Curso Básico de Lealtad"
                                     required
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="provider">Plataforma</Label>
-                                <Select value={provider} onValueChange={setProvider}>
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="YOUTUBE">YouTube</SelectItem>
-                                        <SelectItem value="BUNNY">Bunny.net</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="url">
-                                    {provider === 'YOUTUBE' ? 'ID del Video (YouTube)' : 'URL del Iframe/Embed'}
-                                </Label>
-                                <Input
-                                    id="url"
-                                    value={url}
-                                    onChange={(e) => setUrl(e.target.value)}
-                                    placeholder={provider === 'YOUTUBE' ? "Ej: dQw4w9WgXcQ" : "https://iframe.mediadelivery.net/..."}
-                                    required
-                                />
-                                {provider === 'YOUTUBE' && (
-                                    <p className="text-xs text-muted-foreground">Solo el código ID, no la URL completa.</p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="desc">Descripción (Opcional)</Label>
+                                <Label htmlFor="desc">Descripción</Label>
                                 <Textarea
                                     id="desc"
                                     value={description}
@@ -184,9 +154,19 @@ export default function AdminAcademyPage() {
                                 />
                             </div>
 
+                            <div className="space-y-2">
+                                <Label htmlFor="image">URL de Portada (Opcional)</Label>
+                                <Input
+                                    id="image"
+                                    value={imageUrl}
+                                    onChange={(e) => setImageUrl(e.target.value)}
+                                    placeholder="https://..."
+                                />
+                            </div>
+
                             <DialogFooter className="pt-4">
                                 <Button type="submit" disabled={isSubmitting}>
-                                    {isSubmitting ? "Guardando..." : "Publicar Video"}
+                                    {isSubmitting ? "Creando..." : "Crear Curso"}
                                 </Button>
                             </DialogFooter>
                         </form>
@@ -198,9 +178,9 @@ export default function AdminAcademyPage() {
                 <Table>
                     <TableHeader className="bg-muted/50">
                         <TableRow>
-                            <TableHead>Video</TableHead>
-                            <TableHead>Plataforma</TableHead>
-                            <TableHead>Fecha</TableHead>
+                            <TableHead>Curso</TableHead>
+                            <TableHead>Lecciones</TableHead>
+                            <TableHead>Estado</TableHead>
                             <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -208,61 +188,72 @@ export default function AdminAcademyPage() {
                         {isLoading ? (
                             <TableRow>
                                 <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                                    Cargando videos...
+                                    Cargando cursos...
                                 </TableCell>
                             </TableRow>
-                        ) : videos.length === 0 ? (
+                        ) : courses.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                                    No hay videos publicados aún.
+                                    No hay cursos creados. Crea el primero arriba.
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            videos.map((video) => (
-                                <TableRow key={video.id}>
+                            courses.map((course) => (
+                                <TableRow key={course.id}>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded bg-muted flex items-center justify-center text-muted-foreground">
-                                                <Video size={20} />
+                                            <div className="w-10 h-10 rounded bg-muted flex items-center justify-center text-muted-foreground overflow-hidden">
+                                                {course.imageUrl ? (
+                                                    <img src={course.imageUrl} alt="" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <BookOpen size={20} />
+                                                )}
                                             </div>
                                             <div>
-                                                <div className="font-medium">{video.title}</div>
-                                                <div className="text-xs text-muted-foreground truncate max-w-[200px]">
-                                                    {video.url}
+                                                <div className="font-medium">{course.title}</div>
+                                                <div className="text-xs text-muted-foreground">
+                                                    /{course.slug}
                                                 </div>
                                             </div>
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <span className={`text-xs font-mono px-2 py-1 rounded border ${video.provider === 'YOUTUBE'
-                                                ? 'bg-red-500/10 text-red-500 border-red-500/20'
-                                                : 'bg-blue-500/10 text-blue-500 border-blue-500/20'
-                                            }`}>
-                                            {video.provider}
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                            {course._count?.lessons || 0} lecciones
                                         </span>
                                     </TableCell>
-                                    <TableCell className="text-sm text-muted-foreground">
-                                        {new Date(video.createdAt).toLocaleDateString()}
+                                    <TableCell>
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${course.published
+                                                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                                                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300"
+                                            }`}>
+                                            {course.published ? "Publicado" : "Borrador"}
+                                        </span>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            {video.provider === 'YOUTUBE' && (
-                                                <a
-                                                    href={`https://www.youtube.com/watch?v=${video.url}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="p-2 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors"
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                                    <span className="sr-only">Menu</span>
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={`/admin/academy/${course.id}`} className="cursor-pointer">
+                                                        <Settings className="mr-2 h-4 w-4" /> Gestionar Lecciones
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem
+                                                    onClick={() => handleDeleteCourse(course.id)}
+                                                    className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-900/20"
                                                 >
-                                                    <ExternalLink size={16} />
-                                                </a>
-                                            )}
-                                            <button
-                                                onClick={() => handleDeleteVideo(video.id)}
-                                                className="p-2 hover:bg-destructive/10 rounded-md text-muted-foreground hover:text-destructive transition-colors"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </div>
+                                                    <Trash2 className="mr-2 h-4 w-4" /> Eliminar Curso
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </TableCell>
                                 </TableRow>
                             ))

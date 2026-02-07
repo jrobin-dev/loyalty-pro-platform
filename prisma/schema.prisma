@@ -108,13 +108,55 @@ model StampTransaction {
   createdAt  DateTime @default(now())
 }
 
-model AcademyVideo {
+
+
+model AcademyCourse {
   id          String   @id @default(uuid())
   title       String
   description String?
+  slug        String   @unique
+  imageUrl    String?
+  published   Boolean  @default(false)
+  
+  lessons     AcademyLesson[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AcademyLesson {
+  id          String   @id @default(uuid())
+  courseId    String
+  course      AcademyCourse @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  title       String
+  description String?  // Markdown support
   provider    String   // YOUTUBE, BUNNY
-  url         String
+  videoId     String   // ID or URL
+  duration    String?
   order       Int      @default(0)
+  
+  comments    AcademyComment[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AcademyComment {
+  id          String   @id @default(uuid())
+  content     String
+  
+  lessonId    String
+  lesson      AcademyLesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  
+  userId      String   // User ID (UUID) from Supabase Auth
+  userRole    String?  // Store role snapshot if needed, or join with user table if sync'd
+  userName    String?  // Store name for display
+  userAvatar  String?
+  
+  parentId    String?
+  parent      AcademyComment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies     AcademyComment[] @relation("CommentReplies")
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

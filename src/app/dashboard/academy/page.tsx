@@ -1,28 +1,20 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getAdminVideos } from "@/app/actions/admin-academy"
-import { VideoPlayer } from "@/components/academy/video-player"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
-import { Play } from "lucide-react"
+import { getPublishedCourses } from "@/app/actions/academy"
+import { BookOpen, PlayCircle } from "lucide-react"
+import Link from "next/link"
 
 export default function AcademyPage() {
-    const [videos, setVideos] = useState<any[]>([])
+    const [courses, setCourses] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [selectedVideo, setSelectedVideo] = useState<any | null>(null)
 
     useEffect(() => {
-        const fetchVideos = async () => {
+        const fetchCourses = async () => {
             try {
-                const result = await getAdminVideos()
+                const result = await getPublishedCourses()
                 if (result.success && result.data) {
-                    setVideos(result.data)
+                    setCourses(result.data)
                 }
             } catch (error) {
                 console.error(error)
@@ -30,7 +22,7 @@ export default function AcademyPage() {
                 setIsLoading(false)
             }
         }
-        fetchVideos()
+        fetchCourses()
     }, [])
 
     return (
@@ -38,91 +30,73 @@ export default function AcademyPage() {
             <div>
                 <h1 className="text-3xl font-bold font-[family-name:var(--font-funnel-display)] tracking-tight">Academia LoyaltyPro</h1>
                 <p className="text-muted-foreground mt-2 max-w-2xl">
-                    Aprende a sacar el máximo provecho a tu programa de lealtad con nuestros tutoriales paso a paso.
+                    Cursos y tutoriales para dominar la plataforma y hacer crecer tu negocio.
                 </p>
             </div>
 
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="aspect-video bg-muted rounded-xl animate-pulse" />
+                        <div key={i} className="aspect-[16/10] bg-muted rounded-xl animate-pulse" />
                     ))}
                 </div>
-            ) : videos.length === 0 ? (
+            ) : courses.length === 0 ? (
                 <div className="text-center py-12 bg-muted/30 rounded-xl border border-dashed">
-                    <p className="text-muted-foreground">Pronto subiremos nuevos tutoriales.</p>
+                    <BookOpen className="mx-auto h-12 w-12 text-muted-foreground/50 mb-3" />
+                    <p className="text-muted-foreground">Pronto publicaremos nuevos cursos.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {videos.map((video) => (
-                        <div
-                            key={video.id}
-                            className="group relative bg-card rounded-xl border border-border overflow-hidden cursor-pointer hover:shadow-lg transition-all hover:scale-[1.01]"
-                            onClick={() => setSelectedVideo(video)}
+                    {courses.map((course) => (
+                        <Link
+                            key={course.id}
+                            href={`/dashboard/academy/${course.slug}`}
+                            className="group block"
                         >
-                            {/* Thumbnail / Preview Area */}
-                            <div className="aspect-video bg-black/5 relative group-hover:bg-black/10 transition-colors">
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-12 h-12 rounded-full bg-primary/90 text-primary-foreground flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                                        <Play size={20} className="ml-1" />
+                            <div className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all hover:scale-[1.01] flex flex-col h-full">
+                                {/* Thumbnail */}
+                                <div className="aspect-[16/9] bg-muted relative overflow-hidden">
+                                    {course.imageUrl ? (
+                                        <img
+                                            src={course.imageUrl}
+                                            alt={course.title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
+                                            <BookOpen size={40} className="text-primary/20" />
+                                        </div>
+                                    )}
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                                        <div className="w-12 h-12 rounded-full bg-white/90 text-primary opacity-0 group-hover:opacity-100 transform scale-50 group-hover:scale-100 transition-all duration-300 flex items-center justify-center shadow-lg">
+                                            <PlayCircle size={24} className="ml-0.5" />
+                                        </div>
                                     </div>
                                 </div>
-                                {video.provider === 'YOUTUBE' && (
-                                    <img
-                                        src={`https://img.youtube.com/vi/${video.url}/hqdefault.jpg`}
-                                        alt={video.title}
-                                        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-                                    />
-                                )}
-                                {video.provider === 'BUNNY' && (
-                                    <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-500">
-                                        <Play size={40} />
-                                    </div>
-                                )}
-                            </div>
 
-                            <div className="p-4">
-                                <h3 className="font-semibold line-clamp-1 group-hover:text-primary transition-colors">{video.title}</h3>
-                                {video.description && (
-                                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                                        {video.description}
-                                    </p>
-                                )}
-                                <div className="mt-3 flex items-center gap-2">
-                                    <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                                        {video.provider}
-                                    </span>
+                                <div className="p-5 flex flex-col flex-1">
+                                    <h3 className="font-bold text-lg leading-tight mb-2 group-hover:text-primary transition-colors">
+                                        {course.title}
+                                    </h3>
+                                    {course.description && (
+                                        <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1">
+                                            {course.description}
+                                        </p>
+                                    )}
+                                    <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
+                                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
+                                            {course._count?.lessons || 0} Lecciones
+                                        </span>
+                                        <span className="text-xs text-muted-foreground">
+                                            Ver curso &rarr;
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             )}
-
-            {/* Video Player Modal */}
-            <Dialog open={!!selectedVideo} onOpenChange={(open) => !open && setSelectedVideo(null)}>
-                <DialogContent className="bg-card border-border sm:max-w-4xl p-0 overflow-hidden">
-                    <DialogHeader className="p-4 pb-0">
-                        <DialogTitle>{selectedVideo?.title}</DialogTitle>
-                        <DialogDescription className="hidden">Reproduciendo video</DialogDescription>
-                    </DialogHeader>
-                    <div className="p-4 pt-2">
-                        {selectedVideo && (
-                            <VideoPlayer
-                                provider={selectedVideo.provider}
-                                url={selectedVideo.url}
-                                title={selectedVideo.title}
-                                autoPlay={true}
-                            />
-                        )}
-                        {selectedVideo?.description && (
-                            <p className="text-sm text-muted-foreground mt-4">
-                                {selectedVideo.description}
-                            </p>
-                        )}
-                    </div>
-                </DialogContent>
-            </Dialog>
         </div>
     )
 }
