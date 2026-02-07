@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Search, Filter, MoreVertical, Edit, Trash2, Ban, CheckCircle2 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils" // Utility for tailwind class merging
 
 // Mock Data for Tenants
 const tenants = [

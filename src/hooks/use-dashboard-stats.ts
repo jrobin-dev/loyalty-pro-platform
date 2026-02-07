@@ -83,10 +83,6 @@ export function useDashboardStats({ dateRange }: UseDashboardStatsProps = {}) {
                 console.error('Transactions error:', transactionsError)
             }
 
-            // Calculate stats
-            const totalCustomers = customers?.length || 0
-            const totalStamps = customers?.reduce((sum, c) => sum + (c.currentStamps || 0), 0) || 0
-            const totalRevenue = transactions?.reduce((sum, t) => sum + (t.amount || 0), 0) || 0
             // Fetch redeemed transactions for rewards count
             const { data: redeemedTransactions, error: redeemedError } = await supabase
                 .from('StampTransaction')
