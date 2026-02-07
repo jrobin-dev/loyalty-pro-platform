@@ -86,7 +86,7 @@ export default function TenantsPage() {
                     <h1 className="text-3xl font-bold font-[family-name:var(--font-funnel-display)] tracking-tight">Gestión de Tenants</h1>
                     <p className="text-muted-foreground mt-1">Administra todos los negocios registrados en la plataforma.</p>
                 </div>
-                <Button className="bg-[#FF00E5] hover:bg-[#D600C0] text-white font-medium">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
                     + Nuevo Tenant Manual
                 </Button>
             </div>

@@ -16,7 +16,7 @@ import {
     Search
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Input } from "@/components/ui/input"
 import {
@@ -28,6 +28,8 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
+import { useUserProfile } from "@/hooks/use-user-profile"
+import { createClient } from "@/lib/supabase/client"
 
 interface SidebarProps {
     isOpen: boolean
@@ -36,6 +38,7 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     const pathname = usePathname()
+    const { profile } = useUserProfile()
 
     const menuItems = [
         { icon: LayoutDashboard, label: "Overview", href: "/admin" },
@@ -108,13 +111,27 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
                         {/* User Profile */}
                         <div className="flex items-center gap-3 px-2">
                             <Avatar className="h-8 w-8 border border-border">
-                                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">SA</AvatarFallback>
+                                {profile?.avatarUrl && <AvatarImage src={profile.avatarUrl} />}
+                                <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                                    {profile?.name?.[0]?.toUpperCase() || "SA"}
+                                </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate text-foreground">System Admin</p>
-                                <p className="text-xs text-muted-foreground truncate">admin@saas.com</p>
+                                <p className="text-sm font-medium truncate text-foreground">
+                                    {profile?.name ? `${profile.name} ${profile.lastName || ''}` : 'Cargando...'}
+                                </p>
+                                <p className="text-xs text-muted-foreground truncate">{profile?.email || ''}</p>
                             </div>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                onClick={async () => {
+                                    const supabase = createClient()
+                                    await supabase.auth.signOut()
+                                    window.location.href = "/login"
+                                }}
+                            >
                                 <LogOut size={16} />
                             </Button>
                         </div>
