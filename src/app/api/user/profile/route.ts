@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
                 phone: true,
                 birthday: true,
                 avatarUrl: true,
+                role: true,
             },
         })
 
@@ -68,6 +69,7 @@ export async function PATCH(request: NextRequest) {
                 phone: true,
                 birthday: true,
                 avatarUrl: true,
+                role: true,
             },
         })
 
