@@ -79,14 +79,6 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
         })
     }
 
-    // Add Admin link if user is SUPER_ADMIN
-    if (profile?.role === "SUPER_ADMIN") {
-        menuItems.push({
-            icon: Zap,
-            label: "Super Admin",
-            href: "/admin"
-        })
-    }
 
     return (
         <>
