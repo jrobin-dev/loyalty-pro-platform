@@ -19,6 +19,7 @@ export async function getTenants() {
                 createdAt: 'desc'
             }
         })
+        console.log(`[getTenants] Found ${tenants.length} tenants`) // Debug log
         return { success: true, data: tenants }
     } catch (error) {
         console.error("Error fetching tenants:", error)
@@ -52,7 +53,7 @@ export async function createTenant(formData: FormData) {
                 ownerId: owner.id,
                 plan,
                 status: 'ACTIVE'
-            }
+            } as any
         })
 
         revalidatePath("/admin/tenants")
@@ -67,7 +68,7 @@ export async function updateTenantStatus(tenantId: string, status: string) {
     try {
         await prisma.tenant.update({
             where: { id: tenantId },
-            data: { status }
+            data: { status } as any
         })
         revalidatePath("/admin/tenants")
         return { success: true }

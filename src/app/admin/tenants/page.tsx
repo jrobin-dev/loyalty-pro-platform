@@ -55,6 +55,7 @@ export default function TenantsPage() {
         setIsLoading(true)
         try {
             const result = await getTenants()
+            console.log("[TenantsPage] Result:", result) // Debug log
             if (result.success && result.data) {
                 setTenants(result.data)
             }
