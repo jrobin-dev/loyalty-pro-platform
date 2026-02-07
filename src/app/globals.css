@@ -25,6 +25,17 @@
   --ring: 142 76% 50%;
   --radius: 0.75rem;
   --chart-1: 142 76% 50%;
+
+  /* Sidebar Variables - Dark Mode (Default) */
+  --sidebar: 142 10% 4%;
+  /* Matches background */
+  --sidebar-foreground: 142 5% 90%;
+  --sidebar-primary: 142 76% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 142 5% 12%;
+  --sidebar-accent-foreground: 142 5% 90%;
+  --sidebar-border: 142 8% 15%;
+  --sidebar-ring: 142 76% 50%;
 }
 
 .dark {
@@ -47,6 +58,16 @@
   --border: 142 8% 15%;
   --input: 142 5% 12%;
   --ring: 142 76% 50%;
+
+  /* Sidebar Dark Redundant (Explicit) */
+  --sidebar: 142 10% 4%;
+  --sidebar-foreground: 142 5% 90%;
+  --sidebar-primary: 142 76% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 142 5% 12%;
+  --sidebar-accent-foreground: 142 5% 90%;
+  --sidebar-border: 142 8% 15%;
+  --sidebar-ring: 142 76% 50%;
 }
 
 /* Cosmic Utilities */
@@ -186,6 +207,19 @@
   --input: 0 0% 100%;
   /* White input background for better contrast */
   --ring: 142 76% 45%;
+
+  /* Sidebar Variables - Light Mode */
+  --sidebar: 240 5% 96%;
+  /* Subtle gray for contrast against white background */
+  --sidebar-foreground: 240 5% 10%;
+  --sidebar-primary: 142 76% 45%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 240 4.8% 90%;
+  /* Darker gray for hover */
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 240 5.9% 90%;
+  /* Subtle border */
+  --sidebar-ring: 142 76% 45%;
 }
 
 /* Text Selection - Green Mint Highlight */

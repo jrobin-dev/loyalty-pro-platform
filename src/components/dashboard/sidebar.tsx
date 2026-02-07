@@ -82,7 +82,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
             {/* Sidebar */}
             <div
                 className={cn(
-                    "fixed top-0 left-0 h-full bg-sidebar border-r border-white/10 z-50 transition-all duration-300 flex flex-col",
+                    "fixed top-0 left-0 h-full bg-[hsl(var(--sidebar))] border-r border-[hsl(var(--sidebar-border))] z-50 transition-all duration-300 flex flex-col",
                     isCollapsed ? "w-20" : "w-64",
                     isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
                 )}
@@ -119,7 +119,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 }}
             >
                 {/* Header */}
-                <div className="h-16 flex items-center justify-between px-4 border-b border-white/10">
+                <div className="h-16 flex items-center justify-between px-4 border-b border-[hsl(var(--sidebar-border))]">
                     <Link href="/" className={cn("group cursor-pointer", isCollapsed && "mx-auto")}>
                         {isCollapsed ? (
                             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.3)]">
@@ -135,7 +135,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                         variant="ghost"
                         size="icon"
                         onClick={toggleCollapse}
-                        className={cn("ml-auto hover:bg-white/10", isCollapsed && "mx-auto mt-2")}
+                        className={cn("ml-auto hover:bg-[hsl(var(--sidebar-accent))] text-[hsl(var(--sidebar-foreground))]", isCollapsed && "mx-auto mt-2")}
                     >
                         {isCollapsed ? (
                             <ChevronRight className="h-5 w-5" />
@@ -157,8 +157,8 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                 className={cn(
                                     "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
                                     isActive
-                                        ? "bg-primary/20 text-primary shadow-[0_0_15px_rgba(0,255,148,0.2)]"
-                                        : "text-muted-foreground hover:bg-white/5 hover:text-white",
+                                        ? "bg-[hsl(var(--sidebar-primary))/0.2] text-[hsl(var(--sidebar-primary))] shadow-[0_0_15px_rgba(0,255,148,0.2)]"
+                                        : "text-[hsl(var(--sidebar-foreground))] hover:bg-[hsl(var(--sidebar-accent))] hover:text-[hsl(var(--sidebar-accent-foreground))]",
                                     isCollapsed && "justify-center"
                                 )}
                             >
@@ -172,10 +172,10 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 </nav>
 
                 {/* Footer - User Profile */}
-                <div className="p-4 border-t border-white/10">
+                <div className="p-4 border-t border-[hsl(var(--sidebar-border))]">
                     {!isCollapsed && (
                         <div className="flex justify-center mb-4">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                            <div className="w-10 h-10 rounded-lg bg-[hsl(var(--sidebar-primary))/0.1] flex items-center justify-center border border-[hsl(var(--sidebar-primary))/0.2]">
                                 <Zap size={18} className="fill-yellow-400 text-yellow-400" />
                             </div>
                         </div>
@@ -183,20 +183,20 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
 
                     {/* User Profile */}
                     <div className={cn("flex items-center gap-3", isCollapsed ? "justify-center" : "px-2")}>
-                        <Avatar className="h-8 w-8 border border-transparent ring-2 ring-transparent group-hover:ring-primary/50 transition-all">
+                        <Avatar className="h-8 w-8 border border-transparent ring-2 ring-transparent group-hover:ring-[hsl(var(--sidebar-primary))/0.5] transition-all">
                             {profile?.avatarUrl && (
                                 <AvatarImage src={profile.avatarUrl} alt={userName} />
                             )}
-                            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-blue-500/20 text-xs text-white font-semibold">
+                            <AvatarFallback className="bg-gradient-to-br from-[hsl(var(--sidebar-primary))/0.2] to-blue-500/20 text-xs text-[hsl(var(--sidebar-foreground))] font-semibold">
                                 {userName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)}
                             </AvatarFallback>
                         </Avatar>
                         {!isCollapsed && (
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate text-white">
+                                <p className="text-sm font-medium truncate text-[hsl(var(--sidebar-foreground))]">
                                     {userName}
                                 </p>
-                                <p className="text-xs text-muted-foreground truncate">{business?.name || "Plan Free"}</p>
+                                <p className="text-xs text-[hsl(var(--sidebar-foreground))/0.6] truncate">{business?.name || "Plan Free"}</p>
                             </div>
                         )}
                         {!isCollapsed && (
@@ -205,7 +205,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                 <button
                                     onClick={handleLogout}
                                     disabled={isLoggingOut}
-                                    className="text-muted-foreground hover:text-red-400 transition-colors disabled:opacity-50"
+                                    className="text-[hsl(var(--sidebar-foreground))/0.6] hover:text-red-400 transition-colors disabled:opacity-50"
                                     title="Cerrar Sesión"
                                 >
                                     {isLoggingOut ? <Loader2 size={16} className="animate-spin" /> : <LogOut size={16} />}
