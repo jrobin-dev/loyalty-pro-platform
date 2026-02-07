@@ -112,7 +112,7 @@ export default function TenantsPage() {
     const filteredTenants = tenants.filter(tenant =>
         tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         tenant.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tenant.owner?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+        (tenant.owner?.email || "").toLowerCase().includes(searchTerm.toLowerCase())
     )
 
     return (

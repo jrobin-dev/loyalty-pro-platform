@@ -20,7 +20,8 @@ export async function POST(request: NextRequest) {
 
         console.log('🚀 Starting onboarding for:', body.email)
 
-        // Step 1: Create user with Supabase Auth (using admin client)
+        // Step 1: Check if user exists or create new
+        let userId = ''
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email: body.email,
             password: body.password,
@@ -28,40 +29,49 @@ export async function POST(request: NextRequest) {
         })
 
         if (authError) {
-            console.error('❌ Auth error:', authError)
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: authError.message || 'No se pudo crear la cuenta'
-                },
-                { status: 400 }
-            )
+            // If user already exists, try to get their ID
+            if (authError.message.includes("already been registered") || authError.status === 400) {
+                console.log("⚠️ User already exists, fetching ID...")
+                const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
+                const existingUser = existingUsers.users.find(u => u.email === body.email)
+
+                if (existingUser) {
+                    userId = existingUser.id
+                } else {
+                    // Generic error if we can't find them but creation failed
+                    console.error('❌ Auth error:', authError)
+                    return NextResponse.json({ success: false, error: authError.message }, { status: 400 })
+                }
+            } else {
+                console.error('❌ Auth error:', authError)
+                return NextResponse.json({ success: false, error: authError.message }, { status: 400 })
+            }
+        } else {
+            userId = authData.user!.id
         }
 
-        if (!authData.user) {
-            console.error('❌ No user returned from Supabase')
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'No se pudo crear el usuario'
-                },
-                { status: 500 }
-            )
+        if (!userId) {
+            return NextResponse.json({ success: false, error: 'No se pudo obtener el ID del usuario' }, { status: 500 })
         }
 
-        console.log('✅ User created:', authData.user.id)
+        console.log('✅ User identified:', userId)
 
-        // Step 2: Create User in Prisma
-        const prismaUser = await prisma.user.create({
-            data: {
-                id: authData.user.id,
+        // Step 2: Create or Update User in Prisma (Upsert)
+        const prismaUser = await prisma.user.upsert({
+            where: { email: body.email },
+            update: {
+                id: userId, // Ensure ID sync if needed (though email is unique)
+                role: 'BUSINESS_OWNER'
+            },
+            create: {
+                id: userId,
                 email: body.email,
                 name: body.ownerName || body.businessName,
                 role: 'BUSINESS_OWNER',
             }
         })
 
-        console.log('✅ Prisma user created:', prismaUser.id)
+        console.log('✅ Prisma user upserted:', prismaUser.id)
 
         // Step 3: Create Tenant (Business)
         const slug = body.businessName
@@ -76,7 +86,7 @@ export async function POST(request: NextRequest) {
                 slug: `${slug}-${Date.now()}`, // Ensure uniqueness
                 name: body.businessName,
                 category: body.category,
-                ownerId: authData.user.id,
+                ownerId: userId,
                 plan: 'FREE',
             }
         })
