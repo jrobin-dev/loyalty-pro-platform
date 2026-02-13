@@ -4,6 +4,7 @@ import { useOnboardingStore } from "@/store/onboarding-store"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@radix-ui/react-label"
+import { CountryCodeSelect } from "@/components/ui/country-code-select"
 
 export default function Step5OwnerInfo() {
     const { data, updateData, nextStep, prevStep } = useOnboardingStore()
@@ -38,18 +39,10 @@ export default function Step5OwnerInfo() {
                 <div className="space-y-2">
                     <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">WhatsApp del Negocio</Label>
                     <div className="flex gap-2">
-                        <select
-                            className="w-24 rounded-xl border border-input bg-white dark:bg-white/5 px-2 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary hover:bg-gray-50 dark:hover:bg-white/10"
-                            value={data.country}
-                            onChange={(e) => updateData({ country: e.target.value })}
-                        >
-                            <option value="+51" className="bg-background text-foreground">🇵🇪 +51</option>
-                            <option value="+52" className="bg-background text-foreground">🇲🇽 +52</option>
-                            <option value="+57" className="bg-background text-foreground">🇨🇴 +57</option>
-                            <option value="+54" className="bg-background text-foreground">🇦🇷 +54</option>
-                            <option value="+34" className="bg-background text-foreground">🇪🇸 +34</option>
-                            <option value="+1" className="bg-background text-foreground">🇺🇸 +1</option>
-                        </select>
+                        <CountryCodeSelect
+                            value={data.country || "+51"}
+                            onChange={(value) => updateData({ country: value })}
+                        />
                         <Input
                             placeholder="999 999 999"
                             value={data.whatsapp}
@@ -62,7 +55,7 @@ export default function Step5OwnerInfo() {
             </div>
 
             <div className="flex gap-4 pt-4">
-                <Button variant="ghost" className="flex-1" onClick={prevStep}>
+                <Button variant="ghost" className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 transition-colors" onClick={prevStep}>
                     Atrás
                 </Button>
                 <Button

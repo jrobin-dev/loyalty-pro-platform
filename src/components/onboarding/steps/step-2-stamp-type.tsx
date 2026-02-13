@@ -1,8 +1,7 @@
-"use client"
-
 import { useOnboardingStore } from "@/store/onboarding-store"
 import { Button } from "@/components/ui/button"
-import { Coffee, Pizza, Star, ShoppingBag, Dumbbell, Scissors } from "lucide-react"
+import { Coffee, Pizza, Star, ShoppingBag, Dumbbell, Scissors, Upload } from "lucide-react"
+import { IconUpload } from "@/components/ui/icon-upload"
 
 export default function Step2StampType() {
     const { data, updateData, nextStep, prevStep } = useOnboardingStore()
@@ -13,7 +12,7 @@ export default function Step2StampType() {
         { id: 'retail', label: 'Tienda', icon: ShoppingBag },
         { id: 'beauty', label: 'Belleza', icon: Scissors },
         { id: 'fitness', label: 'Fitness', icon: Dumbbell },
-        { id: 'other', label: 'Genérico', icon: Star },
+        { id: 'custom', label: 'Personalizado', icon: Upload },
     ]
 
     return (
@@ -57,14 +56,38 @@ export default function Step2StampType() {
                 })}
             </div>
 
+            {/* Custom Icon Upload Area - Only show if 'custom' is selected */}
+            {data.stampType === 'custom' && (
+                <div className="animate-in fade-in slide-in-from-top-4 duration-300 bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+                    <p className="text-sm text-muted-foreground mb-4">
+                        Sube tu propio icono en formato SVG para una mejor calidad.
+                    </p>
+                    <div className="flex justify-center">
+                        <IconUpload
+                            value={data.customIconUrl}
+                            onChange={(url) => updateData({ customIconUrl: url })}
+                            onRemove={() => updateData({ customIconUrl: '' })}
+                        />
+                    </div>
+                </div>
+            )}
+
             <div className="flex gap-4 pt-4">
-                <Button variant="ghost" className="flex-1" onClick={prevStep}>
+                <Button variant="ghost" className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 transition-colors" onClick={prevStep}>
                     Atrás
                 </Button>
                 <Button
                     className="flex-1 text-lg font-bold"
                     size="lg"
-                    onClick={nextStep}
+                    onClick={() => {
+                        if (data.stampType === 'custom' && !data.customIconUrl) {
+                            // Prevent proceeding if custom is selected but no icon uploaded? 
+                            // Or just allow default star? Let's verify.
+                            // For now, allow but maybe show warning? 
+                        }
+                        nextStep()
+                    }}
+                    disabled={data.stampType === 'custom' && !data.customIconUrl}
                 >
                     Continuar
                 </Button>

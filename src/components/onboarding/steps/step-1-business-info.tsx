@@ -8,7 +8,7 @@ import { Label } from "@radix-ui/react-label"
 // For speed, let's use a styled HTML select or the Input component
 
 export default function Step1BusinessInfo() {
-    const { data, updateData, nextStep } = useOnboardingStore()
+    const { data, updateData, nextStep, prevStep } = useOnboardingStore()
 
     const handleContinue = () => {
         if (!data.businessName || !data.category) return
@@ -34,6 +34,17 @@ export default function Step1BusinessInfo() {
                         value={data.businessName}
                         onChange={(e) => updateData({ businessName: e.target.value })}
                         autoFocus
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Moneda (Símbolo)</Label>
+                    <Input
+                        placeholder="Ej: S/ o $"
+                        value={data.currency || '$'}
+                        onChange={(e) => updateData({ currency: e.target.value })}
+                        onFocus={(e) => e.target.select()}
+                        maxLength={5}
                     />
                 </div>
 
@@ -65,14 +76,23 @@ export default function Step1BusinessInfo() {
                 )}
             </div>
 
-            <Button
-                className="w-full text-lg font-bold"
-                size="lg"
-                onClick={handleContinue}
-                disabled={!data.businessName || !data.category}
-            >
-                Continuar
-            </Button>
+            <div className="flex gap-4">
+                <Button
+                    variant="ghost"
+                    className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 transition-colors"
+                    onClick={prevStep}
+                >
+                    Atrás
+                </Button>
+                <Button
+                    className="flex-1 text-lg font-bold"
+                    size="lg"
+                    onClick={handleContinue}
+                    disabled={!data.businessName || !data.category}
+                >
+                    Continuar
+                </Button>
+            </div>
         </div>
     )
 }

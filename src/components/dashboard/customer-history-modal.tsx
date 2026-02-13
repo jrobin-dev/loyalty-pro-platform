@@ -78,7 +78,7 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-[#0a0a0a] border-transparent max-w-2xl">
+            <DialogContent className="bg-popover border-border max-w-2xl">
                 <DialogHeader>
                     <DialogTitle className="text-2xl flex items-center gap-2">
                         <History className="h-6 w-6 text-blue-400" />
@@ -102,7 +102,7 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
                         transactions.map((transaction) => (
                             <div
                                 key={transaction.id}
-                                className="bg-card/50 rounded-lg p-4 border border-white/10 hover:border-white/20 transition-colors"
+                                className="bg-accent/5 rounded-lg p-4 border border-border/40 hover:border-border transition-colors"
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
@@ -117,7 +117,7 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
                                             )}
                                         </div>
                                         <div>
-                                            <p className="font-medium text-white">
+                                            <p className="font-medium text-foreground">
                                                 {transaction.type === 'reward' ? 'Premio Canjeado' : 'Consumo'}
                                             </p>
                                             <p className="text-xs text-muted-foreground">
@@ -126,7 +126,7 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-bold text-white">
+                                        <p className="font-bold text-foreground">
                                             {currency} {transaction.amount.toFixed(2)}
                                         </p>
                                         <p className={`text-xs ${transaction.type === 'reward'

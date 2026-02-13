@@ -69,17 +69,17 @@ export function DeleteAccountModal({ open, onOpenChange }: DeleteAccountModalPro
                         </div>
                         <DialogTitle className="text-xl">Eliminar Cuenta</DialogTitle>
                     </div>
-                    <DialogDescription className="text-white/60">
-                        Esta acción es <strong className="text-red-500">permanente e irreversible</strong>.
+                    <DialogDescription className="text-muted-foreground">
+                        Esta acción es <strong className="text-red-500 font-bold">permanente e irreversible</strong>.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-4 py-4">
                     <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 space-y-2">
-                        <p className="text-sm text-white/80 font-medium">
+                        <p className="text-sm text-foreground font-bold">
                             Al eliminar tu cuenta, perderás:
                         </p>
-                        <ul className="text-sm text-white/60 space-y-1 list-disc list-inside">
+                        <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
                             <li>Todos tus datos de negocio</li>
                             <li>Todos tus clientes y sus stamps</li>
                             <li>Todo el historial de transacciones</li>
@@ -89,14 +89,14 @@ export function DeleteAccountModal({ open, onOpenChange }: DeleteAccountModalPro
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-white/80">
+                        <Label className="text-foreground font-medium">
                             Para confirmar, escribe <span className="font-mono font-bold text-red-500">ELIMINAR</span>
                         </Label>
                         <Input
                             value={confirmText}
                             onChange={(e) => setConfirmText(e.target.value)}
                             placeholder="ELIMINAR"
-                            className="bg-white/5 border-white/10 font-mono"
+                            className="bg-secondary/50 border-border font-mono transition-all focus:border-red-500/50"
                             autoFocus
                         />
                     </div>

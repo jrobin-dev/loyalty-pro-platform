@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
-import { Sora, Funnel_Display } from "next/font/google";
-import { GeistSans } from "geist/font/sans";
-import { Toaster } from "sonner";
-import { ThemeProvider } from "@/components/theme-provider";
+import { Geist, Geist_Mono, Funnel_Display } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
-const sora = Sora({
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  variable: "--font-sora",
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 const funnelDisplay = Funnel_Display({
-  subsets: ["latin"],
   variable: "--font-funnel-display",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "LoyaltyPro - Sistema de Lealtad Digital para tu Negocio",
-  description: "Crea programas de lealtad digitales, gestiona clientes y aumenta tus ventas. Tarjetas en Apple Wallet y Google Wallet. Empieza gratis hoy.",
+  title: "LoyaltyPro | Fidelización Inteligente",
+  description: "La plataforma de fidelización más avanzada para negocios que buscan crecer y retener a sus clientes.",
 };
 
 export default function RootLayout({
@@ -26,9 +29,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body
-        className={`${GeistSans.variable} ${sora.variable} ${funnelDisplay.variable} antialiased bg-background text-foreground font-sans`}
+        className={`${geistSans.variable} ${geistMono.variable} ${funnelDisplay.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -37,7 +40,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <Toaster />
         </ThemeProvider>
       </body>
     </html>

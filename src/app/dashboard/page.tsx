@@ -1,6 +1,5 @@
 "use client"
 
-import DashboardLayout from "@/components/dashboard/dashboard-layout"
 import { RecentActivityTable } from "@/components/dashboard/recent-activity"
 import { ScannerQRAccess } from "@/components/dashboard/scanner-qr-access"
 import { DashboardStatsAdvanced } from "@/components/dashboard/dashboard-stats"
@@ -59,99 +58,97 @@ export default function DashboardPage() {
     const dateRange = getDateRange(selectedMonth)
 
     return (
-        <DashboardLayout>
-            <div className="flex flex-col lg:flex-row gap-6">
-                {/* Main Content */}
-                <section className="flex-1 space-y-6">
-                    {/* Hero Banner */}
-                    <DashboardHero />
+        <div className="flex flex-col lg:flex-row gap-6">
+            {/* Main Content */}
+            <section className="flex-1 space-y-6">
+                {/* Hero Banner */}
+                <DashboardHero />
 
-                    {/* Header Actions */}
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div>
-                            <h1 className="text-3xl font-bold font-sans">Dashboard</h1>
-                            <p className="text-muted-foreground">Monitorea en tiempo real el rendimiento de tu programa.</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="bg-background border-border text-foreground hover:bg-secondary">
-                                        <Calendar size={14} className="mr-2" />
-                                        {selectedMonth}
-                                        <ChevronDown size={14} className="ml-2" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48 bg-[#0a0a0a] border-transparent">
-                                    {months.map((month) => (
-                                        <DropdownMenuItem
-                                            key={month}
-                                            onClick={() => {
-                                                setSelectedMonth(month)
-                                                toast.success("Filtro aplicado", {
-                                                    description: `Mostrando datos de ${month}`
-                                                })
-                                            }}
-                                            className={selectedMonth === month ? "bg-primary/10 text-primary" : "hover:bg-white/5"}
-                                        >
-                                            {month}
-                                        </DropdownMenuItem>
-                                    ))}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                            <Button onClick={handleDownloadReport} className="btn-cosmic">
-                                <Download size={14} className="mr-2" /> Descargar
-                            </Button>
-                        </div>
+                {/* Header Actions */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold font-sans">Dashboard</h1>
+                        <p className="text-muted-foreground">Monitorea en tiempo real el rendimiento de tu programa.</p>
                     </div>
+                    <div className="flex items-center gap-2">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="bg-background border-border text-foreground hover:bg-secondary">
+                                    <Calendar size={14} className="mr-2" />
+                                    {selectedMonth}
+                                    <ChevronDown size={14} className="ml-2" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48 bg-[#0a0a0a] border-transparent">
+                                {months.map((month) => (
+                                    <DropdownMenuItem
+                                        key={month}
+                                        onClick={() => {
+                                            setSelectedMonth(month)
+                                            toast.success("Filtro aplicado", {
+                                                description: `Mostrando datos de ${month}`
+                                            })
+                                        }}
+                                        className={selectedMonth === month ? "bg-primary/10 text-primary" : "hover:bg-white/5"}
+                                    >
+                                        {month}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <Button onClick={handleDownloadReport} className="btn-cosmic">
+                            <Download size={14} className="mr-2" /> Descargar
+                        </Button>
+                    </div>
+                </div>
 
-                    {/* Dashboard Stats */}
-                    <DashboardStatsAdvanced dateRange={dateRange} />
+                {/* Dashboard Stats */}
+                <DashboardStatsAdvanced dateRange={dateRange} />
 
-                    {/* Dashboard Charts */}
-                    <DashboardCharts />
+                {/* Dashboard Charts */}
+                <DashboardCharts />
 
-                    {/* Recent Activity */}
-                    <RecentActivityTable />
+                {/* Recent Activity */}
+                <RecentActivityTable />
 
-                    {/* Customer Table */}
-                    <CustomerTableAdvanced />
-                </section>
+                {/* Customer Table */}
+                <CustomerTableAdvanced />
+            </section>
 
-                {/* Side Content */}
-                <section className="w-full lg:w-[350px] space-y-6">
-                    {/* Small Side Stats (Stamps Summary) */}
-                    <div className="col-span-1 space-y-4">
-                        <div className="bg-card rounded-xl p-6 shadow-sm">
-                            <h3 className="font-bold text-foreground mb-4 text-base">Resumen de Stamps</h3>
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center py-2 border-b-0">
-                                    <span className="text-sm text-muted-foreground">Stamps Activos</span>
-                                    <span className="font-mono font-bold font-[family-name:var(--font-sora)]">0</span>
-                                </div>
-                                <div className="flex justify-between items-center py-2 border-b-0">
-                                    <span className="text-sm text-muted-foreground">Por Canjear</span>
-                                    <span className="font-mono font-bold font-[family-name:var(--font-sora)] text-blue-500">0</span>
-                                </div>
-                                <div className="flex justify-between items-center py-2 border-b-0">
-                                    <span className="text-sm text-muted-foreground">En Circulación</span>
-                                    <span className="font-mono font-bold font-[family-name:var(--font-sora)] text-primary">0</span>
-                                </div>
+            {/* Side Content */}
+            <section className="w-full lg:w-[350px] space-y-6">
+                {/* Small Side Stats (Stamps Summary) */}
+                <div className="col-span-1 space-y-4">
+                    <div className="bg-card rounded-xl p-6 shadow-sm">
+                        <h3 className="font-bold text-foreground mb-4 text-base">Resumen de Stamps</h3>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center py-2 border-b-0">
+                                <span className="text-sm text-muted-foreground">Stamps Activos</span>
+                                <span className="font-mono font-bold font-[family-name:var(--font-sora)]">0</span>
+                            </div>
+                            <div className="flex justify-between items-center py-2 border-b-0">
+                                <span className="text-sm text-muted-foreground">Por Canjear</span>
+                                <span className="font-mono font-bold font-[family-name:var(--font-sora)] text-blue-500">0</span>
+                            </div>
+                            <div className="flex justify-between items-center py-2 border-b-0">
+                                <span className="text-sm text-muted-foreground">En Circulación</span>
+                                <span className="font-mono font-bold font-[family-name:var(--font-sora)] text-primary">0</span>
                             </div>
                         </div>
-
-                        <ScannerQRAccess />
                     </div>
 
-                    {/* Support Card */}
-                    <div className="rounded-xl bg-white/5 p-6 backdrop-blur-sm">
-                        <h3 className="text-xl font-bold font-sans mb-2">Soporte</h3>
-                        <p className="text-sm text-foreground/60 mb-4">¿Tienes dudas sobre cómo configurar tu campaña?</p>
-                        <button className="w-full py-3 rounded-xl border-0 bg-white/10 hover:bg-white/20 transition-colors">
-                            Contactar Soporte
-                        </button>
-                    </div>
-                </section>
-            </div>
-        </DashboardLayout>
+                    <ScannerQRAccess />
+                </div>
+
+                {/* Support Card */}
+                <div className="rounded-xl bg-white/5 p-6 backdrop-blur-sm">
+                    <h3 className="text-xl font-bold font-sans mb-2">Soporte</h3>
+                    <p className="text-sm text-foreground/60 mb-4">¿Tienes dudas sobre cómo configurar tu campaña?</p>
+                    <button className="w-full py-3 rounded-xl border-0 bg-white/10 hover:bg-white/20 transition-colors">
+                        Contactar Soporte
+                    </button>
+                </div>
+            </section>
+        </div>
     )
 }

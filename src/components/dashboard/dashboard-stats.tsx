@@ -19,19 +19,20 @@ function StatCard({ title, value, change, icon: Icon, iconColor, iconBg }: StatC
     const formattedChange = `${isPositive ? '+' : ''}${change}%`
 
     return (
-        <Card className="relative overflow-hidden bg-card/50 backdrop-blur-sm border-transparent hover:bg-card/70 transition-all duration-300">
+        <Card className="relative overflow-hidden bg-white dark:bg-card/50 backdrop-blur-sm border-border/40 hover:bg-white dark:hover:bg-card/60 transition-all duration-300 shadow-md group">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+                <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors">
                     {title}
                 </CardTitle>
-                <div className={`p-2 rounded-lg ${iconBg}`}>
+                <div className={`p-2 rounded-lg ${iconBg} group-hover:scale-110 transition-transform`}>
                     <Icon className={`h-4 w-4 ${iconColor}`} />
                 </div>
             </CardHeader>
             <CardContent>
-                <div className="text-3xl font-bold font-sans mb-1">{value}</div>
-                <p className={`text-xs ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {formattedChange} vs mes anterior
+                <div className="text-3xl font-bold font-sans tracking-tight text-foreground">{value}</div>
+                <p className={`text-xs font-medium flex items-center gap-1 mt-1 ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600'}`}>
+                    {formattedChange}
+                    <span className="text-muted-foreground/60 font-normal">vs mes anterior</span>
                 </p>
             </CardContent>
         </Card>
@@ -58,7 +59,7 @@ export function DashboardStatsAdvanced({ dateRange }: { dateRange?: { start: str
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatCard
                 title="Ingreso Total"
-                value={`${currency} ${stats.totalRevenue.toLocaleString()}`}
+                value={`${currency} ${stats.totalRevenue.toFixed(0)}`}
                 change={stats.revenueChange}
                 icon={DollarSign}
                 iconColor="text-orange-500"
@@ -66,11 +67,11 @@ export function DashboardStatsAdvanced({ dateRange }: { dateRange?: { start: str
             />
             <StatCard
                 title="Total Usuarios"
-                value={stats.totalCustomers.toLocaleString()}
+                value={stats.totalCustomers.toString()}
                 change={stats.customersChange}
                 icon={Users}
-                iconColor="text-purple-500"
-                iconBg="bg-purple-500/10"
+                iconColor="text-emerald-400"
+                iconBg="bg-emerald-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
             />
             <StatCard
                 title="Premios Canjeados"
@@ -82,11 +83,11 @@ export function DashboardStatsAdvanced({ dateRange }: { dateRange?: { start: str
             />
             <StatCard
                 title="Total Stamps"
-                value={stats.totalStamps.toLocaleString()}
+                value={stats.totalStamps.toString()}
                 change={stats.stampsChange}
                 icon={Award}
-                iconColor="text-blue-500"
-                iconBg="bg-blue-500/10"
+                iconColor="text-primary"
+                iconBg="bg-primary/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
             />
         </div>
     )

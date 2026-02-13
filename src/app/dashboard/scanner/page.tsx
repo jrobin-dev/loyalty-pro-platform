@@ -128,13 +128,13 @@ export default function ScannerPage() {
                         />
                         {/* Custom Finder Overlay */}
                         <div className="absolute inset-0 border-[40px] border-black/60 pointer-events-none flex items-center justify-center">
-                            <div className="w-64 h-64 border-[3px] border-[#00FF94] rounded-3xl relative">
+                            <div className="w-64 h-64 border-[3px] border-emerald-500 rounded-3xl relative">
                                 <div className="absolute top-4 left-4 right-4 bottom-4 border border-white/20 rounded-2xl animate-pulse"></div>
                                 {/* Corners */}
-                                <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-[#00FF94] rounded-tl-xl" />
-                                <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-[#00FF94] rounded-tr-xl" />
-                                <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-[#00FF94] rounded-bl-xl" />
-                                <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-[#00FF94] rounded-br-xl" />
+                                <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-emerald-500 rounded-tl-xl" />
+                                <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-emerald-500 rounded-tr-xl" />
+                                <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-emerald-500 rounded-bl-xl" />
+                                <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-emerald-500 rounded-br-xl" />
                             </div>
                         </div>
                     </div>
@@ -143,19 +143,19 @@ export default function ScannerPage() {
                     </CardContent>
                 </Card>
             ) : (
-                <Card className="border-[#00FF94]/30 bg-black relative overflow-hidden animate-in zoom-in-95 duration-300 shadow-2xl shadow-[#00FF94]/10">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#00FF94]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                <Card className="border-emerald-500/30 bg-black relative overflow-hidden animate-in zoom-in-95 duration-300 shadow-2xl shadow-emerald-500/10">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
                     <CardHeader className="text-center pb-6 relative z-10 pt-8">
                         <div className="relative inline-block mx-auto mb-4">
-                            <Avatar className="w-24 h-24 border-4 border-[#00FF94] shadow-[0_0_20px_rgba(0,255,148,0.3)]">
+                            <Avatar className="w-24 h-24 border-4 border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
                                 <AvatarImage src={customer.user?.image} />
-                                <AvatarFallback className="text-3xl bg-[#00FF94] text-black font-bold font-[family-name:var(--font-funnel-display)]">
+                                <AvatarFallback className="text-3xl bg-emerald-500 text-black font-bold font-[family-name:var(--font-funnel-display)]">
                                     {customer.user?.name?.[0] || 'C'}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="absolute -bottom-2 -right-2 bg-black rounded-full p-1 border border-white/10">
-                                <Check className="w-6 h-6 text-[#00FF94] bg-[#00FF94]/20 rounded-full p-1" />
+                                <Check className="w-6 h-6 text-emerald-500 bg-emerald-500/20 rounded-full p-1" />
                             </div>
                         </div>
 
@@ -171,14 +171,14 @@ export default function ScannerPage() {
                                 <span className="text-xs uppercase px-2 py-0.5 rounded bg-white/10 text-white/60">Nivel Member</span>
                             </div>
                             <div className="flex items-end gap-2">
-                                <span className="text-5xl font-bold text-[#00FF94] font-[family-name:var(--font-funnel-display)] tracking-tighter">
+                                <span className="text-5xl font-bold text-emerald-500 font-[family-name:var(--font-funnel-display)] tracking-tighter">
                                     {customer.currentStamps}
                                 </span>
                                 <span className="text-lg text-white/60 mb-1 font-medium">/ 10 Stamps</span>
                             </div>
                             <div className="w-full bg-white/10 h-2 rounded-full mt-4 overflow-hidden">
                                 <div
-                                    className="bg-[#00FF94] h-full rounded-full transition-all duration-1000"
+                                    className="bg-emerald-500 h-full rounded-full transition-all duration-1000"
                                     style={{ width: `${Math.min((customer.currentStamps / 10) * 100, 100)}%` }}
                                 />
                             </div>
@@ -203,7 +203,7 @@ export default function ScannerPage() {
 
                             <div className="grid grid-cols-1 gap-3">
                                 <Button
-                                    className="w-full bg-[#00FF94] text-black hover:bg-[#00cc76] font-bold h-14 text-lg shadow-[0_0_15px_rgba(0,255,148,0.4)] hover:shadow-[0_0_25px_rgba(0,255,148,0.6)] transition-all"
+                                    className="w-full bg-emerald-500 text-black hover:bg-emerald-600 font-bold h-14 text-lg shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] transition-all"
                                     onClick={() => handleTransaction('EARN')}
                                     disabled={isProcessing || !moneyAmount || Number(moneyAmount) <= 0}
                                 >

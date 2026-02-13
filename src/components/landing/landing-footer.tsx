@@ -7,10 +7,10 @@ const footerLinks = {
     product: {
         title: "Producto",
         links: [
-            { label: "Características", href: "#features" },
-            { label: "Precios", href: "#pricing" },
-            { label: "Integraciones", href: "#integrations" },
-            { label: "Roadmap", href: "#roadmap" },
+            { label: "Características", href: "/#features" },
+            { label: "Precios", href: "/#pricing" },
+            { label: "Integraciones", href: "/#integrations" },
+            { label: "Roadmap", href: "/#roadmap" },
         ],
     },
     company: {

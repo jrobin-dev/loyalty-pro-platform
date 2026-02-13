@@ -25,17 +25,28 @@ export function useUserProfile() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
+    // Load cache on mount securely
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const cached = localStorage.getItem("user_profile_cache")
+            if (cached) {
+                setProfile(JSON.parse(cached))
+                setLoading(false)
+            }
+        }
+    }, [])
+
     const fetchProfile = async () => {
         try {
-            setLoading(true)
             const supabase = createClient()
 
             const { data: { session } } = await supabase.auth.getSession()
             console.log("[useUserProfile] Session:", session?.user?.email) // Debug
 
             if (!session) {
-                console.log("[useUserProfile] No session found") // Debug
-                throw new Error("No active session")
+                localStorage.removeItem("user_profile_cache")
+                setLoading(false)
+                return
             }
 
             console.log("[useUserProfile] Fetching profile API...") // Debug
@@ -48,6 +59,9 @@ export function useUserProfile() {
             const data = await response.json()
             console.log("[useUserProfile] Profile Data Received:", data.user) // Debug
             setProfile(data.user)
+
+            // Update cache
+            localStorage.setItem("user_profile_cache", JSON.stringify(data.user))
         } catch (err: any) {
             console.error("[useUserProfile] Error:", err) // Debug
             setError(err.message)

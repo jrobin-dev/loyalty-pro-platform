@@ -1,27 +1,46 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import Hero from "@/components/loyalty/Hero"
+import Benefits from "@/components/loyalty/Benefits"
+import Features from "@/components/loyalty/Features"
+import Pricing from "@/components/loyalty/Pricing"
+import Footer from "@/components/loyalty/Footer"
+import HowItWorks from "@/components/loyalty/HowItWorks"
+import SocialProof from "@/components/loyalty/SocialProof"
+import WhatIs from "@/components/loyalty/WhatIs"
+import FinalCTA from "@/components/loyalty/FinalCTA"
+import Apps from "@/components/loyalty/Apps"
+import Devices from "@/components/loyalty/Devices"
 import { LandingHeader } from "@/components/landing/landing-header"
-import { HeroSection } from "@/components/landing/hero-section"
-import { FeaturesSection } from "@/components/landing/features-section"
-import { StatsSection } from "@/components/landing/stats-section"
-import { ClientLogos } from "@/components/landing/client-logos"
-import { TestimonialsSection } from "@/components/landing/testimonials-section"
-import { FAQSection } from "@/components/landing/faq-section"
-import { NewsletterSection } from "@/components/landing/newsletter-section"
-import { LandingFooter } from "@/components/landing/landing-footer"
+import { ScrollToTop } from "@/components/loyalty/ScrollToTop"
 
 export default function HomePage() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
       <LandingHeader />
       <main>
-        <HeroSection />
-        <ClientLogos />
-        <FeaturesSection />
-        <StatsSection />
-        <TestimonialsSection />
-        <FAQSection />
-        <NewsletterSection />
+        <Hero />
+        <SocialProof />
+        <WhatIs />
+        <Benefits />
+        <Features />
+        <HowItWorks />
+        <Apps />
+        <Devices />
+        <Pricing />
+        <FinalCTA />
       </main>
-      <LandingFooter />
+      <Footer />
+      <ScrollToTop />
     </div>
   )
 }

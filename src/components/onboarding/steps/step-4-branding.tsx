@@ -2,9 +2,10 @@
 
 import { useOnboardingStore } from "@/store/onboarding-store"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@radix-ui/react-label"
-// import { Switch } from "@/components/ui/switch" (We need to build switch or use checkbox)
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { ColorPicker } from "@/components/ui/color-picker"
+import { GradientDirectionPicker } from "@/components/ui/gradient-direction-picker"
 
 export default function Step4Branding() {
     const { data, updateData, nextStep, prevStep } = useOnboardingStore()
@@ -21,66 +22,72 @@ export default function Step4Branding() {
             </div>
 
             <div className="space-y-6">
-                {/* Colors Grid */}
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <Label className="text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-widest">Color Principal</Label>
-                        <div className="flex items-center gap-3 bg-white dark:bg-white/5 p-2 rounded-xl border border-gray-200 dark:border-white/10">
-                            <input
-                                type="color"
-                                value={data.primaryColor}
-                                onChange={(e) => updateData({ primaryColor: e.target.value })}
-                                className="h-10 w-10 rounded-lg bg-transparent border-0 cursor-pointer"
-                            />
-                            <span className="text-sm font-mono text-gray-700 dark:text-white/80">{data.primaryColor}</span>
-                        </div>
+                <div className="space-y-6">
+                    <ColorPicker
+                        label="Color Principal"
+                        color={data.primaryColor}
+                        onChange={(color) => updateData({ primaryColor: color })}
+                    />
+
+                    <div className="flex items-center gap-2">
+                        <Switch
+                            checked={data.gradientEnabled}
+                            onCheckedChange={(checked) => updateData({ gradientEnabled: checked })}
+                            id="gradient-mode"
+                        />
+                        <Label htmlFor="gradient-mode" className="cursor-pointer">Usar degradado</Label>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label className="text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-widest">Color Secundario</Label>
-                        <div className="flex items-center gap-3 bg-white dark:bg-white/5 p-2 rounded-xl border border-gray-200 dark:border-white/10">
-                            <input
-                                type="color"
-                                value={data.secondaryColor}
-                                onChange={(e) => updateData({ secondaryColor: e.target.value })}
-                                className="h-10 w-10 rounded-lg bg-transparent border-0 cursor-pointer"
-                            />
-                            <span className="text-sm font-mono text-gray-700 dark:text-white/80">{data.secondaryColor}</span>
+                    {data.gradientEnabled && (
+                        <div className="space-y-4 animate-in slide-in-from-top-2 fade-in duration-300">
+                            <div className="p-4 rounded-lg bg-card/30 border border-white/5 space-y-4">
+                                <ColorPicker
+                                    label="Color Secundario"
+                                    color={data.secondaryColor}
+                                    onChange={(color) => updateData({ secondaryColor: color })}
+                                />
+                                <GradientDirectionPicker
+                                    value={data.gradientDirection || "to right"}
+                                    onChange={(direction) => updateData({ gradientDirection: direction })}
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
+
+                    {!data.gradientEnabled && (
+                        <div className="opacity-50 pointer-events-none filter grayscale">
+                            <ColorPicker
+                                label="Color Secundario (Ignorado)"
+                                color={data.secondaryColor}
+                                onChange={() => { }}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* Preview Box */}
                 <div className="space-y-3">
                     <Label className="text-xs font-medium text-gray-500 dark:text-white/60 uppercase tracking-widest">Vista Previa (Mini)</Label>
                     <div
-                        className="w-full h-32 rounded-2xl flex items-center justify-center shadow-2xl border border-gray-200 dark:border-white/10 relative overflow-hidden"
+                        className="w-full h-32 rounded-2xl flex items-center justify-center shadow-2xl border border-gray-200 dark:border-white/10 relative overflow-hidden transition-all duration-500"
                         style={{
                             background: data.gradientEnabled
-                                ? `linear-gradient(135deg, ${data.primaryColor} 0%, ${data.secondaryColor} 100%)`
+                                ? (data.gradientDirection?.includes('radial')
+                                    ? `radial-gradient(circle at center, ${data.primaryColor}, ${data.secondaryColor})`
+                                    : `linear-gradient(${data.gradientDirection || 'to right'}, ${data.primaryColor}, ${data.secondaryColor})`)
                                 : data.primaryColor
                         }}
                     >
-                        <div className="text-white font-bold text-xl drop-shadow-md">Tu Marca</div>
+                        <div className="absolute inset-0 bg-white/10 z-0 mix-blend-overlay"></div>
+                        <div className="text-white font-bold text-xl drop-shadow-md z-10 font-[family-name:var(--font-funnel-display)]">Tu Marca</div>
                         {/* Shine effect */}
-                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-white/20 to-transparent pointer-events-none" />
-                    </div>
-
-                    <div className="flex items-center gap-3 mt-2">
-                        <input
-                            type="checkbox"
-                            id="gradient"
-                            checked={data.gradientEnabled}
-                            onChange={(e) => updateData({ gradientEnabled: e.target.checked })}
-                            className="w-5 h-5 rounded border-gray-300 text-[#00FF94] focus:ring-[#00FF94]"
-                        />
-                        <Label htmlFor="gradient" className="text-sm text-gray-700 dark:text-white/80">Activar Gradiente</Label>
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-white/20 to-transparent pointer-events-none z-20" />
                     </div>
                 </div>
             </div>
 
             <div className="flex gap-4 pt-4">
-                <Button variant="ghost" className="flex-1" onClick={prevStep}>
+                <Button variant="ghost" className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 transition-colors" onClick={prevStep}>
                     Atrás
                 </Button>
                 <Button

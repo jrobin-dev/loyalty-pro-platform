@@ -11,10 +11,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 type={type}
                 className={cn(
                     "flex h-12 w-full rounded-xl border border-input px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium",
-                    // Dark mode: gray background with contrast, white text
-                    "dark:bg-white/10 dark:text-white dark:placeholder:text-gray-400",
-                    // Light mode: white background, black text
-                    "bg-white !text-black placeholder:text-gray-400",
+                    "bg-white text-black dark:bg-zinc-900/50 dark:text-white placeholder:text-zinc-500 dark:placeholder:text-zinc-400",
                     "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
                     className
                 )}

@@ -22,9 +22,12 @@ interface BusinessData {
     primaryColor: string
     secondaryColor: string
     gradientEnabled: boolean
+    gradientDirection?: string
+    currency?: string
 
     // Assets
     logoUrl?: string
+    customIconUrl?: string
 }
 
 interface OnboardingState {
@@ -58,6 +61,9 @@ export const useOnboardingStore = create<OnboardingState>()(
                 primaryColor: '#00FF94', // Neon Green
                 secondaryColor: '#000000',
                 gradientEnabled: true,
+                gradientDirection: 'to right',
+                currency: '$',
+                customIconUrl: '',
             },
 
             setStep: (step) => set({ currentStep: step }),

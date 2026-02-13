@@ -15,6 +15,8 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 
+import { CountryCodeSelect } from "@/components/ui/country-code-select"
+
 interface AddCustomerDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
@@ -23,6 +25,7 @@ interface AddCustomerDialogProps {
 
 export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomerDialogProps) {
     const [loading, setLoading] = useState(false)
+    const [countryCode, setCountryCode] = useState("+51")
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -55,13 +58,16 @@ export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomer
             }
 
             // Call API to create customer
+            const fullPhone = `${countryCode} ${formData.phone}`.trim()
+
             const response = await fetch('/api/customers/auth', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email: formData.email,
                     name: formData.name,
-                    tenantId: tenantData.id
+                    phone: fullPhone,
+                    tenantId: tenantData.id,
                 })
             })
 
@@ -78,7 +84,9 @@ export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomer
             // Reset form
             setFormData({ name: "", email: "", phone: "" })
             onOpenChange(false)
-            onSuccess?.()
+            if (onSuccess) {
+                onSuccess()
+            }
         } catch (error: any) {
             console.error("Error adding customer:", error)
             toast.error("Error al agregar cliente", {
@@ -91,10 +99,10 @@ export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomer
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px] bg-[#0a0a0a] border-transparent">
+            <DialogContent className="sm:max-w-[425px] bg-popover border-border/40 shadow-2xl">
                 <DialogHeader>
-                    <DialogTitle>Nuevo Cliente</DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="text-xl font-display">Nuevo Cliente</DialogTitle>
+                    <DialogDescription className="text-muted-foreground">
                         Registra un nuevo cliente en tu programa de lealtad.
                     </DialogDescription>
                 </DialogHeader>
@@ -123,21 +131,32 @@ export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomer
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="phone">Teléfono</Label>
-                            <Input
-                                id="phone"
-                                type="tel"
-                                value={formData.phone}
-                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                placeholder="+51 900 000 000"
-                                required
-                            />
+                            <div className="flex gap-2">
+                                <CountryCodeSelect
+                                    value={countryCode}
+                                    onChange={setCountryCode}
+                                />
+                                <Input
+                                    id="phone"
+                                    type="tel"
+                                    value={formData.phone}
+                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    placeholder="900 000 000"
+                                    className="flex-1"
+                                    required
+                                />
+                            </div>
                         </div>
                     </div>
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                             Cancelar
                         </Button>
-                        <Button type="submit" disabled={loading} className="btn-cosmic">
+                        <Button
+                            type="submit"
+                            disabled={loading}
+                            className="bg-emerald-500 text-white dark:text-black hover:bg-emerald-400 border-0 shadow-lg shadow-emerald-500/20 font-bold cursor-pointer transition-all hover:scale-[1.02]"
+                        >
                             {loading ? "Guardando..." : "Guardar Cliente"}
                         </Button>
                     </DialogFooter>

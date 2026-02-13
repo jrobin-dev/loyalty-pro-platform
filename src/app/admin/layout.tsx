@@ -41,11 +41,11 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     const { profile } = useUserProfile()
 
     const menuItems = [
-        { icon: LayoutDashboard, label: "Overview", href: "/admin" },
+        { icon: LayoutDashboard, label: "Vista General", href: "/admin" },
         { icon: Store, label: "Negocios", href: "/admin/tenants" },
         { icon: Users, label: "Usuarios Globales", href: "/admin/users" },
-        { icon: Megaphone, label: "Marketing Banners", href: "/admin/banners" },
-        { icon: BarChart3, label: "Revenue", href: "/admin/revenue" },
+        { icon: Megaphone, label: "Banners de Marketing", href: "/admin/banners" },
+        { icon: BarChart3, label: "Ingresos", href: "/admin/revenue" },
         { icon: Settings, label: "Configuración", href: "/admin/settings" },
     ]
 
@@ -217,16 +217,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <div className="max-h-[300px] overflow-y-auto">
-                                    <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-pointer">
+                                    <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-pointer hover:bg-emerald-500/5 transition-colors">
                                         <div className="flex items-center justify-between w-full">
                                             <span className="font-medium text-sm">Nuevo Tenant: Burger King</span>
                                             <span className="text-[10px] text-muted-foreground">Hace 2m</span>
                                         </div>
                                         <p className="text-xs text-muted-foreground">Se registró en el plan Free.</p>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-pointer bg-muted/50">
+                                    <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-pointer bg-emerald-500/5 dark:bg-emerald-500/10">
                                         <div className="flex items-center justify-between w-full">
-                                            <span className="font-medium text-sm text-primary">Pago Recibido: $50</span>
+                                            <span className="font-medium text-sm text-emerald-600 dark:text-emerald-400">Pago Recibido: S/. 50</span>
                                             <span className="text-[10px] text-muted-foreground">Hace 1h</span>
                                         </div>
                                         <p className="text-xs text-muted-foreground">Spa & Wellness renovó Plan Pro.</p>

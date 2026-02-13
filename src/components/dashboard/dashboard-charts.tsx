@@ -7,13 +7,13 @@ import { useState } from "react"
 import { useTheme } from "next-themes"
 
 const dataDays = [
-    { name: "Lun", total: Math.floor(Math.random() * 500) + 100 },
-    { name: "Mar", total: Math.floor(Math.random() * 500) + 100 },
-    { name: "Mie", total: Math.floor(Math.random() * 500) + 100 },
-    { name: "Jue", total: Math.floor(Math.random() * 500) + 100 },
-    { name: "Vie", total: Math.floor(Math.random() * 500) + 100 },
-    { name: "Sab", total: Math.floor(Math.random() * 500) + 100 },
-    { name: "Dom", total: Math.floor(Math.random() * 500) + 100 },
+    { name: "Lun", total: 400 },
+    { name: "Mar", total: 300 },
+    { name: "Mie", total: 200 },
+    { name: "Jue", total: 278 },
+    { name: "Vie", total: 189 },
+    { name: "Sab", total: 239 },
+    { name: "Dom", total: 349 },
 ]
 
 const dataWeeks = [
@@ -24,12 +24,12 @@ const dataWeeks = [
 ]
 
 const dataMonths = [
-    { name: "Ene", total: Math.floor(Math.random() * 5000) + 1000 },
-    { name: "Feb", total: Math.floor(Math.random() * 5000) + 1000 },
-    { name: "Mar", total: Math.floor(Math.random() * 5000) + 1000 },
-    { name: "Abr", total: Math.floor(Math.random() * 5000) + 1000 },
-    { name: "May", total: Math.floor(Math.random() * 5000) + 1000 },
-    { name: "Jun", total: Math.floor(Math.random() * 5000) + 1000 },
+    { name: "Ene", total: 4000 },
+    { name: "Feb", total: 3000 },
+    { name: "Mar", total: 2000 },
+    { name: "Abr", total: 2780 },
+    { name: "May", total: 1890 },
+    { name: "Jun", total: 2390 },
 ]
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -59,7 +59,7 @@ export function DashboardCharts() {
     const chartColor = theme === 'dark' ? '#00FF94' : '#00C070'
 
     return (
-        <Card className="col-span-4 lg:col-span-3 bg-card border-border shadow-sm overflow-hidden">
+        <Card className="col-span-4 lg:col-span-3 bg-white dark:bg-card border-border shadow-md overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
                 <div className="space-y-1">
                     <CardTitle className="text-base font-bold">Gráfica de Consumo</CardTitle>
@@ -74,15 +74,15 @@ export function DashboardCharts() {
                 </Tabs>
             </CardHeader>
             <CardContent className="pl-0">
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={300} id="dashboard-responsive-container">
                     {period === "daily" ? (
-                        <BarChart data={dataDays} barSize={20} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                            <Tooltip cursor={{ fill: 'var(--muted)' }} content={<CustomTooltip />} />
+                        <BarChart id="dashboard-bar-chart" data={dataDays} barSize={20} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                            <Tooltip cursor={{ fill: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)' }} content={<CustomTooltip />} />
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
                             <XAxis
                                 dataKey="name"
-                                stroke="var(--muted-foreground)"
-                                fontSize={12}
+                                stroke={theme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'}
+                                fontSize={10}
                                 tickLine={false}
                                 axisLine={false}
                                 dy={10}
@@ -95,7 +95,7 @@ export function DashboardCharts() {
                             />
                         </BarChart>
                     ) : (
-                        <AreaChart data={period === 'weekly' ? dataWeeks : dataMonths} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                        <AreaChart id="dashboard-area-chart" data={period === 'weekly' ? dataWeeks : dataMonths} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
@@ -106,8 +106,8 @@ export function DashboardCharts() {
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
                             <XAxis
                                 dataKey="name"
-                                stroke="var(--muted-foreground)"
-                                fontSize={12}
+                                stroke={theme === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)'}
+                                fontSize={10}
                                 tickLine={false}
                                 axisLine={false}
                                 dy={10}

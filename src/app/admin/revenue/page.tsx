@@ -23,11 +23,11 @@ export default function RevenuePage() {
                         <CardTitle className="text-sm font-medium text-muted-foreground">
                             MRR Total
                         </CardTitle>
-                        <BarChart3 className="h-4 w-4 text-[#00FF94]" />
+                        <BarChart3 className="h-4 w-4 text-emerald-500" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold text-foreground">$12,450.00</div>
-                        <p className="text-xs text-[#00FF94]">+20.1% desde el mes pasado</p>
+                        <p className="text-xs text-emerald-400">+20.1% desde el mes pasado</p>
                     </CardContent>
                 </Card>
             </div>

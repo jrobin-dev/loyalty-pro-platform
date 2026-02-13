@@ -191,11 +191,11 @@ export default function BillingPage() {
                                             </TabsList>
 
                                             <TabsContent value="card" className="space-y-4 pt-4">
-                                                <div className="bg-[#00FF94]/5 p-4 rounded-xl border border-[#00FF94]/20 text-center">
+                                                <div className="bg-emerald-500/5 p-4 rounded-xl border border-emerald-500/20 text-center">
                                                     <p className="text-sm text-white/60 mb-2">Total a pagar</p>
-                                                    <p className="text-3xl font-bold text-[#00FF94]">S/ 50.00</p>
+                                                    <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">S/. 1,240.00</div>
                                                 </div>
-                                                <Button onClick={openCulqi} className="w-full bg-[#00FF94] text-black hover:bg-[#00cc76] font-bold h-12">
+                                                <Button onClick={openCulqi} className="w-full bg-emerald-500 text-black hover:bg-[#00cc76] font-bold h-12">
                                                     Pagar con Tarjeta o Yape
                                                 </Button>
                                                 <p className="text-xs text-center text-white/40">Procesado de forma segura por Culqi</p>

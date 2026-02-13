@@ -21,10 +21,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { useTenantSettings } from "@/hooks/use-tenant-settings"
 import { useUserProfile } from "@/hooks/use-user-profile"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { UpgradeProBanner } from "./upgrade-banner"
 
 interface SidebarProps {
     isOpen: boolean
@@ -54,7 +56,8 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
             setIsLoggingOut(true)
             const supabase = createClient()
             await supabase.auth.signOut()
-            router.push("/login")
+            localStorage.removeItem("user_profile_cache")
+            window.location.href = "/login"
         } catch (error) {
             console.error("Error logging out:", error)
         } finally {
@@ -67,7 +70,6 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
         { icon: Users, label: "Clientes", href: "/dashboard/customers" },
         { icon: QrCode, label: "Escanear", href: "/dashboard/scan" },
         { icon: Gift, label: "Premios", href: "/dashboard/rewards" },
-        { icon: CreditCard, label: "Planes", href: "/dashboard/plans" },
         { icon: GraduationCap, label: "Academia", href: "/dashboard/academy" },
         { icon: Settings, label: "Configuración", href: "/dashboard/settings" },
     ]
@@ -88,44 +90,13 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
             {/* Sidebar */}
             <div
                 className={cn(
-                    "fixed top-0 left-0 h-full bg-[hsl(var(--sidebar))] border-r border-[hsl(var(--sidebar-border))] z-50 transition-all duration-300 flex flex-col",
+                    "fixed top-0 left-0 h-full bg-background border-r border-border z-50 transition-all duration-300 flex flex-col",
                     isCollapsed ? "w-20" : "w-64",
                     isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
                 )}
-                onMouseEnter={() => {
-                    if (isCollapsed) {
-                        toggleCollapse()
-                    }
-                }}
-                onMouseLeave={() => {
-                    // Optional: auto-collapse on leave if it was collapsed by user preference
-                    // But user said "hazlo que el sidebar se descolapse cuando paso el mose por encima"
-                    // This usually implies expanding on hover. 
-                    // If we expand on hover, we should probably toggle state.
-                    // However, modifying global state on hover might be annoying if user just passes by.
-                    // Let's assume the user wants it to OPEN on hover.
-                    // The "descolapse" means UN-collapse (expand).
-                    // Let's implement auto-expand on hover, and auto-collapse on leave ONLY if it was previously collapsed?
-                    // No, simpler: Hover expands, Leave collapses (if intended to be side-menu style).
-                    // But this has a toggle button.
-                    // The user request: "el sidebar se descolapse cuando paso el mose por encima" -> Expand on hover.
-
-                    if (!isCollapsed) {
-                        // If we want it to close when leaving, we call toggle. 
-                        // But wait, if user clicked to expand, it should stay expanded.
-                        // Implements: Mouse enter -> set(false). Mouse leave -> set(true).
-                        // But this conflicts with the button.
-                        // Let's assume the user treats the "collapsed" state as the default "resting" state and wants peek-on-hover.
-                        // So we'll add a local state override or just use the toggle.
-                        // Given the instruction "descolapse cuando paso el mose", I will simply call toggleCollapse if isCollapsed is true.
-                        // And if I leave? He didn't say. But usually peek sidebars collapse on leave.
-                        // I'll implement expand on hover. And collapse on leave.
-                        toggleCollapse()
-                    }
-                }}
             >
-                {/* Header */}
-                <div className="h-16 flex items-center justify-between px-4 border-b border-[hsl(var(--sidebar-border))]">
+                {/* Header - Logo & Close Button (Mobile) */}
+                <div className="h-16 flex items-center justify-between px-6 border-b border-border">
                     <Link href="/" className={cn("group cursor-pointer", isCollapsed && "mx-auto")}>
                         {isCollapsed ? (
                             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.3)]">
@@ -137,101 +108,160 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                             </h1>
                         )}
                     </Link>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={toggleCollapse}
-                        className={cn("ml-auto hover:bg-[hsl(var(--sidebar-accent))] text-[hsl(var(--sidebar-foreground))]", isCollapsed && "mx-auto mt-2")}
-                    >
-                        {isCollapsed ? (
-                            <ChevronRight className="h-5 w-5" />
-                        ) : (
-                            <ChevronLeft className="h-5 w-5" />
-                        )}
-                    </Button>
+
+                    {/* Close Button only for mobile/tablet */}
+                    {!isCollapsed && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setIsOpen(false)}
+                            className="lg:hidden h-8 w-8 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-full"
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                    )}
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 p-4 space-y-2">
+                <nav className="flex-1 pl-2.5 pr-4 pt-6 space-y-3 overflow-y-auto custom-scrollbar relative">
                     {menuItems.map((item) => {
                         const Icon = item.icon
                         const isActive = pathname === item.href
+
                         return (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={cn(
-                                    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200",
-                                    isActive
-                                        ? "bg-[hsl(var(--sidebar-primary))/0.2] text-[hsl(var(--sidebar-primary))] shadow-[0_0_15px_rgba(0,255,148,0.2)]"
-                                        : "text-[hsl(var(--sidebar-foreground))] hover:bg-[hsl(var(--sidebar-accent))] hover:text-[hsl(var(--sidebar-accent-foreground))]",
-                                    isCollapsed && "justify-center"
+                            <div key={item.href} className="relative flex items-center group">
+                                {/* Indicador Neón Lateral - Separado del recuadro */}
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="activeIndicator"
+                                        className="absolute z-10"
+                                        style={{
+                                            left: "-10px",
+                                            width: "6px",
+                                            height: "38px",
+                                            backgroundColor: "lab(78 -63.38 35.21)",
+                                            borderRadius: "0px 25px 25px 0px",
+                                            boxShadow: "-4px 0 10px 2px #3bc295, 0 0 15px rgba(16, 185, 129, 0.8)",
+                                            pointerEvents: "none"
+                                        }}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 300,
+                                            damping: 30,
+                                            borderRadius: { duration: 0 },
+                                            layout: { duration: 0.3 }
+                                        }}
+                                    />
                                 )}
-                            >
-                                <Icon className="h-5 w-5 flex-shrink-0" />
-                                {!isCollapsed && (
-                                    <span className="font-medium">{item.label}</span>
-                                )}
-                            </Link>
+
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className={cn(
+                                        "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 relative",
+                                        isActive
+                                            ? "bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/10 dark:text-[#19E28C]"
+                                            : "text-muted-foreground hover:bg-emerald-500/5 hover:text-emerald-500",
+                                        isCollapsed ? "w-12 justify-center mx-auto" : "flex-1"
+                                    )}
+                                    title={isCollapsed ? item.label : ""}
+                                >
+                                    <div className={cn(
+                                        "flex items-center justify-center w-9 h-9 transition-colors duration-300 flex-shrink-0",
+                                        isActive ? "bg-emerald-500/10 dark:bg-emerald-500/20" : "bg-transparent group-hover:bg-accent rounded-full"
+                                    )}
+                                        style={isActive ? {
+                                            borderRadius: "8px"
+                                        } : {}}
+                                    >
+                                        <Icon className={cn(
+                                            "h-4.5 w-4.5 transition-transform duration-300",
+                                            isActive ? "text-emerald-600 dark:text-emerald-400 scale-110" : "group-hover:text-foreground"
+                                        )} />
+                                    </div>
+
+                                    <AnimatePresence mode="wait">
+                                        {!isCollapsed && (
+                                            <motion.div
+                                                className="flex flex-1 items-center gap-3 overflow-hidden whitespace-nowrap"
+                                                initial={{ opacity: 0, width: 0 }}
+                                                animate={{ opacity: 1, width: "auto" }}
+                                                exit={{ opacity: 0, width: 0 }}
+                                                transition={{ duration: 0.2 }}
+                                            >
+                                                <span
+                                                    className={cn(
+                                                        "flex-1 font-medium text-[16px] transition-colors duration-300",
+                                                        isActive ? "text-emerald-700 dark:text-[#7ed4b9]" : "group-hover:text-foreground"
+                                                    )}
+                                                >
+                                                    {item.label}
+                                                </span>
+                                                {isActive && (
+                                                    <ChevronRight
+                                                        className="animate-in fade-in slide-in-from-left-2 duration-300"
+                                                        style={{
+                                                            color: "color-mix(in oklab, lab(85 -28.78 13.88) 50%, transparent)",
+                                                            width: "20px",
+                                                            height: "20px"
+                                                        }}
+                                                    />
+                                                )}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </Link>
+                            </div>
                         )
                     })}
-
-
                 </nav>
 
-                {/* Footer - Admin Link & User Profile */}
-                <div className="p-4 border-t border-[hsl(var(--sidebar-border))] space-y-2">
-                    {!isCollapsed && (
-                        <div className="flex justify-center gap-2 mb-4">
-                            {/* Existing Branding/Status Icon */}
-                            <div className="w-10 h-10 rounded-lg bg-[hsl(var(--sidebar-primary))/0.1] flex items-center justify-center border border-[hsl(var(--sidebar-primary))/0.2]">
-                                <Zap size={18} className="fill-yellow-400 text-yellow-400" />
-                            </div>
-
-                            {/* Super Admin Link - Square & Green */}
-                            {profile?.role === "SUPER_ADMIN" && (
-                                <Link
-                                    href="/admin"
-                                    className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center border border-green-500/20 hover:bg-green-500/20 transition-colors group"
-                                    title="Panel Super Admin"
-                                >
-                                    <Zap size={18} className="text-green-500 fill-green-500 group-hover:scale-110 transition-transform" />
-                                </Link>
-                            )}
-                        </div>
-                    )}
-
-                    {/* User Profile */}
-                    <div className={cn("flex items-center gap-3", isCollapsed ? "justify-center" : "px-2")}>
-                        <Avatar className="h-8 w-8 border border-transparent ring-2 ring-transparent group-hover:ring-[hsl(var(--sidebar-primary))/0.5] transition-all">
-                            {profile?.avatarUrl && (
-                                <AvatarImage src={profile.avatarUrl} alt={userName} />
-                            )}
-                            <AvatarFallback className="bg-gradient-to-br from-[hsl(var(--sidebar-primary))/0.2] to-blue-500/20 text-xs text-[hsl(var(--sidebar-foreground))] font-semibold">
-                                {userName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)}
-                            </AvatarFallback>
-                        </Avatar>
+                {/* Footer */}
+                <div className="p-4 border-t border-border mt-auto space-y-4">
+                    {/* Premium Upgrade Banner */}
+                    <AnimatePresence mode="wait">
                         {!isCollapsed && (
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate text-[hsl(var(--sidebar-foreground))]">
-                                    {userName}
-                                </p>
-                                <p className="text-xs text-[hsl(var(--sidebar-foreground))/0.6] truncate">{settings?.tenant.name || "Plan Free"}</p>
-                            </div>
+                            <UpgradeProBanner />
                         )}
-                        {!isCollapsed && (
-                            <div className="flex items-center gap-2">
-                                <ThemeToggle />
-                                <button
-                                    onClick={handleLogout}
-                                    disabled={isLoggingOut}
-                                    className="text-[hsl(var(--sidebar-foreground))/0.6] hover:text-red-400 transition-colors disabled:opacity-50"
-                                    title="Cerrar Sesión"
-                                >
-                                    {isLoggingOut ? <Loader2 size={16} className="animate-spin" /> : <LogOut size={16} />}
-                                </button>
+                    </AnimatePresence>
+
+                    {/* Simple Logout Action */}
+                    <div className={cn("flex items-center", isCollapsed ? "justify-center" : "px-2")}>
+                        <button
+                            onClick={handleLogout}
+                            disabled={isLoggingOut}
+                            className={cn(
+                                "group flex items-center gap-3 w-full py-2 text-red-500/60 hover:text-red-500 transition-all duration-300 disabled:opacity-50 outline-none",
+                                isCollapsed && "justify-center"
+                            )}
+                            title="Cerrar Sesión"
+                        >
+                            <div className={cn(
+                                "flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300",
+                                isCollapsed ? "bg-red-500/5 group-hover:bg-red-500/10" : "bg-transparent group-hover:bg-red-500/5"
+                            )}>
+                                {isLoggingOut ? (
+                                    <Loader2 size={18} className="animate-spin" />
+                                ) : (
+                                    <LogOut size={18} className="transition-transform group-hover:scale-110" />
+                                )}
                             </div>
-                        )}
+                            <AnimatePresence mode="wait">
+                                {!isCollapsed && (
+                                    <motion.span
+                                        className="text-[13px] font-semibold overflow-hidden whitespace-nowrap"
+                                        initial={{ opacity: 0, width: 0 }}
+                                        animate={{ opacity: 1, width: "auto" }}
+                                        exit={{ opacity: 0, width: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        Cerrar Sesión
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
+                        </button>
                     </div>
                 </div>
             </div>

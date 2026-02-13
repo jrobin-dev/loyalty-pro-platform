@@ -5,8 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
 import { TenantSettings } from "@/hooks/use-tenant-settings"
-import { Building2, Palette } from "lucide-react"
+import { Building2, Palette, ImageIcon } from "lucide-react"
+import { ColorPicker } from "@/components/ui/color-picker"
+import { GradientDirectionPicker } from "@/components/ui/gradient-direction-picker"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 interface BusinessSettingsFormProps {
     settings: TenantSettings
@@ -19,6 +23,9 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
     const [primaryColor, setPrimaryColor] = useState(settings.branding.primaryColor)
     const [secondaryColor, setSecondaryColor] = useState(settings.branding.secondaryColor)
     const [currency, setCurrency] = useState(settings.branding.currency || '$')
+    const [logoUrl, setLogoUrl] = useState(settings.branding.logoUrl || "")
+    const [gradient, setGradient] = useState(settings.branding.gradient || false)
+    const [gradientDirection, setGradientDirection] = useState(settings.branding.gradientDirection || "to right")
     const [isSaving, setIsSaving] = useState(false)
 
     const handleSave = async () => {
@@ -31,23 +38,27 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
         await onSaveBranding({
             primaryColor,
             secondaryColor,
-            currency
+            currency,
+            logoUrl,
+            gradient,
+            gradientDirection
         })
 
         setIsSaving(false)
     }
 
     return (
-        <Card className="bg-card/50 backdrop-blur-sm border-transparent">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Building2 className="h-5 w-5 text-blue-400" />
+        <Card className="bg-card border-border shadow-sm">
+            <CardHeader className="border-b border-border/50">
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                    <Building2 className="h-5 w-5 text-blue-500" />
                     Información del Negocio
                 </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-                {/* Business Name */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="space-y-8">
+                {/* Business Info Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                    {/* Name */}
                     <div className="space-y-2">
                         <Label htmlFor="name">Nombre del negocio</Label>
                         <Input
@@ -55,76 +66,114 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Mi Negocio"
-                            className="bg-card/50 border-white/10"
+                            className="bg-secondary/30 border-border"
                         />
                     </div>
+
+                    {/* Currency */}
                     <div className="space-y-2">
                         <Label htmlFor="currency">Moneda (Símbolo)</Label>
                         <Input
                             id="currency"
                             value={currency}
                             onChange={(e) => setCurrency(e.target.value)}
+                            onFocus={(e) => e.target.select()}
                             placeholder="$"
-                            className="bg-card/50 border-white/10"
-                            maxLength={3}
+                            className="bg-secondary/30 border-border"
+                            maxLength={10}
                         />
+                    </div>
+
+                    {/* Logo (Now in the grid) */}
+                    <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                            <ImageIcon className="h-4 w-4" />
+                            Logotipo
+                        </Label>
+                        <div className="w-full">
+                            <ImageUpload
+                                value={logoUrl}
+                                onChange={setLogoUrl}
+                                onRemove={() => setLogoUrl("")}
+                            />
+                        </div>
                     </div>
                 </div>
 
-                {/* Colors */}
-                <div className="space-y-4">
-                    <Label className="flex items-center gap-2">
-                        <Palette className="h-4 w-4" />
+                {/* Branding Colors */}
+                <div className="space-y-6">
+                    <Label className="flex items-center gap-2 text-lg font-semibold">
+                        <Palette className="h-5 w-5 text-primary" />
                         Colores de marca
                     </Label>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="primary" className="text-xs text-muted-foreground">
-                                Color primario
-                            </Label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="color"
-                                    id="primary"
-                                    value={primaryColor}
-                                    onChange={(e) => setPrimaryColor(e.target.value)}
-                                    className="w-12 h-12 rounded-lg cursor-pointer border border-white/10"
+                    <div className="grid md:grid-cols-2 gap-8">
+                        <div className="space-y-6">
+                            <ColorPicker
+                                label="Color principal"
+                                color={primaryColor}
+                                onChange={setPrimaryColor}
+                            />
+
+                            <div className="flex items-center gap-2">
+                                <Switch
+                                    checked={gradient}
+                                    onCheckedChange={setGradient}
+                                    id="gradient-mode"
                                 />
-                                <Input
-                                    value={primaryColor}
-                                    onChange={(e) => setPrimaryColor(e.target.value)}
-                                    className="bg-card/50 border-white/10 font-mono text-sm"
-                                />
+                                <Label htmlFor="gradient-mode" className="cursor-pointer">Usar degradado</Label>
                             </div>
+
+                            {gradient && (
+                                <div className="space-y-4 animate-in slide-in-from-top-2 fade-in duration-300">
+                                    <div className="p-4 rounded-lg bg-secondary/20 border border-border space-y-4">
+                                        <ColorPicker
+                                            label="Color secundario"
+                                            color={secondaryColor}
+                                            onChange={setSecondaryColor}
+                                        />
+                                        <GradientDirectionPicker
+                                            value={gradientDirection}
+                                            onChange={setGradientDirection}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {!gradient && (
+                                <div className="opacity-50 pointer-events-none filter grayscale">
+                                    <ColorPicker
+                                        label="Color secundario (Ignorado)"
+                                        color={secondaryColor}
+                                        onChange={() => { }}
+                                    />
+                                </div>
+                            )}
                         </div>
 
+                        {/* Live Preview */}
                         <div className="space-y-2">
-                            <Label htmlFor="secondary" className="text-xs text-muted-foreground">
-                                Color secundario
-                            </Label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="color"
-                                    id="secondary"
-                                    value={secondaryColor}
-                                    onChange={(e) => setSecondaryColor(e.target.value)}
-                                    className="w-12 h-12 rounded-lg cursor-pointer border border-white/10"
-                                />
-                                <Input
-                                    value={secondaryColor}
-                                    onChange={(e) => setSecondaryColor(e.target.value)}
-                                    className="bg-card/50 border-white/10 font-mono text-sm"
-                                />
+                            <Label>Vista previa</Label>
+                            <div
+                                className="w-full h-32 rounded-xl shadow-2xl flex items-center justify-center transition-all duration-500"
+                                style={{
+                                    background: gradient
+                                        ? gradientDirection.includes('radial')
+                                            ? `radial-gradient(circle at center, ${primaryColor}, ${secondaryColor})`
+                                            : `linear-gradient(${gradientDirection}, ${primaryColor}, ${secondaryColor})`
+                                        : primaryColor
+                                }}
+                            >
+                                <span className="text-white font-bold text-lg drop-shadow-md">
+                                    {name || "Tu Marca"}
+                                </span>
+                            </div>
+                            <div className="w-full h-12 rounded-lg mt-4 flex items-center justify-center text-white text-sm font-medium transition-all duration-500"
+                                style={{ backgroundColor: secondaryColor }}
+                            >
+                                Color Secundario / Acento
                             </div>
                         </div>
-                    </div>
-
-                    {/* Color Preview */}
-                    <div className="p-4 rounded-lg" style={{
-                        background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`
-                    }}>
-                        <p className="text-white font-bold text-center">Vista previa de colores</p>
                     </div>
                 </div>
 
@@ -132,7 +181,7 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
                 <Button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold h-12 text-md shadow-lg shadow-blue-900/20"
                 >
                     {isSaving ? "Guardando..." : "Guardar cambios"}
                 </Button>

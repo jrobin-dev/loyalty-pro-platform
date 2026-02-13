@@ -1,95 +1,124 @@
 "use client"
 
+import { AnimatePresence, motion } from "framer-motion"
 import { useOnboardingStore } from "@/store/onboarding-store"
-import { motion, AnimatePresence } from "framer-motion"
-import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Zap } from "lucide-react"
-
 import Step0AccountInfo from "./steps/step-0-account-info"
 import Step1BusinessInfo from "./steps/step-1-business-info"
 import Step2StampType from "./steps/step-2-stamp-type"
 import Step3StampsRequired from "./steps/step-3-stamps-required"
 import Step4RewardDescription from "./steps/step-4-reward-description"
-import Step5Branding from "./steps/step-4-branding"
-import Step6OwnerInfo from "./steps/step-5-owner-info"
-import Step7LogoUpload from "./steps/step-6-logo-upload"
-import Step8Final from "./steps/step-7-final"
+import Step4Branding from "./steps/step-4-branding"
+import Step5OwnerInfo from "./steps/step-5-owner-info"
+import Step6LogoUpload from "./steps/step-6-logo-upload"
+import Step7Final from "./steps/step-7-final"
+import { OnboardingPreview } from "./onboarding-preview"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function WizardLayout() {
     const { currentStep, totalSteps } = useOnboardingStore()
-    const [mounted, setMounted] = useState(false)
+    const isLastStep = currentStep === totalSteps
 
-    useEffect(() => {
-        setMounted(true)
-    }, [])
-
-    if (!mounted) return null
-
-    const progress = (currentStep / totalSteps) * 100
+    const renderStep = () => {
+        switch (currentStep) {
+            case 1: return <Step0AccountInfo />
+            case 2: return <Step1BusinessInfo />
+            case 3: return <Step2StampType />
+            case 4: return <Step3StampsRequired />
+            case 5: return <Step4RewardDescription />
+            case 6: return <Step4Branding />
+            case 7: return <Step5OwnerInfo />
+            case 8: return <Step6LogoUpload />
+            case 9: return <Step7Final />
+            default: return <Step0AccountInfo />
+        }
+    }
 
     return (
-        <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 relative overflow-hidden">
-            {/* Background Gradients - Deep Space Vibe */}
-            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-emerald-500/10 dark:bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-green-500/10 dark:bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
-
-            <div className="w-full max-w-xl z-10">
-                {/* Header */}
-                <div className="mb-8 text-center space-y-2">
-                    {/* Logo/Brand */}
-                    <div className="mb-6 flex justify-center">
-                        <Link href="/" className="flex items-center gap-2 group cursor-pointer">
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                                <Zap className="h-6 w-6 text-white fill-white" />
+        <div className="min-h-screen bg-white dark:bg-black font-[family-name:var(--font-geist-sans)] flex flex-col lg:flex-row">
+            {/* Left Column: Forms */}
+            <div className="flex-1 flex flex-col h-full min-h-screen overflow-y-auto">
+                <main className={`flex-1 w-full mx-auto px-6 py-12 lg:py-20 flex flex-col ${isLastStep ? 'max-w-[800px] items-center justify-center' : 'max-w-[500px]'}`}>
+                    {!isLastStep && (
+                        <div className="mb-12 w-full">
+                            <div className="flex items-center justify-between mb-8">
+                                <Link href="/" className="inline-flex items-center gap-2 group cursor-pointer hover:opacity-80 transition-opacity">
+                                    <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
+                                        <span className="text-black font-black text-xl">L</span>
+                                    </div>
+                                    <span className="text-xl font-black font-[family-name:var(--font-funnel-display)] tracking-tighter">
+                                        Loyalty<span className="text-primary">Pro</span>
+                                    </span>
+                                </Link>
+                                <ThemeToggle />
                             </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
-                                LoyaltyPro
-                            </span>
-                        </Link>
+
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-end">
+                                    <h1 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
+                                        Configuración del Sistema
+                                    </h1>
+                                    <span className="text-xs font-bold text-primary">
+                                        Paso {currentStep} de {totalSteps}
+                                    </span>
+                                </div>
+                                <div className="h-1.5 w-full bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                    <motion.div
+                                        className="h-full bg-primary"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
+                                        transition={{ duration: 0.5, ease: "circOut" }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="bg-white/50 dark:bg-transparent lg:border-0 lg:p-0">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentStep}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                transition={{ duration: 0.3 }}
+                                className="w-full"
+                            >
+                                {renderStep()}
+                            </motion.div>
+                        </AnimatePresence>
                     </div>
 
-                    <h1 className="text-3xl font-bold font-sans tracking-tight">
-                        Configura tu Sistema de Lealtad
-                    </h1>
-                    <p className="text-muted-foreground">
-                        Paso {currentStep} de {totalSteps}
-                    </p>
-
-                    {/* Progress Bar */}
-                    <div className="h-2 w-full bg-secondary rounded-full overflow-hidden mt-4">
-                        <motion.div
-                            className="h-full bg-primary shadow-[0_0_10px_rgba(0,255,148,0.5)]"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${progress}%` }}
-                            transition={{ duration: 0.5, ease: "easeInOut" }}
-                        />
-                    </div>
-                </div>
-
-                {/* Card Container - Standard Card like Login */}
-                <div className="bg-card rounded-3xl p-8 shadow-2xl relative border border-border/50">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={currentStep}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            {currentStep === 1 && <Step0AccountInfo />}
-                            {currentStep === 2 && <Step1BusinessInfo />}
-                            {currentStep === 3 && <Step2StampType />}
-                            {currentStep === 4 && <Step3StampsRequired />}
-                            {currentStep === 5 && <Step4RewardDescription />}
-                            {currentStep === 6 && <Step5Branding />}
-                            {currentStep === 7 && <Step6OwnerInfo />}
-                            {currentStep === 8 && <Step7LogoUpload />}
-                            {currentStep === 9 && <Step8Final />}
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
+                    {/* Footer / Powered By */}
+                    {!isLastStep && (
+                        <div className="mt-auto pt-12 text-center lg:text-left border-t border-gray-100 dark:border-white/5 mt-12 pt-8">
+                            <p className="text-xs text-muted-foreground">
+                                Impulsado por <span className="text-primary font-bold">LoyaltyPro</span> &bull; 2026
+                            </p>
+                        </div>
+                    )}
+                </main>
             </div>
+
+            {/* Right Column: Premium Preview (Desktop Only) */}
+            {!isLastStep && (
+                <div className="hidden lg:flex flex-1 bg-zinc-50 dark:bg-zinc-950 items-center justify-center relative overflow-hidden">
+                    {/* Decorative Background for Preview */}
+                    <div className="absolute inset-0 opacity-20 dark:opacity-40">
+                        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] animate-pulse" />
+                        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[100px]" />
+                    </div>
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ delay: 0.2, duration: 0.8, ease: "circOut" }}
+                        className="z-10 w-full h-full flex items-center justify-center"
+                    >
+                        <OnboardingPreview />
+                    </motion.div>
+                </div>
+            )}
         </div>
     )
 }

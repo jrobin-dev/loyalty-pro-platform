@@ -21,12 +21,16 @@ export interface TenantSettings {
         logoUrl?: string
         fontFamily: string
         gradient: boolean
+        gradientDirection: string
         currency: string
     }
+    // Loyalty Program data
     // Loyalty Program data
     loyaltyProgram: {
         id: string
         stampIcon: string
+        customIconUrl?: string
+        rewardImage?: string
         stampsRequired: number
         rewardTitle: string
     }
@@ -38,75 +42,38 @@ export function useTenantSettings() {
 
     const fetchSettings = async () => {
         try {
-            setLoading(true)
-            const supabase = createClient()
+            if (!settings) setLoading(true)
 
-            // Get authenticated user
-            const { data: { session } } = await supabase.auth.getSession()
+            const response = await fetch(`/api/settings?t=${Date.now()}`)
 
-            if (!session?.user) {
-                console.error('No authenticated user')
-                setLoading(false)
-                return
+            if (!response.ok) {
+                if (response.status === 401) {
+                    console.error('No authenticated user')
+                    return
+                }
+                const errorData = await response.json()
+                throw new Error(errorData.error || 'Error fetching settings')
             }
 
-            // Get Tenant
-            const { data: tenantData, error: tenantError } = await supabase
-                .from('Tenant')
-                .select('*')
-                .eq('ownerId', session.user.id)
-                .single()
-
-            if (tenantError || !tenantData) {
-                console.error('Tenant error:', tenantError)
-                toast.error('No se encontró configuración del negocio')
-                setLoading(false)
-                return
-            }
-
-            // Get Branding
-            const { data: brandingData, error: brandingError } = await supabase
-                .from('Branding')
-                .select('*')
-                .eq('tenantId', tenantData.id)
-                .single()
-
-            if (brandingError) {
-                console.error('Branding error:', brandingError)
-            }
-
-            // Get Loyalty Program
-            const { data: loyaltyData, error: loyaltyError } = await supabase
-                .from('LoyaltyProgram')
-                .select('*')
-                .eq('tenantId', tenantData.id)
-                .single()
-
-            if (loyaltyError) {
-                console.error('Loyalty error:', loyaltyError)
-            }
+            const data = await response.json()
 
             // Combine all data
             setSettings({
-                tenant: {
-                    id: tenantData.id,
-                    slug: tenantData.slug,
-                    name: tenantData.name,
-                    category: tenantData.category,
-                    plan: tenantData.plan
-                },
-                branding: brandingData || {
-                    id: '',
+                tenant: data.tenant,
+                branding: data.branding || {
+                    id: '', // Will be ignored in upsert
                     primaryColor: '#00FF94',
                     secondaryColor: '#000000',
                     logoUrl: null,
                     fontFamily: 'Funnel Display',
                     gradient: false,
+                    gradientDirection: 'to right',
                     currency: '$'
                 },
-                loyaltyProgram: loyaltyData || {
+                loyaltyProgram: data.loyaltyProgram || {
                     id: '',
                     stampIcon: 'star',
+                    customIconUrl: '',
                     stampsRequired: 6,
                     rewardTitle: '¡Premio gratis!'
                 }
@@ -151,10 +118,39 @@ export function useTenantSettings() {
 
         try {
             const supabase = createClient()
-            const { error } = await supabase
+
+            // Check if branding exists, if not calculate defaults
+            const { data: existing } = await supabase
                 .from('Branding')
-                .update(updates)
-                .eq('id', settings.branding.id)
+                .select('id')
+                .eq('tenantId', settings.tenant.id)
+                .single()
+
+            let error;
+
+            if (existing) {
+                const { error: updateError } = await supabase
+                    .from('Branding')
+                    .update(updates)
+                    .eq('id', existing.id)
+                error = updateError
+            } else {
+                // Insert new branding
+                const { error: insertError } = await supabase
+                    .from('Branding')
+                    .insert({
+                        tenantId: settings.tenant.id,
+                        primaryColor: settings.branding.primaryColor,
+                        secondaryColor: settings.branding.secondaryColor,
+                        fontFamily: settings.branding.fontFamily,
+                        logoUrl: settings.branding.logoUrl,
+                        gradient: settings.branding.gradient,
+                        gradientDirection: settings.branding.gradientDirection,
+                        currency: settings.branding.currency,
+                        ...updates
+                    })
+                error = insertError
+            }
 
             if (error) {
                 console.error('Error updating branding:', error)
@@ -177,10 +173,38 @@ export function useTenantSettings() {
 
         try {
             const supabase = createClient()
-            const { error } = await supabase
+            // Check if exists
+            const { data: existing } = await supabase
                 .from('LoyaltyProgram')
-                .update(updates)
-                .eq('id', settings.loyaltyProgram.id)
+                .select('id')
+                .eq('tenantId', settings.tenant.id)
+                .single()
+
+            let error;
+
+            console.log('Updating Loyalty Program with:', updates)
+
+            if (existing) {
+                const { data: updatedData, error: updateError } = await supabase
+                    .from('LoyaltyProgram')
+                    .update(updates)
+                    .eq('id', existing.id)
+                    .select()
+
+                console.log('Supabase Update Result:', { updatedData, updateError })
+
+                if (updateError) console.error('Supabase Update Error:', updateError)
+                error = updateError
+            } else {
+                const { error: insertError } = await supabase
+                    .from('LoyaltyProgram')
+                    .insert({
+                        tenantId: settings.tenant.id,
+                        ...updates
+                    })
+                if (insertError) console.error('Supabase Insert Error:', insertError)
+                error = insertError
+            }
 
             if (error) {
                 console.error('Error updating loyalty program:', error)
@@ -188,7 +212,9 @@ export function useTenantSettings() {
                 return false
             }
 
+            console.log('Update successful, fetching settings...')
             await fetchSettings()
+            console.log('Settings fetched')
             toast.success('Programa de lealtad actualizado correctamente')
             return true
         } catch (error) {

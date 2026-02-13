@@ -13,7 +13,7 @@ export function MarketingSlider() {
             id: 1,
             title: "Plan Pro: WhatsApp Automático",
             description: "Envía mensajes de cumpleaños y recordatorios sin mover un dedo.",
-            bg: "bg-gradient-to-r from-[#00FF94]/20 to-[#00C2FF]/20",
+            bg: "bg-gradient-to-r from-emerald-500/20 to-blue-500/20",
             cta: "Activar Demo",
         },
         {
@@ -37,7 +37,7 @@ export function MarketingSlider() {
 
                                 <div className="relative z-10 max-w-2xl">
                                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/20 border border-white/5 backdrop-blur-md text-xs font-medium text-white mb-4">
-                                        <Sparkles size={12} className="text-[#00FF94]" />
+                                        <Sparkles size={12} className="text-emerald-400" />
                                         <span>Novedad</span>
                                     </div>
                                     <h2 className="text-3xl md:text-4xl font-bold font-sans mb-4 leading-tight text-white">

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useUserProfile } from "@/hooks/use-user-profile"
 import { AvatarUploader } from "./avatar-uploader"
 import { DeleteAccountModal } from "./delete-account-modal"
+import { CountryCodeSelect } from "@/components/ui/country-code-select"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -133,13 +134,12 @@ export function AccountSettingsForm() {
     return (
         <div className="space-y-8">
             {/* Avatar Section */}
-            <Card className="p-6 glass-card border-white/10">
-                <h3 className="text-lg font-semibold text-white mb-4">Foto de Perfil</h3>
+            <Card className="p-6 glass-card border-border">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Foto de Perfil</h3>
                 <AvatarUploader
                     currentAvatarUrl={profile?.avatarUrl}
                     userName={profile?.name}
                     onUploadComplete={async (url) => {
-                        // Refresh profile to show new avatar immediately
                         await refetch()
                         toast.success("Avatar actualizado")
                     }}
@@ -147,58 +147,67 @@ export function AccountSettingsForm() {
             </Card>
 
             {/* Personal Information */}
-            <Card className="p-6 glass-card border-white/10">
-                <h3 className="text-lg font-semibold text-white mb-4">Información Personal</h3>
+            <Card className="p-6 glass-card border-border">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Información Personal</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label className="text-white/80">Nombre</Label>
+                        <Label>Nombre</Label>
                         <Input
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Tu nombre"
-                            className="bg-white/5 border-white/10"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-white/80">Apellido</Label>
+                        <Label>Apellido</Label>
                         <Input
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                             placeholder="Tu apellido"
-                            className="bg-white/5 border-white/10"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-white/80">Email</Label>
+                        <Label>Email</Label>
                         <Input
                             value={profile?.email || ""}
                             disabled
-                            className="bg-white/5 border-white/10 opacity-50 cursor-not-allowed"
+                            className="opacity-50 cursor-not-allowed"
                         />
-                        <p className="text-xs text-white/40">
+                        <p className="text-xs text-muted-foreground">
                             El email no se puede cambiar por seguridad
                         </p>
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-white/80">Teléfono / WhatsApp</Label>
-                        <Input
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder="+51 999 999 999"
-                            className="bg-white/5 border-white/10"
-                        />
+                        <Label>Teléfono / WhatsApp</Label>
+                        <div className="flex gap-2">
+                            <CountryCodeSelect
+                                value={phone.split(' ')[0].startsWith('+') ? phone.split(' ')[0] : "+51"}
+                                onChange={(code) => {
+                                    const number = phone.split(' ').slice(1).join(' ') || phone.replace(/^\+\d+\s*/, '')
+                                    setPhone(`${code} ${number}`)
+                                }}
+                            />
+                            <Input
+                                value={phone.split(' ').slice(1).join(' ') || phone.replace(/^\+\d+\s*/, '')}
+                                onChange={(e) => {
+                                    const code = phone.split(' ')[0].startsWith('+') ? phone.split(' ')[0] : "+51"
+                                    setPhone(`${code} ${e.target.value}`)
+                                }}
+                                placeholder="999 999 999"
+                                className="flex-1"
+                            />
+                        </div>
                     </div>
 
                     <div className="space-y-2 md:col-span-2">
-                        <Label className="text-white/80">Fecha de Cumpleaños</Label>
+                        <Label>Fecha de Cumpleaños</Label>
                         <Input
                             type="date"
                             value={birthday}
                             onChange={(e) => setBirthday(e.target.value)}
-                            className="bg-white/5 border-white/10"
                         />
                     </div>
                 </div>
@@ -221,29 +230,29 @@ export function AccountSettingsForm() {
             </Card>
 
             {/* Security Section */}
-            <Card className="p-6 glass-card border-white/10">
+            <Card className="p-6 glass-card border-border">
                 <div className="flex items-center gap-2 mb-4">
                     <Lock className="h-5 w-5 text-primary" />
-                    <h3 className="text-lg font-semibold text-white">Seguridad</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Seguridad</h3>
                 </div>
 
-                <Separator className="mb-6 bg-white/10" />
+                <Separator className="mb-6" />
 
                 <div className="space-y-4">
                     <div className="space-y-2">
-                        <Label className="text-white/80">Contraseña Actual</Label>
+                        <Label>Contraseña Actual</Label>
                         <div className="relative">
                             <Input
                                 type={showCurrentPassword ? "text" : "password"}
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="bg-white/5 border-white/10 pr-10"
+                                className="pr-10"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                             >
                                 {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
@@ -251,19 +260,19 @@ export function AccountSettingsForm() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-white/80">Nueva Contraseña</Label>
+                        <Label>Nueva Contraseña</Label>
                         <div className="relative">
                             <Input
                                 type={showNewPassword ? "text" : "password"}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="bg-white/5 border-white/10 pr-10"
+                                className="pr-10"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowNewPassword(!showNewPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                             >
                                 {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
@@ -271,13 +280,12 @@ export function AccountSettingsForm() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="text-white/80">Confirmar Nueva Contraseña</Label>
+                        <Label>Confirmar Nueva Contraseña</Label>
                         <Input
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             placeholder="••••••••"
-                            className="bg-white/5 border-white/10"
                         />
                     </div>
 
@@ -299,7 +307,7 @@ export function AccountSettingsForm() {
             </Card>
 
             {/* Danger Zone */}
-            <Card className="p-6 glass-card border-red-500/20 bg-red-500/5">
+            <Card className="p-6 glass-card border-red-500/20 bg-red-500/5 shadow-none">
                 <div className="flex items-center gap-2 mb-4">
                     <AlertTriangle className="h-5 w-5 text-red-500" />
                     <h3 className="text-lg font-semibold text-red-500">Zona de Advertencia</h3>
@@ -309,9 +317,9 @@ export function AccountSettingsForm() {
 
                 <div className="space-y-4">
                     <div>
-                        <h4 className="font-medium text-white mb-2">Eliminar Cuenta</h4>
-                        <p className="text-sm text-white/60 mb-4">
-                            Eliminar tu cuenta es <strong>irreversible</strong>. Perderás todos tus datos, clientes, stamps y configuración.
+                        <h4 className="font-medium text-foreground mb-2">Eliminar Cuenta</h4>
+                        <p className="text-sm text-muted-foreground mb-4">
+                            Eliminar tu cuenta es <strong className="text-foreground">irreversible</strong>. Perderás todos tus datos, clientes, stamps y configuración.
                         </p>
                         <Button
                             variant="destructive"

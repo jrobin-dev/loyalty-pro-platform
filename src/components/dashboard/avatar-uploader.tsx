@@ -152,7 +152,7 @@ export function AvatarUploader({ currentAvatarUrl, userName, onUploadComplete }:
     return (
         <>
             <div className="flex items-center gap-6">
-                <Avatar className="h-24 w-24 border-2 border-white/10">
+                <Avatar className="h-24 w-24 border-2 border-border shadow-sm">
                     <AvatarImage src={currentAvatarUrl || undefined} alt={userName || "User"} />
                     <AvatarFallback className="text-2xl bg-primary/20 text-primary">
                         {getInitials()}
@@ -163,18 +163,18 @@ export function AvatarUploader({ currentAvatarUrl, userName, onUploadComplete }:
                     <div
                         {...getRootProps()}
                         className={`border-2 border-dashed rounded-xl p-6 cursor-pointer transition-all ${isDragActive
-                                ? "border-primary bg-primary/5"
-                                : "border-white/10 hover:border-white/20 hover:bg-white/5"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/20 hover:bg-secondary/50"
                             }`}
                     >
                         <input {...getInputProps()} />
-                        <div className="flex items-center gap-3 text-white/60">
+                        <div className="flex items-center gap-3 text-muted-foreground">
                             <Upload size={20} />
                             <div>
-                                <p className="text-sm font-medium text-white">
+                                <p className="text-sm font-medium text-foreground">
                                     {isDragActive ? "Suelta la imagen aquí" : "Cambiar perfil"}
                                 </p>
-                                <p className="text-xs text-white/40">
+                                <p className="text-xs text-muted-foreground/60">
                                     Imagen cuadrada, mínimo 300x300px. Máx. 2 MB (JPG, PNG, WebP)
                                 </p>
                             </div>
@@ -207,7 +207,7 @@ export function AvatarUploader({ currentAvatarUrl, userName, onUploadComplete }:
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm text-white/60">Zoom</label>
+                        <label className="text-sm text-muted-foreground">Zoom</label>
                         <input
                             type="range"
                             min={1}

@@ -1,6 +1,4 @@
-"use client"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -8,7 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Textarea } from "@/components/ui/textarea"
 import { TenantSettings } from "@/hooks/use-tenant-settings"
-import { Award, Sparkles } from "lucide-react"
+import { Award, Sparkles, Coffee, Pizza, ShoppingBag, Dumbbell, Scissors, Upload, Wifi, BatteryFull, Signal } from "lucide-react"
+import { IconUpload } from "@/components/ui/icon-upload"
+import { WalletCard } from "@/components/wallet/wallet-card"
 
 interface LoyaltyCardEditorProps {
     settings: TenantSettings
@@ -18,13 +18,36 @@ interface LoyaltyCardEditorProps {
 export function LoyaltyCardEditor({ settings, onSave }: LoyaltyCardEditorProps) {
     const [stampsRequired, setStampsRequired] = useState(settings.loyaltyProgram.stampsRequired)
     const [rewardDescription, setRewardDescription] = useState(settings.loyaltyProgram.rewardTitle)
+    // Initialize with fallback to 'star' if forbidden/missing, though schema default is 'star'
+    const [stampIcon, setStampIcon] = useState(settings.loyaltyProgram.stampIcon || 'star')
+    const [customIconUrl, setCustomIconUrl] = useState(settings.loyaltyProgram.customIconUrl || "")
+
     const [isSaving, setIsSaving] = useState(false)
+
+    // Sync with settings when they load
+    useEffect(() => {
+        if (settings?.loyaltyProgram) {
+            setStampsRequired(settings.loyaltyProgram.stampsRequired)
+            setRewardDescription(settings.loyaltyProgram.rewardTitle)
+            setStampIcon(settings.loyaltyProgram.stampIcon || 'star')
+
+            // Only update customIconUrl if settings has a value, OR if we don't have a value locally yet.
+            // This prevents a race condition where a fresh upload (local state) gets overwritten by a stale setting (empty)
+            if (settings.loyaltyProgram.customIconUrl) {
+                setCustomIconUrl(settings.loyaltyProgram.customIconUrl)
+            } else if (!customIconUrl) { // If settings has no customIconUrl, and local state is also empty, ensure it stays empty.
+                setCustomIconUrl("");
+            }
+        }
+    }, [settings])
 
     const handleSave = async () => {
         setIsSaving(true)
         await onSave({
             stampsRequired,
-            rewardTitle: rewardDescription
+            rewardTitle: rewardDescription,
+            stampIcon,
+            customIconUrl
         })
         setIsSaving(false)
     }
@@ -40,6 +63,51 @@ export function LoyaltyCardEditor({ settings, onSave }: LoyaltyCardEditorProps) 
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                    {/* Stamp Icon & Type */}
+                    <div className="space-y-3">
+                        <Label htmlFor="stamp-type">Diseño del Sello</Label>
+                        <div className="grid grid-cols-3 gap-4 mb-4">
+                            {[
+                                { id: 'coffee', label: 'Café', icon: Coffee },
+                                { id: 'restaurant', label: 'Comida', icon: Pizza },
+                                { id: 'retail', label: 'Tienda', icon: ShoppingBag },
+                                { id: 'beauty', label: 'Belleza', icon: Scissors },
+                                { id: 'fitness', label: 'Fit', icon: Dumbbell },
+                                { id: 'custom', label: 'Custom', icon: Upload }, // Replaced Star with Upload/Custom
+                            ].map((option) => {
+                                const Icon = option.icon
+                                const isSelected = stampIcon === option.id
+                                return (
+                                    <button
+                                        key={option.id}
+                                        onClick={() => setStampIcon(option.id)}
+                                        className={`
+                                            flex flex-col items-center justify-center gap-2 p-3 rounded-xl border transition-all
+                                            ${isSelected
+                                                ? 'bg-primary/20 border-primary text-primary'
+                                                : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'
+                                            }
+                                        `}
+                                    >
+                                        <Icon size={20} />
+                                        <span className="text-xs">{option.label}</span>
+                                    </button>
+                                )
+                            })}
+                        </div>
+
+                        {stampIcon === 'custom' && (
+                            <div className="animate-in fade-in slide-in-from-top-2">
+                                <Label className="mb-2 block text-xs text-muted-foreground">Sube tu icono (SVG recomendado)</Label>
+                                <IconUpload
+                                    value={customIconUrl}
+                                    onChange={setCustomIconUrl}
+                                    onRemove={() => setCustomIconUrl("")}
+                                />
+                            </div>
+                        )}
+                    </div>
+
                     {/* Stamps Required */}
                     <div className="space-y-3">
                         <Label htmlFor="stamps">Sellos requeridos para premio</Label>
@@ -89,92 +157,52 @@ export function LoyaltyCardEditor({ settings, onSave }: LoyaltyCardEditorProps) 
                 </CardContent>
             </Card>
 
-            {/* Live Preview - Mobile Phone Style */}
-            <Card className="bg-card/50 backdrop-blur-sm border-white/10">
-                <CardHeader>
-                    <CardTitle>Vista Previa</CardTitle>
-                </CardHeader>
-                <CardContent className="flex justify-center">
-                    {/* Phone Frame */}
-                    <div className="relative w-[300px] h-[600px] bg-black rounded-[3rem] p-3 shadow-2xl border-8 border-gray-800">
-                        {/* Phone Notch */}
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-b-2xl z-10" />
+            {/* Live Preview - Modern iPhone Style */}
+            <div className="flex flex-col items-center justify-center p-4 lg:p-8 h-full">
+                {/* Modern Frameless Look - Maximize View */}
+                <div className="relative w-[380px] h-[750px] bg-black rounded-[55px] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden border-[8px] border-zinc-900 ring-1 ring-white/10">
 
-                        {/* Phone Screen */}
-                        <div className="w-full h-full bg-gradient-to-br from-gray-900 to-black rounded-[2.5rem] overflow-hidden">
-                            {/* Status Bar */}
-                            <div className="h-12 flex items-center justify-between px-6 text-white text-xs">
-                                <span>9:30</span>
-                                <div className="flex gap-1">
-                                    <div className="w-1 h-1 bg-white rounded-full" />
-                                    <div className="w-1 h-1 bg-white rounded-full" />
-                                    <div className="w-1 h-1 bg-white rounded-full" />
-                                </div>
-                            </div>
-
-                            {/* Card Content */}
-                            <div className="p-6 space-y-4">
-                                {/* Business Header */}
-                                <div
-                                    className="rounded-2xl p-6 text-center"
-                                    style={{
-                                        backgroundColor: settings.branding.primaryColor || '#8b5cf6'
-                                    }}
-                                >
-                                    <div className="w-16 h-16 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center">
-                                        <Award className="h-8 w-8 text-white" />
-                                    </div>
-                                    <h3 className="text-white font-bold text-lg">{settings.tenant.name}</h3>
-                                </div>
-
-                                {/* Stamps Section */}
-                                <div className="bg-gray-800/50 rounded-2xl p-4 backdrop-blur-sm border border-white/10">
-                                    <div className="flex justify-between items-center mb-3">
-                                        <p className="text-white/80 text-sm">Progreso</p>
-                                        <p className="text-white text-lg font-bold">
-                                            0/{stampsRequired} Sellos
-                                        </p>
-                                    </div>
-
-                                    {/* Stamp Grid */}
-                                    <div
-                                        className="grid gap-2 mb-3"
-                                        style={{
-                                            gridTemplateColumns: `repeat(${Math.min(stampsRequired, 4)}, minmax(0, 1fr))`
-                                        }}
-                                    >
-                                        {Array.from({ length: stampsRequired }).map((_, index) => (
-                                            <div
-                                                key={index}
-                                                className="aspect-square rounded-xl flex items-center justify-center bg-white/10 border-2 border-dashed border-white/20"
-                                            >
-                                                <div className="h-5 w-5 border-2 border-dashed border-white/30 rounded-full" />
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {/* Progress Bar */}
-                                    <div className="bg-white/10 rounded-full h-2 overflow-hidden">
-                                        <div
-                                            className="h-full transition-all duration-500"
-                                            style={{
-                                                width: '0%',
-                                                backgroundColor: settings.branding.primaryColor || '#8b5cf6'
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Reward Section */}
-                                <div className="bg-gray-800/50 rounded-2xl p-4 backdrop-blur-sm border border-white/10 text-center">
-                                    <p className="text-white/60 text-xs mb-1">PREMIO</p>
-                                    <p className="text-white font-bold">{rewardDescription}</p>
-                                </div>
-                            </div>
+                    {/* Dynamic Island / Notch Area */}
+                    <div className="absolute top-0 w-full h-14 flex items-center justify-between px-8 text-white text-xs z-20 bg-gradient-to-b from-black/60 to-transparent pointer-events-none">
+                        <span className="font-semibold text-sm">9:41</span>
+                        {/* Dynamic Island */}
+                        <div className="absolute left-1/2 -translate-x-1/2 top-3 w-[120px] h-[35px] bg-black rounded-full flex items-center justify-center z-30">
+                            <div className="w-16 h-4 bg-zinc-900/50 rounded-full" />
+                        </div>
+                        <div className="flex gap-2 items-center grayscale opacity-90">
+                            <Signal size={16} fill="currentColor" className="text-white" />
+                            <Wifi size={16} className="text-white" />
+                            <BatteryFull size={20} className="text-white" />
                         </div>
                     </div>
-                </CardContent>
-            </Card>
+
+                    {/* Wallet Card Component */}
+                    <div className="h-full w-full flex items-center justify-center p-4 bg-zinc-950">
+                        <WalletCard
+                            tenant={{
+                                ...settings.tenant,
+                                loyalty: {
+                                    stampIcon: stampIcon,
+                                    customIconUrl: customIconUrl,
+                                    rewardImage: settings.loyaltyProgram.rewardImage,
+                                    rewardTitle: rewardDescription
+                                }
+                            }}
+                            customer={{
+                                name: 'Roxy Studio',
+                                avatarUrl: '',
+                                id: '123456'
+                            }}
+                            stamps={1} // Show 1 stamp earned
+                            maxStamps={stampsRequired}
+                            primaryColor={settings.branding.primaryColor || '#8b5cf6'}
+                        />
+                    </div>
+
+                    {/* Home Indicator */}
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-white/20 rounded-full z-20" />
+                </div>
+            </div>
         </div>
     )
 }

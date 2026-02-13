@@ -46,7 +46,7 @@ export default function Step3StampsRequired() {
             </div>
 
             <div className="flex gap-4 pt-4">
-                <Button variant="ghost" className="flex-1" onClick={prevStep}>
+                <Button variant="ghost" className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 transition-colors" onClick={prevStep}>
                     Atrás
                 </Button>
                 <Button

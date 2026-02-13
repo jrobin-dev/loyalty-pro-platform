@@ -40,16 +40,16 @@ export default function SettingsPage() {
                 </div>
 
                 <Tabs defaultValue="business" className="w-full">
-                    <TabsList className="bg-card/50 border border-white/10">
-                        <TabsTrigger value="business" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">
+                    <TabsList className="bg-secondary/50 border border-border">
+                        <TabsTrigger value="business" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
                             <Building2 className="h-4 w-4 mr-2" />
                             Negocio
                         </TabsTrigger>
-                        <TabsTrigger value="loyalty" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
+                        <TabsTrigger value="loyalty" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400">
                             <Award className="h-4 w-4 mr-2" />
                             Tarjeta de Lealtad
                         </TabsTrigger>
-                        <TabsTrigger value="account" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-400">
+                        <TabsTrigger value="account" className="data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400">
                             <User className="h-4 w-4 mr-2" />
                             Cuenta
                         </TabsTrigger>
