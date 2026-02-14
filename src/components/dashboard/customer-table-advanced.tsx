@@ -25,6 +25,7 @@ import { createClient } from "@/lib/supabase/client"
 import { CustomerDetailModal } from "./customer-detail-modal"
 import { CustomerHistoryModal } from "./customer-history-modal"
 import { useTenantSettings } from "@/hooks/use-tenant-settings"
+import { formatNumber } from "@/lib/utils"
 
 interface CustomerTableProps {
     showFilters?: boolean
@@ -131,7 +132,7 @@ export function CustomerTableAdvanced({
             }
 
             toast.success(`Visita registrada para ${selectedCustomer.name}`, {
-                description: `Se registró el consumo de ${currency} ${amount} y se añadió +1 Stamp.`
+                description: `Se registró el consumo de ${currency} ${formatNumber(amount)} y se añadió +1 Stamp.`
             })
 
             setIsAddConsumptionOpen(false)

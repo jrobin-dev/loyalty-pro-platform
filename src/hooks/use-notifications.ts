@@ -80,67 +80,131 @@ export function useNotifications(manualUserId?: string, onNewNotification?: (n: 
         }
     }
 
-    useEffect(() => {
-        let activeUserId = manualUserId
+    // Helper to normalize Supabase Realtime payload (which might be lowercase/snake_case)
+    const mapNotificationFromPayload = (payload: any): Notification => {
+        let createdAt = payload.createdAt || payload.createdat || payload.created_at || new Date().toISOString()
 
-        const setupRealtime = async () => {
-            // Si no hay userId manual, intentamos obtener el de la sesión para el filtro
-            if (!activeUserId) {
-                const { data } = await supabase.auth.getUser()
-                activeUserId = data.user?.id
-            }
-
-            console.log("📡 Iniciando suscripción Realtime para:", activeUserId || "TODOS (Cuidado)")
-
-            const channel = supabase
-                .channel(`notif-${activeUserId || 'global'}`)
-                .on(
-                    'postgres_changes',
-                    {
-                        event: 'INSERT',
-                        schema: 'public',
-                        table: 'Notification'
-                    },
-                    (payload) => {
-                        const newNotif = payload.new as Notification
-
-                        // FILTRO CRÍTICO: Solo mostrar si es para este usuario
-                        if (activeUserId && newNotif.userId !== activeUserId) {
-                            return
-                        }
-
-                        console.log("🔔 ¡Notificación recibida en tiempo real!", newNotif)
-
-                        setNotifications(prev => [newNotif, ...prev])
-                        setUnreadCount(prev => prev + 1)
-
-                        if (onNewNotifRef.current) onNewNotifRef.current(newNotif)
-
-                        toast.info(newNotif.title, {
-                            description: newNotif.message,
-                            duration: 5000,
-                        })
-                    }
-                )
-                .subscribe((status) => {
-                    console.log(`🔌 Estado de suscripción Realtime (${activeUserId}):`, status)
-                })
-
-            return channel
+        // Fix: Realtime payload often comes without 'Z' (UTC), causing browser to interpret as local time.
+        // If it's 5 hours ahead (Peru/EST vs UTC), this fixes "In 5 hours" issue.
+        if (typeof createdAt === 'string' && !createdAt.endsWith('Z') && !createdAt.includes('+')) {
+            createdAt += 'Z'
         }
 
-        fetchNotifications()
-        const channelPromise = setupRealtime()
+        return {
+            id: payload.id,
+            userId: payload.userId || payload.userid || payload.user_id,
+            title: payload.title,
+            message: payload.message,
+            type: payload.type || 'info',
+            read: payload.read ?? false,
+            createdAt: createdAt,
+            link: payload.link
+        }
+    }
+
+    useEffect(() => {
+        let mounted = true
+        let channel: ReturnType<typeof supabase.channel> | null = null
+
+        const initialize = async () => {
+            try {
+                let activeUserId = manualUserId
+
+                // 1. Resolve User ID
+                if (!activeUserId) {
+                    const { data } = await supabase.auth.getUser()
+                    activeUserId = data.user?.id
+                }
+
+                if (!mounted) return
+
+                if (!activeUserId) {
+                    console.warn("🚫 No active user ID found. Notifications disabled.")
+                    setLoading(false)
+                    return
+                }
+
+                console.log("🔔 Initializing notifications for:", activeUserId)
+
+                // 2. Fetch Initial Data
+                try {
+                    setLoading(true)
+                    const url = activeUserId
+                        ? `/api/notifications?userId=${activeUserId}`
+                        : '/api/notifications'
+
+                    const res = await fetch(url)
+                    const data = await res.json()
+
+                    if (mounted && data.notifications) {
+                        setNotifications(data.notifications)
+                        setUnreadCount(data.notifications.filter((n: Notification) => !n.read).length)
+                    }
+                } catch (error) {
+                    console.error("❌ Error loading notifications:", error)
+                } finally {
+                    if (mounted) setLoading(false)
+                }
+
+                // 3. Setup Realtime Subscription
+                if (!mounted) return
+
+                channel = supabase
+                    .channel(`notif-${activeUserId}`)
+                    .on(
+                        'postgres_changes',
+                        {
+                            event: 'INSERT',
+                            schema: 'public',
+                            table: 'Notification',
+                        },
+                        (payload) => {
+                            // Verify payload is for this user (Client-side filtering security)
+                            const newNotif = mapNotificationFromPayload(payload.new)
+                            console.log("🔔 Realtime Event Received:", newNotif.userId === activeUserId ? "ACCEPTED" : "IGNORED", newNotif)
+
+                            if (newNotif.userId !== activeUserId) return
+
+                            setNotifications(prev => [newNotif, ...prev])
+                            setUnreadCount(prev => prev + 1)
+
+                            if (onNewNotifRef.current) {
+                                onNewNotifRef.current(newNotif)
+                            }
+
+
+                            // Visual Feedback for debug - REMOVED per user request (overlaps with action toast)
+                            // toast.success("Notificación recibida", {
+                            //     description: newNotif.title,
+                            //     className: "bg-emerald-500 text-white border-0"
+                            // })
+                        }
+                    )
+                    .subscribe((status) => {
+                        console.log(`📡 Subscription Status (${activeUserId}):`, status)
+                        if (status === 'SUBSCRIBED') {
+                            // Optional: toast.success("Conectado a notificaciones")
+                        }
+                        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                            console.error("Realtime Connection Failed:", status)
+                        }
+                    })
+
+            } catch (err) {
+                console.error("Initialization error:", err)
+            }
+        }
+
+        initialize()
 
         return () => {
-            channelPromise.then(channel => {
-                if (channel) {
-                    console.log("🔌 Cerrando canal Realtime")
-                    supabase.removeChannel(channel)
-                }
-            })
+            mounted = false
+            if (channel) {
+                console.log("🔌 Cleaning up notification channel")
+                supabase.removeChannel(channel)
+            }
         }
-    }, [manualUserId])
+    }, [manualUserId, supabase])
 
     return {
         notifications,

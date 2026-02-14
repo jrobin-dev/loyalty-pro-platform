@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useTenantSettings } from "@/hooks/use-tenant-settings"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
+import { formatNumber } from "@/lib/utils"
 
 interface CustomerHistoryModalProps {
     customer: Customer | null
@@ -131,7 +132,7 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
                                     </div>
                                     <div className="text-right">
                                         <p className="font-bold text-foreground">
-                                            {currency} {transaction.amount.toFixed(2)}
+                                            {currency} {formatNumber(transaction.amount)}
                                         </p>
                                         <p className={`text-xs ${transaction.type === 'reward'
                                             ? 'text-red-400'

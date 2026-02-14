@@ -96,7 +96,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 )}
             >
                 {/* Header - Logo & Close Button (Mobile) */}
-                <div className="h-16 flex items-center justify-between px-4 border-b border-border transition-all duration-300">
+                <div className="h-20 flex items-center justify-between px-4 border-b border-border transition-all duration-300">
                     <Link href="/" className={cn("group cursor-pointer transition-all duration-300", isCollapsed ? "w-12 flex justify-center" : "px-2")}>
                         {isCollapsed ? (
                             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.3)]">

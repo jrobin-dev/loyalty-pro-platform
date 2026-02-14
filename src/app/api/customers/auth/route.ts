@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { createNotification } from '@/lib/notifications'
 
 export async function POST(request: Request) {
     try {
         const body = await request.json()
-        const { email, name, tenantId } = body
+        const { email, name, tenantId, phone } = body
 
         if (!email || !tenantId) {
             return NextResponse.json({ error: 'Faltan datos' }, { status: 400 })
@@ -22,8 +23,15 @@ export async function POST(request: Request) {
                 data: {
                     email,
                     name: name || email.split('@')[0],
+                    phone,
                     role: 'END_USER'
                 }
+            })
+        } else if (phone && !user.phone) {
+            // Update phone if missing
+            user = await prisma.user.update({
+                where: { id: user.id },
+                data: { phone }
             })
         }
 
@@ -46,15 +54,31 @@ export async function POST(request: Request) {
                     currentStamps: 0
                 }
             })
+
+            // NOTIFICACIÓN: Avisar al dueño del negocio
+            const tenant = await prisma.tenant.findUnique({
+                where: { id: tenantId },
+                select: { ownerId: true }
+            })
+
+            if (tenant?.ownerId) {
+                await createNotification(
+                    tenant.ownerId,
+                    "Nuevo Cliente Registrado",
+                    `${name || email} se ha unido a tu lista de clientes.`,
+                    "success",
+                    `/dashboard/customers?id=${customer.id}`
+                )
+            }
         }
 
         return NextResponse.json({
             customer,
-            user: { name: user.name, email: user.email }
+            user: { name: user.name, email: user.email, phone: user.phone }
         })
 
-    } catch (error) {
+    } catch (error: any) {
         console.error(error)
-        return NextResponse.json({ error: 'Error de autenticación' }, { status: 500 })
+        return NextResponse.json({ error: error.message || 'Error de autenticación' }, { status: 500 })
     }
 }

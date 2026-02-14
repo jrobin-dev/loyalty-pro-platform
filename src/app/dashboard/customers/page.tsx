@@ -40,6 +40,15 @@ export default function CustomersPage() {
         toast.success("Archivo CSV descargado")
     }
 
+    const [isRefreshing, setIsRefreshing] = useState(false)
+
+    const handleRefresh = async () => {
+        setIsRefreshing(true)
+        await refresh()
+        setTimeout(() => setIsRefreshing(false), 500) // Visual delay
+        toast.success("Datos actualizados")
+    }
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
@@ -61,8 +70,15 @@ export default function CustomersPage() {
                     <Button onClick={handleExportCSV} variant="outline" size="sm" className="bg-white/5 border-white/10 text-white hover:bg-white/10">
                         <Download size={14} className="mr-2" /> Exportar
                     </Button>
-                    <Button onClick={refresh} variant="outline" size="sm" className="bg-white/5 border-white/10 text-white hover:bg-white/10">
-                        <RefreshCw size={14} className="mr-2" /> Refrescar
+                    <Button
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                        variant="outline"
+                        size="sm"
+                        className="bg-white/5 border-white/10 text-white hover:bg-white/10"
+                    >
+                        <RefreshCw size={14} className={cn("mr-2", isRefreshing && "animate-spin")} />
+                        {isRefreshing ? "Refrescando..." : "Refrescar"}
                     </Button>
                     <Button onClick={() => setIsAddCustomerOpen(true)} size="sm" className="btn-cosmic">
                         <Plus size={16} className="mr-2" /> Nuevo Cliente

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { createNotification } from '@/lib/notifications'
 
 export async function POST(request: Request) {
     try {
@@ -48,6 +49,22 @@ export async function POST(request: Request) {
                 }
             })
         ])
+
+        const ownerId = customer.tenant?.ownerId
+        if (ownerId) {
+            const title = type === 'EARN' ? 'Puntos/Stamps Ganados' : 'Canje Realizado'
+            const msg = type === 'EARN'
+                ? `El cliente ha recibido ${amount} puntos/stamps.`
+                : `El cliente ha canjeado ${amount} puntos/stamps.`
+
+            await createNotification(
+                ownerId,
+                title,
+                msg,
+                "info",
+                `/dashboard/customers?id=${customerId}`
+            )
+        }
 
         return NextResponse.json({
             success: true,

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Search, User, Settings, CreditCard, LayoutDashboard, Store, Users as UsersIcon, Megaphone, ChevronRight, BookOpen, GraduationCap } from "lucide-react"
+import { Search, User, Settings, CreditCard, LayoutDashboard, Store, Users as UsersIcon, Megaphone, ChevronRight, BookOpen, GraduationCap, Video } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useCustomers } from "@/hooks/use-customers"
@@ -11,7 +11,7 @@ interface SearchResult {
     id: string
     title: string
     description: string
-    category: "Navegación" | "Panel" | "Usuarios" | "Colecciones" | "Academia"
+    category: "Navegación" | "Panel" | "Usuarios" | "Colecciones" | "Academia" | "Lecciones"
     href: string
     icon: any
 }
@@ -57,6 +57,7 @@ export function GlobalSearch() {
             // 2. Filter Academy (Courses and Lessons)
             const academyResults: SearchResult[] = []
             courses.forEach(course => {
+                // Match Course
                 if (course.title.toLowerCase().includes(searchLower) || (course.description && course.description.toLowerCase().includes(searchLower))) {
                     academyResults.push({
                         id: `course-${course.id}`,
@@ -67,9 +68,18 @@ export function GlobalSearch() {
                         icon: BookOpen
                     })
                 }
-                // Check lessons if available (though getPublishedCourses only includes _count)
-                // If we need topics/lessons, we'd need more data. 
-                // For now, let's just do courses as per getPublishedCourses response.
+
+                // MOCK Logic for Lessons matching
+                if (searchLower.includes("leccion") || searchLower.includes("clase")) {
+                    academyResults.push({
+                        id: `lesson-${course.id}`,
+                        title: `Lecciones en ${course.title}`,
+                        description: "Explorar contenido del curso",
+                        category: "Lecciones",
+                        href: `/dashboard/academy/${course.slug}`, // Redirects to course for now
+                        icon: Video
+                    })
+                }
             })
 
             // 3. Filter real customers (scoped by tenant already via hook)
@@ -85,7 +95,7 @@ export function GlobalSearch() {
                     title: `${c.name} ${c.lastName || ''}`,
                     description: `Cliente - ${c.email}`,
                     category: "Usuarios",
-                    href: `/dashboard/customers?id=${c.id}`,
+                    href: `/dashboard/customers?id=${c.id}`, // Deep link logic
                     icon: User
                 }))
 
@@ -114,51 +124,61 @@ export function GlobalSearch() {
         setQuery("")
     }
 
+    const hasResults = isOpen && results.length > 0;
+
     return (
-        <div className="relative w-full" ref={containerRef}>
+        <div className="relative w-full max-w-xl mx-auto z-50" ref={containerRef}>
             <div className={cn(
-                "flex items-center gap-2 h-10 px-3 rounded-xl transition-all",
-                "bg-secondary/40 dark:bg-secondary/50",
-                "border-none",
-                "dark:shadow-inner",
-                "focus-within:bg-secondary/60 dark:focus-within:bg-secondary/80 focus-within:ring-2 focus-within:ring-emerald-500/10",
-                isOpen && results.length > 0 ? "rounded-b-none shadow-none" : ""
+                "flex items-center gap-3 h-11 px-4 transition-all duration-200",
+                "bg-[#0F0F10] border border-[#27272A]",
+                "focus-within:bg-[#18181B] focus-within:border-emerald-500/50 focus-within:ring-1 focus-within:ring-emerald-500/20",
+                hasResults ? "rounded-t-2xl rounded-b-none border-b-transparent border-emerald-500/30 bg-[#18181B]" : "rounded-full hover:border-zinc-700"
             )}>
-                <Search className="w-4 h-4 text-muted-foreground" />
+                <Search className="w-4 h-4 text-zinc-500" />
                 <input
                     type="text"
                     placeholder="Buscar clientes, cursos, ajustes..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onFocus={() => query.length > 0 && setIsOpen(true)}
-                    className="bg-transparent border-none outline-none text-sm text-foreground w-full placeholder:text-muted-foreground h-full"
+                    className="bg-transparent border-none outline-none text-sm text-zinc-100 w-full placeholder:text-zinc-600 h-full"
                 />
             </div>
 
             {/* Results Dropdown */}
-            {isOpen && results.length > 0 && (
-                <div className="absolute top-full left-0 w-full bg-card border border-border/50 rounded-b-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="max-h-[300px] overflow-y-auto p-2">
+            {hasResults && (
+                <div className="absolute top-full left-0 w-full bg-[#18181B] border border-emerald-500/30 border-t-0 rounded-b-2xl shadow-2xl overflow-hidden -mt-[1px]">
+                    {/* Horizontal line to separate input from results but keep outer border seamless */}
+                    <div className="h-px w-[95%] mx-auto bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
+
+                    <div className="max-h-[400px] overflow-y-auto p-2 space-y-1">
                         {results.map((result) => (
                             <button
                                 key={result.id}
                                 onClick={() => handleSelect(result.href)}
-                                className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-emerald-500/5 group transition-all text-left"
+                                className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-emerald-500/10 group transition-all text-left border border-transparent hover:border-emerald-500/20"
                             >
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-secondary/50 flex items-center justify-center text-muted-foreground group-hover:text-emerald-500 group-hover:bg-emerald-500/10 transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <div className={cn(
+                                        "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
+                                        "bg-zinc-900 text-zinc-500 group-hover:bg-emerald-500/20 group-hover:text-emerald-500"
+                                    )}>
                                         <result.icon size={18} />
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="font-semibold text-sm text-foreground">{result.title}</span>
-                                        <span className="text-[10px] text-muted-foreground">{result.description}</span>
+                                        <span className="font-medium text-sm text-zinc-200 group-hover:text-white transition-colors">{result.title}</span>
+                                        <span className="text-xs text-zinc-500 group-hover:text-zinc-400 max-w-[200px] truncate">{result.description}</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <span className="px-2 py-0.5 rounded-md bg-secondary text-[8px] font-bold uppercase tracking-wider text-muted-foreground group-hover:bg-emerald-500/20 group-hover:text-emerald-500 transition-colors">
+                                <div className="flex items-center gap-3">
+                                    <span className={cn(
+                                        "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors border",
+                                        "bg-zinc-900 border-zinc-800 text-zinc-500",
+                                        "group-hover:bg-emerald-500/10 group-hover:border-emerald-500/30 group-hover:text-emerald-500"
+                                    )}>
                                         {result.category}
                                     </span>
-                                    <ChevronRight size={14} className="text-muted-foreground/30 group-hover:text-emerald-500/50" />
+                                    <ChevronRight size={14} className="text-zinc-700 group-hover:text-emerald-500 transition-colors" />
                                 </div>
                             </button>
                         ))}

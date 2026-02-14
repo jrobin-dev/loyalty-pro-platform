@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { createClient } from '@/lib/supabase/server'
+import { createNotification } from '@/lib/notifications'
 
 export async function POST(request: Request) {
     try {
@@ -74,6 +75,17 @@ export async function POST(request: Request) {
                     }
                 }
             })
+
+            // 3. Create Notification for Admin (or User)
+            // Note: Since we don't have a SUPER_ADMIN ID handy without fetching, we might just notify the user themselves 
+            // OR if there is a system notification mechanism. 
+            // For now, let's notify the NEW USER that their account is ready.
+            await createNotification(
+                user.id,
+                "¡Bienvenido a LoyaltyPro!",
+                "Tu cuenta ha sido creada exitosamente. Completa tu configuración para empezar.",
+                "success"
+            )
 
             return tenant
         })

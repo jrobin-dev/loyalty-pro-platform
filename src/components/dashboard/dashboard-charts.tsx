@@ -41,7 +41,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-primary" />
                     <p className="text-muted-foreground">
-                        Ventas: <span className="font-mono font-bold text-foreground">{payload[0].payload.currency || '$'} {payload[0].value}</span>
+                        Ventas: <span className="font-mono font-bold text-foreground">{payload[0].payload.currency || '$'} {new Intl.NumberFormat('en-US').format(payload[0].value)}</span>
                     </p>
                 </div>
             </div>

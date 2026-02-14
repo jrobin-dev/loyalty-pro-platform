@@ -1,10 +1,11 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, Search, Menu, User, Settings, LogOut, Moon, Sun, Monitor, HelpCircle, Shield, CreditCard, ChevronDown, Zap } from "lucide-react";
+import { Search, Menu, User, Settings, LogOut, Moon, Sun, Monitor, HelpCircle, Shield, CreditCard, ChevronDown, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { GlobalSearch } from "./global-search";
+import { NotificationsPopover } from "./notifications-popover";
 import { useUserProfile } from "@/hooks/use-user-profile";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -52,69 +53,63 @@ export function DashboardNavbar({
         router.push("/login");
     };
 
-    // Obtener el nombre de la sección actual
-    const getPageTitle = () => {
-        const parts = pathname.split("/");
-        const lastPart = parts[parts.length - 1];
-        if (!lastPart || lastPart === "dashboard") return "Inicio";
-        if (lastPart === "admin") return "Consola Admin";
-        if (lastPart === "customers") return "Clientes";
-        if (lastPart === "rewards") return "Premios";
-        if (lastPart === "academy") return "Academia";
-        if (lastPart === "settings") return "Configuración";
-        if (lastPart === "scan") return "Escanear";
-        return lastPart.charAt(0).toUpperCase() + lastPart.slice(1);
-    };
+
 
     return (
-        <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between bg-background px-4 md:px-6 border-b border-border/50">
+        <header className="sticky top-0 z-30 grid grid-cols-[auto_1fr_auto] h-20 w-full items-center bg-background px-6 border-b border-border/50 gap-4">
+            {/* LEFT: Toggle & Mobile Menu */}
             <div className="flex items-center gap-4">
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="md:hidden"
+                    className="md:hidden text-zinc-400 hover:text-white"
                     onClick={onOpenMobileSidebar}
                 >
-                    <Menu className="h-5 w-5" />
+                    <Menu className="h-6 w-6" />
                 </Button>
 
-                {/* Desktop Collapse Toggle */}
+                {/* Modern Desktop Toggle */}
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="hidden md:flex h-9 w-9 text-muted-foreground hover:text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-colors"
                     onClick={toggleCollapse}
+                    className="hidden md:flex h-10 w-10 text-zinc-400 bg-zinc-900/50 hover:bg-zinc-800 hover:text-white rounded-xl border border-white/5 transition-all group"
                 >
-                    <Menu className={cn("h-5 w-5 transition-transform duration-300", isCollapsed && "rotate-180")} />
+                    <div className="flex flex-col gap-[3px] items-start w-4 group-hover:gap-[4px] transition-all duration-300">
+                        <div className={cn("h-[2px] w-full bg-current rounded-full transition-all duration-300", isCollapsed && "w-2 self-start")} />
+                        <div className="h-[2px] w-3/4 bg-current rounded-full" />
+                        <div className={cn("h-[2px] w-full bg-current rounded-full transition-all duration-300", isCollapsed && "w-2 self-end")} />
+                    </div>
                 </Button>
+            </div>
 
-                <div className="flex flex-col">
-                    <h1 className="text-lg font-bold tracking-tight text-foreground md:text-xl">
-                        {getPageTitle()}
-                    </h1>
+            {/* CENTER: Global Search */}
+            <div className="flex justify-center w-full max-w-2xl mx-auto">
+                <div className="w-full">
+                    <GlobalSearch />
                 </div>
             </div>
 
-            <div className="flex items-center gap-2 md:gap-4">
-                <div className="hidden md:flex relative max-w-sm items-center">
-                    <Search className="absolute left-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        type="search"
-                        placeholder="Buscar..."
-                        className="w-[200px] lg:w-[300px] bg-muted/50 pl-9 border-none focus-visible:ring-1 focus-visible:ring-emerald-500/50"
-                    />
-                </div>
+            {/* RIGHT: Actions */}
+            <div className="flex items-center justify-end gap-3 md:gap-4">
+                {/* Super Admin Action */}
+                {profile?.role === 'SUPER_ADMIN' && (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="relative h-10 w-10 text-emerald-500 bg-emerald-500/10 hover:bg-emerald-500/20 hover:text-emerald-400 rounded-xl transition-all border border-emerald-500/20"
+                        asChild
+                    >
+                        <a href="/admin" target="_blank" rel="noopener noreferrer">
+                            <Zap className="h-5 w-5 fill-current" />
+                        </a>
+                    </Button>
+                )}
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                     <ThemeToggle />
 
-                    <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground hover:bg-muted/50">
-                        <Bell className="h-5 w-5" />
-                        <span className="absolute top-2 right-2 flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </span>
-                    </Button>
+                    <NotificationsPopover />
                 </div>
 
                 <div className="h-8 w-px bg-border/40 mx-1 hidden sm:block" />

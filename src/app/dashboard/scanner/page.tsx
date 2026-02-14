@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ArrowLeft, Check, Loader2, Minus, Plus, RefreshCw, Coffee, Gift } from "lucide-react"
 import Link from "next/link"
 import { useTenantSettings } from "@/hooks/use-tenant-settings"
+import { formatNumber } from "@/lib/utils"
 
 export default function ScannerPage() {
     const [scannedData, setScannedData] = useState<string | null>(null)
@@ -62,7 +63,7 @@ export default function ScannerPage() {
 
         const amount = type === 'EARN' ? 1 : 10 // Assuming 10 stamps = 1 Reward default, or we could make this dynamic later.
         const description = type === 'EARN'
-            ? `Visita Registrada (Consumo: ${currency} ${moneyAmount})`
+            ? `Visita Registrada (Consumo: ${currency} ${formatNumber(moneyAmount)})`
             : 'Canje de Premio (Scanner)'
 
         try {

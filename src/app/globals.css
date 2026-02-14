@@ -92,8 +92,8 @@
 }
 
 .btn-cosmic:hover {
-  box-shadow: 0 0 50px 0px #1f9a1a70;
   transform: translateY(-1px);
+  box-shadow: 0 0 35px #00ff0e29;
 }
 
 @theme inline {
