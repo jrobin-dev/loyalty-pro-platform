@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
 
         console.log('🚀 Starting onboarding for:', body.email)
 
+
         // Step 1: Check if user exists or create new
         let userId = ''
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
@@ -68,6 +69,7 @@ export async function POST(request: NextRequest) {
                 email: body.email,
                 name: body.ownerName || body.businessName,
                 role: 'BUSINESS_OWNER',
+                phone: `${body.country || ''} ${body.whatsapp || ''}`.trim() || null,
             }
         })
 
@@ -88,6 +90,8 @@ export async function POST(request: NextRequest) {
                 category: body.category,
                 ownerId: userId,
                 plan: 'FREE',
+                currency: body.currency || '$',
+                phone: `${body.country || ''}${body.whatsapp || ''}`.trim() || null,
             }
         })
 
@@ -102,6 +106,7 @@ export async function POST(request: NextRequest) {
                 logoUrl: body.logoUrl || null,
                 fontFamily: 'Funnel Display',
                 gradient: body.gradientEnabled || false,
+                gradientDirection: body.gradientDirection || 'to right',
             }
         })
 
@@ -112,6 +117,7 @@ export async function POST(request: NextRequest) {
             data: {
                 tenantId: tenant.id,
                 stampIcon: body.stampType || 'star',
+                customIconUrl: body.customIconUrl || null,
                 stampsRequired: body.stampsRequired || 6,
                 rewardTitle: body.rewardDescription || '¡Premio gratis!',
             }
@@ -135,6 +141,8 @@ export async function POST(request: NextRequest) {
             success: true,
             user: prismaUser,
             tenant,
+            loyalty: loyaltyProgram,
+            branding,
             session: sessionData?.session,
             redirectUrl: '/dashboard'
         })

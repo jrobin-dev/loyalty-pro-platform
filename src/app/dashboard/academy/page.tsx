@@ -26,12 +26,9 @@ export default function AcademyPage() {
     }, [])
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold font-[family-name:var(--font-funnel-display)] tracking-tight">Academia LoyaltyPro</h1>
-                <p className="text-muted-foreground mt-2 max-w-2xl">
-                    Cursos y tutoriales para dominar la plataforma y hacer crecer tu negocio.
-                </p>
+                <h2 className="text-xl font-bold text-muted-foreground/40 font-sans uppercase tracking-wider text-sm">Biblioteca de Entrenamiento</h2>
             </div>
 
             {isLoading ? (

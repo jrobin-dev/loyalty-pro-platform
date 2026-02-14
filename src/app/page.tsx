@@ -1,46 +1,29 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import Hero from "@/components/loyalty/Hero"
-import Benefits from "@/components/loyalty/Benefits"
-import Features from "@/components/loyalty/Features"
-import Pricing from "@/components/loyalty/Pricing"
-import Footer from "@/components/loyalty/Footer"
-import HowItWorks from "@/components/loyalty/HowItWorks"
-import SocialProof from "@/components/loyalty/SocialProof"
-import WhatIs from "@/components/loyalty/WhatIs"
-import FinalCTA from "@/components/loyalty/FinalCTA"
-import Apps from "@/components/loyalty/Apps"
-import Devices from "@/components/loyalty/Devices"
 import { LandingHeader } from "@/components/landing/landing-header"
-import { ScrollToTop } from "@/components/loyalty/ScrollToTop"
+import { HeroSection } from "@/components/landing/hero-section"
+import { ClientLogos } from "@/components/landing/client-logos"
+import { FeaturesSection } from "@/components/landing/features-section"
+import { StatsSection } from "@/components/landing/stats-section"
+import { TestimonialsSection } from "@/components/landing/testimonials-section"
+import { NewsletterSection } from "@/components/landing/newsletter-section"
+import { LandingFooter } from "@/components/landing/landing-footer"
+import { FAQSection } from "@/components/landing/faq-section"
 
-export default function HomePage() {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return null
-
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white overflow-x-hidden selection:bg-emerald-500/30">
       <LandingHeader />
       <main>
-        <Hero />
-        <SocialProof />
-        <WhatIs />
-        <Benefits />
-        <Features />
-        <HowItWorks />
-        <Apps />
-        <Devices />
-        <Pricing />
-        <FinalCTA />
+        <HeroSection />
+        <ClientLogos />
+        <FeaturesSection />
+        <StatsSection />
+        <TestimonialsSection />
+        <FAQSection />
+        <NewsletterSection />
       </main>
-      <Footer />
-      <ScrollToTop />
+      <LandingFooter />
     </div>
   )
 }

@@ -18,10 +18,10 @@ export default function Step2StampType() {
     return (
         <div className="space-y-6">
             <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
+                <h2 className="text-3xl font-black text-white tracking-tighter">
                     Elige tu Icono de Sello
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <p className="text-zinc-500 text-sm font-medium">
                     Este icono aparecerá en la tarjeta digital de tus clientes.
                 </p>
             </div>
@@ -35,20 +35,20 @@ export default function Step2StampType() {
                             key={option.id}
                             onClick={() => updateData({ stampType: option.id })}
                             className={`
-                        relative flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border transition-all duration-300
+                        relative flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border transition-all duration-300 cursor-pointer
                         ${isSelected
-                                    ? 'bg-primary/20 border-primary shadow-[0_0_20px_rgba(16,185,129,0.3)]'
-                                    : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10 hover:border-primary/50'
+                                    ? 'bg-emerald-500/10 border-emerald-500/30'
+                                    : 'bg-[#1c1c1c] border-white/5 hover:bg-white/5 hover:border-white/10'
                                 }
                     `}
                         >
                             <div className={`
                         p-3 rounded-full transition-colors
-                        ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white'}
+                        ${isSelected ? 'bg-emerald-500 text-black' : 'bg-white/5 text-zinc-500'}
                     `}>
                                 <Icon size={24} />
                             </div>
-                            <span className={`text-sm font-medium ${isSelected ? 'text-primary' : 'text-gray-700 dark:text-white/80'}`}>
+                            <span className={`text-sm font-bold ${isSelected ? 'text-emerald-500' : 'text-zinc-600'}`}>
                                 {option.label}
                             </span>
                         </button>
@@ -73,24 +73,20 @@ export default function Step2StampType() {
             )}
 
             <div className="flex gap-4 pt-4">
-                <Button variant="ghost" className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 transition-colors" onClick={prevStep}>
+                <Button
+                    variant="ghost"
+                    className="flex-1 h-15 rounded-2xl hover:bg-white/5 text-zinc-500 hover:text-white transition-all font-bold"
+                    onClick={prevStep}
+                >
                     Atrás
                 </Button>
-                <Button
-                    className="flex-1 text-lg font-bold"
-                    size="lg"
-                    onClick={() => {
-                        if (data.stampType === 'custom' && !data.customIconUrl) {
-                            // Prevent proceeding if custom is selected but no icon uploaded? 
-                            // Or just allow default star? Let's verify.
-                            // For now, allow but maybe show warning? 
-                        }
-                        nextStep()
-                    }}
+                <button
+                    onClick={nextStep}
                     disabled={data.stampType === 'custom' && !data.customIconUrl}
+                    className="flex-1 h-15 rounded-2xl bg-emerald-500 text-black font-black text-xl transition-all hover:bg-emerald-400 active:scale-95 shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] flex items-center justify-center py-4 disabled:opacity-50"
                 >
                     Continuar
-                </Button>
+                </button>
             </div>
         </div>
     )

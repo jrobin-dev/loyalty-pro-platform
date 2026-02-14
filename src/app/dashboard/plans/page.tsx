@@ -57,9 +57,9 @@ export default function PlansPage() {
                 "Account Manager dedicado",
                 "Campañas automáticas IA"
             ],
-            color: "text-purple-600 dark:text-purple-400",
-            borderColor: "border-purple-500/50 dark:border-purple-500/30",
-            bgColor: "bg-purple-50/50 dark:bg-purple-500/5"
+            color: "text-blue-600 dark:text-blue-400",
+            borderColor: "border-blue-500/50 dark:border-blue-500/30",
+            bgColor: "bg-blue-50/50 dark:bg-blue-500/5"
         }
     ]
 
@@ -220,9 +220,9 @@ function PricingTable() {
                     <TableRow label="Campañas temporales" free={false} pro={true} plus={true} />
 
                     {/* Negocio */}
-                    <tr className="bg-purple-50/10 dark:bg-purple-500/[0.02]">
+                    <tr className="bg-blue-50/10 dark:bg-blue-500/[0.02]">
                         <td colSpan={4} className="py-4 px-10">
-                            <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold uppercase tracking-widest text-[10px]">
+                            <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest text-[10px]">
                                 <GraduationCap size={14} /> Negocio y Crecimiento
                             </div>
                         </td>

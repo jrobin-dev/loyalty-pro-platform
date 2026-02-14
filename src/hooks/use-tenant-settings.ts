@@ -12,6 +12,7 @@ export interface TenantSettings {
         name: string
         category?: string
         plan: string
+        currency: string
     }
     // Branding data
     branding: {
@@ -91,17 +92,13 @@ export function useTenantSettings() {
         if (!settings) return false
 
         try {
-            const supabase = createClient()
-            const { error } = await supabase
-                .from('Tenant')
-                .update(updates)
-                .eq('id', settings.tenant.id)
+            const response = await fetch('/api/settings', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tenant: updates })
+            })
 
-            if (error) {
-                console.error('Error updating tenant:', error)
-                toast.error('Error al actualizar negocio')
-                return false
-            }
+            if (!response.ok) throw new Error('Error updating tenant')
 
             await fetchSettings()
             toast.success('Negocio actualizado correctamente')
@@ -117,46 +114,13 @@ export function useTenantSettings() {
         if (!settings) return false
 
         try {
-            const supabase = createClient()
+            const response = await fetch('/api/settings', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ branding: updates })
+            })
 
-            // Check if branding exists, if not calculate defaults
-            const { data: existing } = await supabase
-                .from('Branding')
-                .select('id')
-                .eq('tenantId', settings.tenant.id)
-                .single()
-
-            let error;
-
-            if (existing) {
-                const { error: updateError } = await supabase
-                    .from('Branding')
-                    .update(updates)
-                    .eq('id', existing.id)
-                error = updateError
-            } else {
-                // Insert new branding
-                const { error: insertError } = await supabase
-                    .from('Branding')
-                    .insert({
-                        tenantId: settings.tenant.id,
-                        primaryColor: settings.branding.primaryColor,
-                        secondaryColor: settings.branding.secondaryColor,
-                        fontFamily: settings.branding.fontFamily,
-                        logoUrl: settings.branding.logoUrl,
-                        gradient: settings.branding.gradient,
-                        gradientDirection: settings.branding.gradientDirection,
-                        currency: settings.branding.currency,
-                        ...updates
-                    })
-                error = insertError
-            }
-
-            if (error) {
-                console.error('Error updating branding:', error)
-                toast.error('Error al actualizar colores')
-                return false
-            }
+            if (!response.ok) throw new Error('Error updating branding')
 
             await fetchSettings()
             toast.success('Colores actualizados correctamente')

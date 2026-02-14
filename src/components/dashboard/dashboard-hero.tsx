@@ -11,7 +11,7 @@ export function DashboardHero() {
             <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl animate-pulse" />
             {/* Background Image/Pattern */}
             <div className="absolute right-0 top-0 h-full w-1/2 opacity-20">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-purple-500/20 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/20 via-transparent to-transparent" />
             </div>
 
             <div className="relative z-10 max-w-2xl">
@@ -28,7 +28,7 @@ export function DashboardHero() {
             </div>
 
             {/* Decorative Elements */}
-            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-purple-500/10 blur-3xl" />
+            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-500/10 blur-3xl" />
             <div className="absolute -bottom-10 right-20 h-32 w-32 rounded-full bg-blue-500/10 blur-3xl" />
         </div>
     )

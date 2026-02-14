@@ -134,8 +134,8 @@ export function AccountSettingsForm() {
     return (
         <div className="space-y-8">
             {/* Avatar Section */}
-            <Card className="p-6 glass-card border-border">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Foto de Perfil</h3>
+            <div className="bg-zinc-900/40 p-8 rounded-[2rem] border border-white/5 shadow-2xl">
+                <h3 className="text-xl font-bold text-white mb-6 tracking-tight">Foto de Perfil</h3>
                 <AvatarUploader
                     currentAvatarUrl={profile?.avatarUrl}
                     userName={profile?.name}
@@ -144,52 +144,56 @@ export function AccountSettingsForm() {
                         toast.success("Avatar actualizado")
                     }}
                 />
-            </Card>
+            </div>
 
             {/* Personal Information */}
-            <Card className="p-6 glass-card border-border">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Información Personal</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-zinc-900/40 p-8 rounded-[2rem] border border-white/5 shadow-2xl">
+                <h3 className="text-xl font-bold text-white mb-6 tracking-tight">Información Personal</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <Label>Nombre</Label>
+                        <Label className="text-xs font-black uppercase tracking-tight text-zinc-500 ml-1">Nombre</Label>
                         <Input
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Tu nombre"
+                            className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold px-6 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-700 outline-none"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Apellido</Label>
+                        <Label className="text-xs font-black uppercase tracking-tight text-zinc-500 ml-1">Apellido</Label>
                         <Input
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                             placeholder="Tu apellido"
+                            className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold px-6 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-700 outline-none"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Email</Label>
+                        <Label className="text-xs font-black uppercase tracking-tight text-zinc-500 ml-1">Email</Label>
                         <Input
                             value={profile?.email || ""}
                             disabled
-                            className="opacity-50 cursor-not-allowed"
+                            className="bg-[#1c1c1c]/50 border-white/5 h-14 rounded-2xl text-zinc-500 font-bold px-5 cursor-not-allowed opacity-70"
                         />
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-[10px] text-zinc-600 font-medium uppercase tracking-widest pl-1">
                             El email no se puede cambiar por seguridad
                         </p>
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Teléfono / WhatsApp</Label>
-                        <div className="flex gap-2">
+                        <Label className="text-xs font-black uppercase tracking-tight text-zinc-500 ml-1">Teléfono / WhatsApp</Label>
+                        <div className="flex gap-0 bg-[#1c1c1c] border border-white/5 rounded-2xl overflow-hidden focus-within:ring-1 focus-within:ring-white/10 transition-all">
                             <CountryCodeSelect
                                 value={phone.split(' ')[0].startsWith('+') ? phone.split(' ')[0] : "+51"}
                                 onChange={(code) => {
                                     const number = phone.split(' ').slice(1).join(' ') || phone.replace(/^\+\d+\s*/, '')
                                     setPhone(`${code} ${number}`)
                                 }}
+                                className="h-14 bg-transparent border-none rounded-none font-bold w-[100px] hover:bg-white/5 focus:ring-0"
                             />
+                            <div className="w-[1px] h-8 bg-white/10 self-center" />
                             <Input
                                 value={phone.split(' ').slice(1).join(' ') || phone.replace(/^\+\d+\s*/, '')}
                                 onChange={(e) => {
@@ -197,140 +201,142 @@ export function AccountSettingsForm() {
                                     setPhone(`${code} ${e.target.value}`)
                                 }}
                                 placeholder="999 999 999"
-                                className="flex-1"
+                                className="flex-1 bg-transparent border-none h-14 text-white font-bold px-5 focus:ring-0 focus-visible:ring-1 focus-visible:ring-white/10"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-2 md:col-span-2">
-                        <Label>Fecha de Cumpleaños</Label>
+                        <Label className="text-xs font-black uppercase tracking-tight text-zinc-500 ml-1">Fecha de Cumpleaños</Label>
                         <Input
                             type="date"
                             value={birthday}
                             onChange={(e) => setBirthday(e.target.value)}
+                            className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold px-5 focus-visible:ring-1 focus-visible:ring-white/10 transition-all"
+                            style={{ colorScheme: 'dark' }}
                         />
                     </div>
                 </div>
 
-                <div className="flex justify-end mt-6">
-                    <Button onClick={handleSaveProfile} disabled={saving}>
+                <div className="flex justify-end mt-10">
+                    <button
+                        onClick={handleSaveProfile}
+                        disabled={saving}
+                        className="bg-[#aeaeae] hover:bg-[#c5c5c5] text-black font-semibold text-[12px] px-8 h-10 rounded-full transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-lg"
+                    >
                         {saving ? (
                             <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <Loader2 className="h-4 w-4 animate-spin" />
                                 Guardando...
                             </>
                         ) : (
                             <>
-                                <Save className="mr-2 h-4 w-4" />
+                                <Save className="h-4 w-4" />
                                 Guardar Cambios
                             </>
                         )}
-                    </Button>
+                    </button>
                 </div>
-            </Card>
+            </div>
 
             {/* Security Section */}
-            <Card className="p-6 glass-card border-border">
-                <div className="flex items-center gap-2 mb-4">
-                    <Lock className="h-5 w-5 text-primary" />
-                    <h3 className="text-lg font-semibold text-foreground">Seguridad</h3>
+            <div className="bg-zinc-900/40 p-8 rounded-[2rem] border border-white/5 shadow-2xl">
+                <div className="flex items-center gap-3 mb-6">
+                    <Lock className="h-6 w-6 text-white" />
+                    <h3 className="text-xl font-bold text-white tracking-tight">Seguridad</h3>
                 </div>
 
-                <Separator className="mb-6" />
-
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <div className="space-y-2">
-                        <Label>Contraseña Actual</Label>
+                        <Label className="text-xs font-black uppercase tracking-tight text-zinc-500 ml-1">Contraseña Actual</Label>
                         <div className="relative">
                             <Input
                                 type={showCurrentPassword ? "text" : "password"}
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="pr-10"
+                                className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold px-5 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-700 pr-12"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
                             >
-                                {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                {showCurrentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Nueva Contraseña</Label>
+                        <Label className="text-xs font-black uppercase tracking-tight text-zinc-500 ml-1">Nueva Contraseña</Label>
                         <div className="relative">
                             <Input
                                 type={showNewPassword ? "text" : "password"}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="pr-10"
+                                className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold px-5 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-700 pr-12"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowNewPassword(!showNewPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
                             >
-                                {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
                         </div>
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Confirmar Nueva Contraseña</Label>
+                        <Label className="text-xs font-black uppercase tracking-tight text-zinc-500 ml-1">Confirmar Nueva Contraseña</Label>
                         <Input
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             placeholder="••••••••"
+                            className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold px-5 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-700"
                         />
                     </div>
 
-                    <Button
+                    <button
                         onClick={handleChangePassword}
                         disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}
-                        className="w-full md:w-auto"
+                        className="w-full h-14 rounded-2xl bg-white text-black font-bold transition-all hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 shadow-xl"
                     >
                         {changingPassword ? (
                             <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <Loader2 className="h-5 w-5 animate-spin" />
                                 Cambiando...
                             </>
                         ) : (
                             "Cambiar Contraseña"
                         )}
-                    </Button>
+                    </button>
                 </div>
-            </Card>
+            </div>
 
             {/* Danger Zone */}
-            <Card className="p-6 glass-card border-red-500/20 bg-red-500/5 shadow-none">
-                <div className="flex items-center gap-2 mb-4">
-                    <AlertTriangle className="h-5 w-5 text-red-500" />
-                    <h3 className="text-lg font-semibold text-red-500">Zona de Advertencia</h3>
+            <div className="bg-zinc-900/40 p-8 rounded-[2rem] border border-white/5 shadow-2xl">
+                <div className="flex items-center gap-3 mb-6">
+                    <AlertTriangle className="h-6 w-6 text-red-500" />
+                    <h3 className="text-xl font-bold text-red-500 tracking-tight">Zona de Advertencia</h3>
                 </div>
 
-                <Separator className="mb-6 bg-red-500/20" />
-
-                <div className="space-y-4">
-                    <div>
-                        <h4 className="font-medium text-foreground mb-2">Eliminar Cuenta</h4>
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Eliminar tu cuenta es <strong className="text-foreground">irreversible</strong>. Perderás todos tus datos, clientes, stamps y configuración.
+                <div className="space-y-6">
+                    <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/10">
+                        <h4 className="font-bold text-white mb-2">Eliminar Cuenta</h4>
+                        <p className="text-sm text-zinc-500 mb-6">
+                            Eliminar tu cuenta es <strong className="text-white">irreversible</strong>. Perderás todos tus datos, clientes, stamps y configuración.
                         </p>
-                        <Button
-                            variant="destructive"
+                        <button
                             onClick={() => setShowDeleteModal(true)}
-                            className="bg-red-500 hover:bg-red-600"
+                            className="bg-red-500 hover:bg-red-600 text-white font-bold h-12 px-8 rounded-xl transition-all active:scale-95 shadow-lg shadow-red-500/20"
                         >
                             Eliminar Cuenta
-                        </Button>
+                        </button>
                     </div>
                 </div>
-            </Card>
+            </div>
 
             {/* Delete Account Modal */}
             <DeleteAccountModal open={showDeleteModal} onOpenChange={setShowDeleteModal} />

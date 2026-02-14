@@ -91,7 +91,7 @@ export function CustomerDetailModal({ customer, open, onOpenChange, onUpdate }: 
             const fullPhone = `${editData.countryCode} ${editData.phone}`.trim()
 
             const response = await fetch(`/api/customers/${customer.id}`, {
-                method: 'PUT',
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email: editData.email,
@@ -125,18 +125,19 @@ export function CustomerDetailModal({ customer, open, onOpenChange, onUpdate }: 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-popover border-border max-w-2xl text-foreground">
-                <DialogHeader className="flex flex-row items-center justify-between pr-8">
-                    <DialogTitle className="text-2xl flex items-center gap-3">
-                        <Avatar className="h-10 w-10 border border-border">
+            <DialogContent className="sm:max-w-[640px] bg-[#0a0a0a] border-white/5 p-0 overflow-hidden rounded-[2.5rem] shadow-2xl text-foreground">
+                <DialogHeader className="p-8 pb-4 flex flex-row items-center justify-between">
+                    <DialogTitle className="text-3xl font-medium tracking-tighter flex items-center gap-5">
+                        <Avatar className="h-16 w-16 border-2 border-zinc-800 shadow-xl">
                             <AvatarImage src={customer.avatarUrl} className="object-cover" />
-                            <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
-                                {customer.name?.[0]}
+                            <AvatarFallback className="bg-zinc-800 text-zinc-400 text-lg font-black uppercase">
+                                {customer.name.charAt(0)}
+                                {customer.lastName?.charAt(0) || ''}
                             </AvatarFallback>
                         </Avatar>
                         <div>
-                            <span className="block">{customer.name} {customer.lastName}</span>
-                            <span className="block text-xs text-muted-foreground font-normal">Detalle del cliente</span>
+                            <span className="block text-white leading-tight">{customer.name} {customer.lastName}</span>
+                            <span className="block text-[10px] text-zinc-500 uppercase font-black tracking-widest mt-1">Detalle del cliente</span>
                         </div>
                     </DialogTitle>
 
@@ -176,50 +177,50 @@ export function CustomerDetailModal({ customer, open, onOpenChange, onUpdate }: 
                     )}
                 </DialogHeader>
 
-                <div className="space-y-6">
+                <div className="px-8 pb-10 space-y-6">
                     {/* Customer Info */}
-                    <div className="bg-accent/10 rounded-xl p-4 border border-border">
+                    <div className="bg-zinc-900/40 p-6 rounded-[1.8rem] border border-white/5">
                         {isEditing ? (
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <p className="text-muted-foreground mb-1 text-xs">Nombre</p>
+                            <div className="grid grid-cols-2 gap-4 mb-5">
+                                <div className="space-y-2">
+                                    <p className="text-zinc-500 font-black uppercase tracking-tight text-[10px]">Nombre</p>
                                     <Input
                                         value={customer.name}
                                         disabled
-                                        className="opacity-70"
+                                        className="bg-[#1c1c1c]/50 border-white/5 h-12 rounded-xl text-zinc-600 font-bold px-4 cursor-not-allowed"
                                     />
                                 </div>
-                                <div>
-                                    <p className="text-muted-foreground mb-1 text-xs">Apellido</p>
+                                <div className="space-y-2">
+                                    <p className="text-zinc-500 font-black uppercase tracking-tight text-[10px]">Apellido</p>
                                     <Input
                                         value={editData.lastName}
                                         onChange={(e) => setEditData({ ...editData, lastName: e.target.value })}
-                                        className=""
+                                        className="bg-[#1c1c1c] border-white/5 h-12 rounded-xl text-white font-bold px-4 focus-visible:ring-1 focus-visible:ring-white/10 transition-all"
                                         placeholder="Apellido"
                                     />
                                 </div>
                             </div>
                         ) : (
-                            <h3 className="text-lg font-bold text-foreground mb-4">
+                            <h3 className="text-xl font-bold text-white mb-5 tracking-tight">
                                 {customer.name} {customer.lastName}
                             </h3>
                         )}
 
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <p className="text-muted-foreground mb-1">Email</p>
+                        <div className="grid grid-cols-2 gap-6 text-sm">
+                            <div className="space-y-2">
+                                <p className="text-zinc-500 font-black uppercase tracking-tight text-[10px]">Email</p>
                                 {isEditing ? (
                                     <Input
                                         value={editData.email}
                                         onChange={(e) => setEditData({ ...editData, email: e.target.value })}
-                                        className="h-10"
+                                        className="bg-[#1c1c1c] border-white/5 h-12 rounded-xl text-white font-bold px-4 focus-visible:ring-1 focus-visible:ring-white/10"
                                     />
                                 ) : (
-                                    <p className="text-foreground h-8 flex items-center font-medium">{customer.email || 'No registrado'}</p>
+                                    <p className="text-white h-8 flex items-center font-bold tracking-tight">{customer.email || 'No registrado'}</p>
                                 )}
                             </div>
-                            <div>
-                                <p className="text-muted-foreground mb-1">Teléfono</p>
+                            <div className="space-y-2">
+                                <p className="text-zinc-500 font-black uppercase tracking-tight text-[10px]">WhatsApp</p>
                                 {isEditing ? (
                                     <div className="flex gap-2">
                                         <div className="shrink-0">
@@ -231,44 +232,45 @@ export function CustomerDetailModal({ customer, open, onOpenChange, onUpdate }: 
                                         <Input
                                             value={editData.phone}
                                             onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
-                                            className="h-10 bg-secondary/30 border-border text-foreground flex-1"
+                                            className="bg-[#1c1c1c] border-white/5 h-12 rounded-xl text-white font-bold px-4 flex-1 focus-visible:ring-1 focus-visible:ring-white/10"
                                             placeholder="900 000 000"
                                         />
                                     </div>
                                 ) : (
-                                    <p className="text-foreground h-8 flex items-center">{customer.phone || 'No registrado'}</p>
+                                    <p className="text-white h-8 flex items-center font-bold tracking-tight">{customer.phone || 'No registrado'}</p>
                                 )}
                             </div>
-                            <div>
-                                <p className="text-muted-foreground mb-1">Cumpleaños</p>
+                            <div className="space-y-2">
+                                <p className="text-zinc-500 font-black uppercase tracking-tight text-[10px]">Cumpleaños</p>
                                 {isEditing ? (
                                     <Input
                                         type="date"
                                         value={editData.birthday}
                                         onChange={(e) => setEditData({ ...editData, birthday: e.target.value })}
-                                        className="h-10 block w-full"
+                                        className="bg-[#1c1c1c] border-white/5 h-12 rounded-xl text-white font-bold px-4 w-full focus-visible:ring-1 focus-visible:ring-white/10"
+                                        style={{ colorScheme: 'dark' }}
                                     />
                                 ) : (
-                                    <p className="text-foreground h-8 flex items-center">
+                                    <p className="text-white h-8 flex items-center font-bold tracking-tight">
                                         {customer.birthday
                                             ? format(new Date(customer.birthday), "d 'de' MMMM", { locale: es })
                                             : 'No registrado'}
                                     </p>
                                 )}
                             </div>
-                            <div>
-                                <p className="text-muted-foreground">Última visita</p>
-                                <p className="text-foreground flex items-center gap-1 h-8 font-medium">
-                                    <Calendar className="h-3 w-3" />
+                            <div className="space-y-2">
+                                <p className="text-zinc-500 font-black uppercase tracking-tight text-[10px]">Última visita</p>
+                                <p className="text-white flex items-center gap-2 h-8 font-bold tracking-tight">
+                                    <Calendar className="h-4 w-4 text-zinc-500" />
                                     {customer.last_visit
                                         ? format(new Date(customer.last_visit), "d 'de' MMMM, yyyy", { locale: es })
                                         : 'Nunca'
                                     }
                                 </p>
                             </div>
-                            <div>
-                                <p className="text-muted-foreground">Total visitas</p>
-                                <p className="text-foreground h-8 flex items-center font-medium">{customer.visits} visitas</p>
+                            <div className="space-y-2">
+                                <p className="text-zinc-500 font-black uppercase tracking-tight text-[10px]">Total visitas</p>
+                                <p className="text-white h-8 flex items-center font-bold tracking-tight">{customer.visits} visitas</p>
                             </div>
                         </div>
                     </div>
@@ -354,19 +356,19 @@ export function CustomerDetailModal({ customer, open, onOpenChange, onUpdate }: 
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-card rounded-xl p-4 border border-border">
-                            <div className="flex items-center gap-2 mb-2">
+                        <div className="bg-zinc-900/40 rounded-[1.5rem] p-5 border border-white/5">
+                            <div className="flex items-center gap-3 mb-2">
                                 <Award className="h-5 w-5 text-yellow-500" />
-                                <p className="text-sm text-muted-foreground">Premios Canjeados</p>
+                                <p className="text-xs font-black uppercase tracking-tight text-zinc-500">Premios Canjeados</p>
                             </div>
-                            <p className="text-2xl font-bold text-foreground">{rewardsEarned}</p>
+                            <p className="text-3xl font-black text-white tracking-tighter">{rewardsEarned}</p>
                         </div>
-                        <div className="bg-card rounded-xl p-4 border border-border">
-                            <div className="flex items-center gap-2 mb-2">
+                        <div className="bg-zinc-900/40 rounded-[1.5rem] p-5 border border-white/5">
+                            <div className="flex items-center gap-3 mb-2">
                                 <Gift className="h-5 w-5 text-emerald-500" />
-                                <p className="text-sm text-muted-foreground">Estado</p>
+                                <p className="text-xs font-black uppercase tracking-tight text-zinc-500">Estado</p>
                             </div>
-                            <p className="text-2xl font-bold text-emerald-500">
+                            <p className="text-3xl font-black text-emerald-500 tracking-tighter">
                                 {customer.status === 'active' ? 'Activo' : 'Inactivo'}
                             </p>
                         </div>

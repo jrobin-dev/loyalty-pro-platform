@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
+        const targetUserId = session.user.id
         const formData = await request.formData()
         const file = formData.get("avatar") as File
 
@@ -67,10 +68,10 @@ export async function POST(request: NextRequest) {
             .from("avatars")
             .getPublicUrl(filePath)
 
-        // Update user's avatarUrl in database
+        // Update target user's avatarUrl in database
         await prisma.user.update({
-            where: { id: session.user.id },
-            data: { avatarUrl: publicUrl },
+            where: { id: targetUserId },
+            data: { avatarUrl: publicUrl as string },
         })
 
         return NextResponse.json({ success: true, avatarUrl: publicUrl })

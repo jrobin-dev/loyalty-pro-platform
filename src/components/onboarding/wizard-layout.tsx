@@ -35,10 +35,10 @@ export default function WizardLayout() {
     }
 
     return (
-        <div className="min-h-screen bg-white dark:bg-black font-[family-name:var(--font-geist-sans)] flex flex-col lg:flex-row">
+        <div className="min-h-screen bg-black font-sans flex flex-col lg:flex-row">
             {/* Left Column: Forms */}
             <div className="flex-1 flex flex-col h-full min-h-screen overflow-y-auto">
-                <main className={`flex-1 w-full mx-auto px-6 py-12 lg:py-20 flex flex-col ${isLastStep ? 'max-w-[800px] items-center justify-center' : 'max-w-[500px]'}`}>
+                <main className={`flex-1 w-full mx-auto px-6 py-12 lg:py-20 flex flex-col ${isLastStep ? 'max-w-[800px] items-center justify-center' : 'max-w-[600px]'}`}>
                     {!isLastStep && (
                         <div className="mb-12 w-full">
                             <div className="flex items-center justify-between mb-8">
@@ -46,7 +46,7 @@ export default function WizardLayout() {
                                     <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
                                         <span className="text-black font-black text-xl">L</span>
                                     </div>
-                                    <span className="text-xl font-black font-[family-name:var(--font-funnel-display)] tracking-tighter">
+                                    <span className="text-xl font-black tracking-tighter">
                                         Loyalty<span className="text-primary">Pro</span>
                                     </span>
                                 </Link>
@@ -55,16 +55,16 @@ export default function WizardLayout() {
 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-end">
-                                    <h1 className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
+                                    <h1 className="text-sm font-black text-zinc-500 uppercase tracking-widest">
                                         Configuración del Sistema
                                     </h1>
-                                    <span className="text-xs font-bold text-primary">
+                                    <span className="text-xs font-black text-emerald-500 uppercase tracking-widest">
                                         Paso {currentStep} de {totalSteps}
                                     </span>
                                 </div>
                                 <div className="h-1.5 w-full bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
                                     <motion.div
-                                        className="h-full bg-primary"
+                                        className="h-full bg-emerald-500"
                                         initial={{ width: 0 }}
                                         animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
                                         transition={{ duration: 0.5, ease: "circOut" }}
@@ -93,7 +93,7 @@ export default function WizardLayout() {
                     {!isLastStep && (
                         <div className="mt-auto pt-12 text-center lg:text-left border-t border-gray-100 dark:border-white/5 mt-12 pt-8">
                             <p className="text-xs text-muted-foreground">
-                                Impulsado por <span className="text-primary font-bold">LoyaltyPro</span> &bull; 2026
+                                Impulsado por <span className="text-emerald-500 font-bold">LoyaltyPro</span> &bull; 2026
                             </p>
                         </div>
                     )}

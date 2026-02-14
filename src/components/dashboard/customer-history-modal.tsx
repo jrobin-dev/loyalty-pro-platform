@@ -28,7 +28,7 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
     const [loading, setLoading] = useState(false)
 
     const { settings } = useTenantSettings()
-    const currency = settings?.branding.currency || '$'
+    const currency = settings?.tenant.currency || '$'
 
     useEffect(() => {
         if (customer && open) {
@@ -78,18 +78,22 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="bg-popover border-border max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle className="text-2xl flex items-center gap-2">
-                        <History className="h-6 w-6 text-blue-400" />
+            <DialogContent className="sm:max-w-[640px] bg-[#0a0a0a] border-white/5 p-0 overflow-hidden rounded-[2.5rem] shadow-2xl text-foreground">
+                <DialogHeader className="p-8 pb-4">
+                    <DialogTitle className="text-3xl font-black tracking-tighter flex items-center gap-4 text-white">
+                        <div className="bg-blue-500/10 p-2 rounded-xl">
+                            <History className="h-7 w-7 text-blue-400" />
+                        </div>
                         Historial de Consumos
                     </DialogTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        {customer.name} - {transactions.length} transacciones
-                    </p>
+                    <div className="mt-2 flex items-center gap-2">
+                        <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">{customer.name}</span>
+                        <span className="w-1 h-1 rounded-full bg-zinc-800" />
+                        <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">{transactions.length} transacciones</span>
+                    </div>
                 </DialogHeader>
 
-                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+                <div className="px-8 pb-10 space-y-3 max-h-[500px] overflow-y-auto custom-scrollbar">
                     {loading ? (
                         <div className="text-center py-8 text-muted-foreground">
                             Cargando historial...

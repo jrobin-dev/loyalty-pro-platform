@@ -55,14 +55,14 @@ export function LoyaltyCardEditor({ settings, onSave }: LoyaltyCardEditorProps) 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Editor */}
-            <Card className="bg-card/50 backdrop-blur-sm border-transparent">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-purple-400" />
+            <div className="bg-zinc-900/40 rounded-[2rem] border border-white/5 shadow-2xl overflow-hidden h-full">
+                <div className="p-8 border-b border-white/5 bg-[#141414]">
+                    <h3 className="flex items-center gap-4 text-xl font-bold text-white tracking-tight">
+                        <Sparkles className="h-6 w-6 text-emerald-400" />
                         Configuración de Tarjeta
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
+                    </h3>
+                </div>
+                <div className="p-8 space-y-10">
                     {/* Stamp Icon & Type */}
                     <div className="space-y-3">
                         <Label htmlFor="stamp-type">Diseño del Sello</Label>
@@ -122,7 +122,7 @@ export function LoyaltyCardEditor({ settings, onSave }: LoyaltyCardEditorProps) 
                                 className="flex-1"
                             />
                             <div className="w-16 text-center">
-                                <span className="text-2xl font-bold text-purple-400">{stampsRequired}</span>
+                                <span className="text-2xl font-bold text-emerald-400">{stampsRequired}</span>
                             </div>
                         </div>
                         <p className="text-xs text-muted-foreground">
@@ -132,30 +132,30 @@ export function LoyaltyCardEditor({ settings, onSave }: LoyaltyCardEditorProps) 
 
                     {/* Reward Description */}
                     <div className="space-y-2">
-                        <Label htmlFor="reward">Descripción del premio</Label>
+                        <Label htmlFor="reward" className="text-xs font-black uppercase tracking-tight text-zinc-500 ml-1">Descripción del premio</Label>
                         <Textarea
                             id="reward"
                             value={rewardDescription}
                             onChange={(e) => setRewardDescription(e.target.value)}
                             placeholder="Ej: ¡Café gratis!"
-                            className="bg-card/50 border-white/10"
+                            className="bg-[#1c1c1c] border-white/5 rounded-2xl text-white font-bold px-6 py-4 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-700 min-h-[120px] outline-none resize-none"
                             rows={3}
                         />
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-[10px] text-zinc-600 font-medium uppercase tracking-widest pl-1">
                             Describe qué recibirá el cliente al completar su tarjeta
                         </p>
                     </div>
 
                     {/* Save Button */}
-                    <Button
+                    <button
                         onClick={handleSave}
                         disabled={isSaving}
-                        className="w-full bg-purple-500 hover:bg-purple-600 text-white"
+                        className="w-full h-14 rounded-2xl bg-white text-black font-black text-lg transition-all hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-50 shadow-2xl shadow-white/5"
                     >
                         {isSaving ? "Guardando..." : "Guardar cambios"}
-                    </Button>
-                </CardContent>
-            </Card>
+                    </button>
+                </div>
+            </div>
 
             {/* Live Preview - Modern iPhone Style */}
             <div className="flex flex-col items-center justify-center p-4 lg:p-8 h-full">
@@ -195,7 +195,7 @@ export function LoyaltyCardEditor({ settings, onSave }: LoyaltyCardEditorProps) 
                             }}
                             stamps={1} // Show 1 stamp earned
                             maxStamps={stampsRequired}
-                            primaryColor={settings.branding.primaryColor || '#8b5cf6'}
+                            primaryColor={settings.branding.primaryColor || '#23a341'}
                         />
                     </div>
 

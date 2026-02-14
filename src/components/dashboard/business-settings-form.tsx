@@ -22,7 +22,8 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
     const [name, setName] = useState(settings.tenant.name)
     const [primaryColor, setPrimaryColor] = useState(settings.branding.primaryColor)
     const [secondaryColor, setSecondaryColor] = useState(settings.branding.secondaryColor)
-    const [currency, setCurrency] = useState(settings.branding.currency || '$')
+    const [currency, setCurrency] = useState(settings.tenant.currency || '$')
+
     const [logoUrl, setLogoUrl] = useState(settings.branding.logoUrl || "")
     const [gradient, setGradient] = useState(settings.branding.gradient || false)
     const [gradientDirection, setGradientDirection] = useState(settings.branding.gradientDirection || "to right")
@@ -32,13 +33,13 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
         setIsSaving(true)
 
         // Update tenant name
-        await onSaveTenant({ name })
+        await onSaveTenant({ name, currency })
 
         // Update branding colors and currency
         await onSaveBranding({
             primaryColor,
             secondaryColor,
-            currency,
+
             logoUrl,
             gradient,
             gradientDirection
@@ -48,41 +49,43 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
     }
 
     return (
-        <Card className="bg-card border-border shadow-sm">
-            <CardHeader className="border-b border-border/50">
-                <CardTitle className="flex items-center gap-2 text-foreground">
-                    <Building2 className="h-5 w-5 text-blue-500" />
+        <div className="bg-zinc-900/40 rounded-[2rem] border border-white/5 shadow-2xl overflow-hidden">
+            <div className="p-8 border-b border-white/5 bg-[#141414]">
+                <h3 className="flex items-center gap-4 text-xl font-bold text-white tracking-tight">
+                    <Building2 className="h-6 w-6 text-blue-500" />
                     Información del Negocio
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-8">
+                </h3>
+            </div>
+            <div className="p-8 space-y-10">
                 {/* Business Info Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
                     {/* Name */}
                     <div className="space-y-2">
-                        <Label htmlFor="name">Nombre del negocio</Label>
+                        <Label htmlFor="name" className="text-xs font-black uppercase tracking-tight text-zinc-500 ml-1">Nombre del negocio</Label>
                         <Input
                             id="name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Mi Negocio"
-                            className="bg-secondary/30 border-border"
+                            className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold px-6 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-700 outline-none"
                         />
                     </div>
 
                     {/* Currency */}
                     <div className="space-y-2">
-                        <Label htmlFor="currency">Moneda (Símbolo)</Label>
+                        <Label htmlFor="currency" className="text-xs font-black uppercase tracking-tight text-zinc-500 ml-1">Moneda (Símbolo)</Label>
                         <Input
                             id="currency"
                             value={currency}
                             onChange={(e) => setCurrency(e.target.value)}
                             onFocus={(e) => e.target.select()}
                             placeholder="$"
-                            className="bg-secondary/30 border-border"
+                            className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold px-6 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-700 outline-none"
                             maxLength={10}
                         />
                     </div>
+
+
 
                     {/* Logo (Now in the grid) */}
                     <div className="space-y-2">
@@ -178,14 +181,14 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
                 </div>
 
                 {/* Save Button */}
-                <Button
+                <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold h-12 text-md shadow-lg shadow-blue-900/20"
+                    className="w-full h-14 rounded-2xl bg-white text-black font-black text-lg transition-all hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-50 shadow-2xl shadow-white/5"
                 >
                     {isSaving ? "Guardando..." : "Guardar cambios"}
-                </Button>
-            </CardContent>
-        </Card>
+                </button>
+            </div>
+        </div>
     )
 }

@@ -96,11 +96,11 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 )}
             >
                 {/* Header - Logo & Close Button (Mobile) */}
-                <div className="h-16 flex items-center justify-between px-6 border-b border-border">
-                    <Link href="/" className={cn("group cursor-pointer", isCollapsed && "mx-auto")}>
+                <div className="h-16 flex items-center justify-between px-4 border-b border-border transition-all duration-300">
+                    <Link href="/" className={cn("group cursor-pointer transition-all duration-300", isCollapsed ? "w-12 flex justify-center" : "px-2")}>
                         {isCollapsed ? (
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                                <Zap className="h-6 w-6 text-white fill-white" />
+                            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+                                <Zap className="h-5 w-5 text-white fill-white" />
                             </div>
                         ) : (
                             <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
@@ -123,7 +123,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 pl-2.5 pr-4 pt-6 space-y-3 overflow-y-auto custom-scrollbar relative">
+                <nav className="flex-1 px-4 pt-6 space-y-3 overflow-y-auto custom-scrollbar relative">
                     {menuItems.map((item) => {
                         const Icon = item.icon
                         const isActive = pathname === item.href
@@ -136,9 +136,9 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                         layoutId="activeIndicator"
                                         className="absolute z-10"
                                         style={{
-                                            left: "-10px",
+                                            left: "-16px",
                                             width: "6px",
-                                            height: "38px",
+                                            height: "32px",
                                             backgroundColor: "lab(78 -63.38 35.21)",
                                             borderRadius: "0px 25px 25px 0px",
                                             boxShadow: "-4px 0 10px 2px #3bc295, 0 0 15px rgba(16, 185, 129, 0.8)",
@@ -149,9 +149,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                         transition={{
                                             type: "spring",
                                             stiffness: 300,
-                                            damping: 30,
-                                            borderRadius: { duration: 0 },
-                                            layout: { duration: 0.3 }
+                                            damping: 30
                                         }}
                                     />
                                 )}
@@ -160,24 +158,21 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                     key={item.href}
                                     href={item.href}
                                     className={cn(
-                                        "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 relative",
+                                        "group flex items-center rounded-xl transition-all duration-300 relative h-12 overflow-hidden",
                                         isActive
                                             ? "bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/10 dark:text-[#19E28C]"
                                             : "text-muted-foreground hover:bg-emerald-500/5 hover:text-emerald-500",
-                                        isCollapsed ? "w-12 justify-center mx-auto" : "flex-1"
+                                        isCollapsed ? "w-12 px-0 justify-center" : "w-full px-1.5 gap-3"
                                     )}
                                     title={isCollapsed ? item.label : ""}
                                 >
                                     <div className={cn(
                                         "flex items-center justify-center w-9 h-9 transition-colors duration-300 flex-shrink-0",
-                                        isActive ? "bg-emerald-500/10 dark:bg-emerald-500/20" : "bg-transparent group-hover:bg-accent rounded-full"
+                                        isActive ? "bg-emerald-500/10 dark:bg-emerald-500/20 rounded-lg" : "bg-transparent group-hover:bg-accent rounded-full"
                                     )}
-                                        style={isActive ? {
-                                            borderRadius: "8px"
-                                        } : {}}
                                     >
                                         <Icon className={cn(
-                                            "h-4.5 w-4.5 transition-transform duration-300",
+                                            "h-5 w-5 transition-transform duration-300",
                                             isActive ? "text-emerald-600 dark:text-emerald-400 scale-110" : "group-hover:text-foreground"
                                         )} />
                                     </div>
@@ -228,30 +223,30 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                     </AnimatePresence>
 
                     {/* Simple Logout Action */}
-                    <div className={cn("flex items-center", isCollapsed ? "justify-center" : "px-2")}>
+                    <div className="flex items-center">
                         <button
                             onClick={handleLogout}
                             disabled={isLoggingOut}
                             className={cn(
-                                "group flex items-center gap-3 w-full py-2 text-red-500/60 hover:text-red-500 transition-all duration-300 disabled:opacity-50 outline-none",
-                                isCollapsed && "justify-center"
+                                "group flex items-center rounded-xl transition-all duration-300 disabled:opacity-50 outline-none h-12 overflow-hidden",
+                                isCollapsed ? "w-12 px-0 justify-center mx-auto bg-red-500/5" : "w-full px-1.5 gap-3 bg-transparent hover:bg-red-500/5"
                             )}
                             title="Cerrar Sesión"
                         >
                             <div className={cn(
-                                "flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-300",
-                                isCollapsed ? "bg-red-500/5 group-hover:bg-red-500/10" : "bg-transparent group-hover:bg-red-500/5"
+                                "flex items-center justify-center w-9 h-9 rounded-full transition-colors duration-300 flex-shrink-0",
+                                isCollapsed ? "bg-transparent" : "bg-transparent"
                             )}>
                                 {isLoggingOut ? (
                                     <Loader2 size={18} className="animate-spin" />
                                 ) : (
-                                    <LogOut size={18} className="transition-transform group-hover:scale-110" />
+                                    <LogOut size={18} className="text-red-500/60 transition-transform group-hover:scale-110 group-hover:text-red-500" />
                                 )}
                             </div>
                             <AnimatePresence mode="wait">
                                 {!isCollapsed && (
                                     <motion.span
-                                        className="text-[13px] font-semibold overflow-hidden whitespace-nowrap"
+                                        className="text-[16px] font-medium text-red-500/60 group-hover:text-red-500 overflow-hidden whitespace-nowrap"
                                         initial={{ opacity: 0, width: 0 }}
                                         animate={{ opacity: 1, width: "auto" }}
                                         exit={{ opacity: 0, width: 0 }}

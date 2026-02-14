@@ -54,10 +54,10 @@ export default function Step0AccountInfo() {
     return (
         <div className="space-y-6">
             <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
+                <h2 className="text-3xl font-black text-white tracking-tighter">
                     Crea tu Cuenta
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <p className="text-zinc-500 text-sm font-medium">
                     Usarás este email para acceder a tu dashboard.
                 </p>
             </div>
@@ -65,7 +65,7 @@ export default function Step0AccountInfo() {
             <div className="space-y-4">
                 {/* Email */}
                 <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Email</Label>
                     <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
                         <Input
@@ -73,7 +73,7 @@ export default function Step0AccountInfo() {
                             placeholder="tu@email.com"
                             value={data.email}
                             onChange={(e) => updateData({ email: e.target.value })}
-                            className="pl-10"
+                            className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold pl-12 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-800 outline-none"
                             autoFocus
                         />
                     </div>
@@ -84,7 +84,7 @@ export default function Step0AccountInfo() {
 
                 {/* Password */}
                 <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Contraseña</Label>
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
                         <Input
@@ -92,7 +92,7 @@ export default function Step0AccountInfo() {
                             placeholder="Mínimo 6 caracteres"
                             value={data.password}
                             onChange={(e) => updateData({ password: e.target.value })}
-                            className="pl-10 pr-10"
+                            className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold pl-12 pr-12 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-800 outline-none"
                         />
                         <button
                             type="button"
@@ -109,7 +109,7 @@ export default function Step0AccountInfo() {
 
                 {/* Confirm Password */}
                 <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Confirmar Contraseña</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Confirmar Contraseña</Label>
                     <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
                         <Input
@@ -117,7 +117,7 @@ export default function Step0AccountInfo() {
                             placeholder="Repite tu contraseña"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="pl-10"
+                            className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold pl-12 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-800 outline-none"
                         />
                     </div>
                     {errors.confirm && (
@@ -126,13 +126,12 @@ export default function Step0AccountInfo() {
                 </div>
             </div>
 
-            <Button
-                className="w-full text-lg font-bold"
-                size="lg"
+            <button
                 onClick={handleContinue}
+                className="w-full h-15 rounded-2xl bg-emerald-500 text-black font-black text-xl transition-all hover:bg-emerald-400 active:scale-95 shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] flex items-center justify-center py-4"
             >
                 Continuar
-            </Button>
+            </button>
 
             <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                 Al continuar, aceptas nuestros Términos de Servicio y Política de Privacidad

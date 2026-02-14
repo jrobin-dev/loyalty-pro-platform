@@ -24,14 +24,32 @@ import { AddCustomerDialog } from "./add-customer-dialog"
 import { createClient } from "@/lib/supabase/client"
 import { CustomerDetailModal } from "./customer-detail-modal"
 import { CustomerHistoryModal } from "./customer-history-modal"
+import { useTenantSettings } from "@/hooks/use-tenant-settings"
 
 interface CustomerTableProps {
     showFilters?: boolean
     setShowFilters?: (show: boolean) => void
+    customers?: Customer[]
+    loading?: boolean
+    refresh?: () => void
+    tenantSlug?: string
 }
 
-export function CustomerTableAdvanced({ showFilters: externalShowFilters, setShowFilters: externalSetShowFilters }: CustomerTableProps) {
-    const { customers, loading, refresh, tenantSlug } = useCustomers()
+export function CustomerTableAdvanced({
+    showFilters: externalShowFilters,
+    setShowFilters: externalSetShowFilters,
+    customers: externalCustomers,
+    loading: externalLoading,
+    refresh: externalRefresh,
+    tenantSlug: externalTenantSlug
+}: CustomerTableProps) {
+    const internalHook = useCustomers()
+
+    // Use props if provided, otherwise fallback to internal hook (for backward compatibility if used elsewhere)
+    const customers = externalCustomers ?? internalHook.customers
+    const loading = externalLoading ?? internalHook.loading
+    const refresh = externalRefresh ?? internalHook.refresh
+    const tenantSlug = externalTenantSlug ?? internalHook.tenantSlug
     const searchParams = useSearchParams()
     const highlightedId = searchParams.get('id')
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
@@ -43,6 +61,8 @@ export function CustomerTableAdvanced({ showFilters: externalShowFilters, setSho
     const [historyModalOpen, setHistoryModalOpen] = useState(false)
     const [customerForDetail, setCustomerForDetail] = useState<Customer | null>(null)
     const [customerForHistory, setCustomerForHistory] = useState<Customer | null>(null)
+    const { settings } = useTenantSettings()
+    const currency = settings?.tenant.currency || 'S/'
 
     // Search & Filter State
     const [searchQuery, setSearchQuery] = useState("")
@@ -111,7 +131,7 @@ export function CustomerTableAdvanced({ showFilters: externalShowFilters, setSho
             }
 
             toast.success(`Visita registrada para ${selectedCustomer.name}`, {
-                description: `Se registró el consumo de S/. ${amount} y se añadió +1 Stamp.`
+                description: `Se registró el consumo de ${currency} ${amount} y se añadió +1 Stamp.`
             })
 
             setIsAddConsumptionOpen(false)
@@ -147,11 +167,11 @@ export function CustomerTableAdvanced({ showFilters: externalShowFilters, setSho
             )}
 
             <div className="flex items-center justify-between gap-4">
-                <div className="flex flex-1 items-center gap-3 max-w-md bg-card border border-border p-2 px-5 rounded-2xl focus-within:ring-1 ring-emerald-500/30 transition-all group shadow-sm">
-                    <Search size={20} className="text-muted-foreground group-focus-within:text-emerald-500 transition-colors" />
+                <div className="flex flex-1 items-center gap-3 max-w-md bg-[#1c1c1c] border border-white/5 p-2 px-5 rounded-[1.2rem] focus-within:ring-1 focus-within:ring-white/10 transition-all group shadow-2xl">
+                    <Search size={20} className="text-zinc-500 group-focus-within:text-white transition-colors" />
                     <Input
                         placeholder="Buscar por nombre, email o celular..."
-                        className="border-0 bg-transparent h-8 p-0 px-2 placeholder:text-muted-foreground/40 focus-visible:ring-0 text-sm lg:text-base"
+                        className="border-0 bg-transparent h-10 p-0 px-2 placeholder:text-zinc-700 focus-visible:ring-0 text-sm lg:text-base text-white font-medium"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -160,47 +180,58 @@ export function CustomerTableAdvanced({ showFilters: externalShowFilters, setSho
 
             {/* Filters Bar */}
             {showFilters && (
-                <div className="flex items-center gap-2 p-2 bg-secondary/20 rounded-lg border border-border animate-in fade-in slide-in-from-top-2">
-                    <span className="text-xs text-muted-foreground font-medium pl-2">Estado:</span>
-                    <Badge
-                        variant={statusFilter === "all" ? "default" : "outline"}
-                        className="cursor-pointer"
+                <div className="flex items-center gap-2 p-2 px-4 bg-[#1c1c1c] rounded-2xl border border-white/5 animate-in fade-in slide-in-from-top-2 shadow-xl">
+                    <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest pl-2">Estado:</span>
+                    <button
                         onClick={() => setStatusFilter("all")}
+                        className={cn(
+                            "px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all border",
+                            statusFilter === "all"
+                                ? "bg-emerald-500 text-black border-emerald-500"
+                                : "bg-transparent text-zinc-500 border-white/5 hover:border-white/10"
+                        )}
                     >
                         Todos
-                    </Badge>
-                    <Badge
-                        variant={statusFilter === "active" ? "default" : "outline"}
-                        className="cursor-pointer bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20"
+                    </button>
+                    <button
                         onClick={() => setStatusFilter("active")}
+                        className={cn(
+                            "px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all border",
+                            statusFilter === "active"
+                                ? "bg-emerald-500 text-black border-emerald-500"
+                                : "bg-transparent text-zinc-500 border-white/5 hover:border-white/10"
+                        )}
                     >
                         Activos
-                    </Badge>
-                    <Badge
-                        variant={statusFilter === "inactive" ? "default" : "outline"}
-                        className="cursor-pointer text-muted-foreground"
+                    </button>
+                    <button
                         onClick={() => setStatusFilter("inactive")}
+                        className={cn(
+                            "px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all border",
+                            statusFilter === "inactive"
+                                ? "bg-emerald-500 text-black border-emerald-500"
+                                : "bg-transparent text-zinc-500 border-white/5 hover:border-white/10"
+                        )}
                     >
                         Inactivos
-                    </Badge>
+                    </button>
                 </div>
-            )
-            }
+            )}
 
-            <div className="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
+            <div className="border border-white/5 rounded-[1.8rem] bg-zinc-900/20 shadow-2xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left min-w-[1000px]">
-                        <thead className="bg-muted text-[10px] uppercase text-muted-foreground font-black tracking-widest border-b border-border/60">
+                        <thead className="bg-[#141414] text-[10px] uppercase text-zinc-500 font-black tracking-widest border-b border-white/5">
                             <tr>
-                                <th className="px-6 py-4">Cliente</th>
-                                <th className="px-6 py-4">Contacto</th>
-                                <th className="px-6 py-4 text-right">Visitas</th>
-                                <th className="px-6 py-4 text-center">Stamps</th>
-                                <th className="px-6 py-4 text-center">Status</th>
-                                <th className="px-6 py-4 text-right">Acciones</th>
+                                <th className="px-6 py-5">Cliente</th>
+                                <th className="px-6 py-5">Contacto</th>
+                                <th className="px-6 py-5 text-right">Visitas</th>
+                                <th className="px-6 py-5 text-center">Stamps</th>
+                                <th className="px-6 py-5 text-center">Status</th>
+                                <th className="px-6 py-5 text-right">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-border">
+                        <tbody className="divide-y divide-white/5">
                             {filteredCustomers.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="text-center py-12 text-muted-foreground">
@@ -222,15 +253,16 @@ export function CustomerTableAdvanced({ showFilters: externalShowFilters, setSho
                                             <div className="flex items-center gap-3">
                                                 <Avatar className="h-9 w-9 border border-border/40 shadow-sm">
                                                     <AvatarImage src={customer.avatarUrl} className="object-cover" />
-                                                    <AvatarFallback className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 text-[10px] font-bold">
-                                                        {customer.name.substring(0, 2).toUpperCase()}
+                                                    <AvatarFallback className="bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase">
+                                                        {customer.name.charAt(0)}
+                                                        {customer.lastName?.charAt(0) || ''}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div>
-                                                    <div className="font-medium text-foreground group-hover:text-primary transition-colors">
+                                                    <div className="font-bold text-foreground group-hover:text-primary transition-colors tracking-tight">
                                                         {customer.name} {customer.lastName}
                                                     </div>
-                                                    <div className="text-xs text-muted-foreground">{customer.email}</div>
+                                                    <div className="text-[10px] text-muted-foreground font-medium">{customer.email}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -268,7 +300,7 @@ export function CustomerTableAdvanced({ showFilters: externalShowFilters, setSho
                                                             setCustomerForDetail(customer)
                                                             setDetailModalOpen(true)
                                                         }}
-                                                        className="px-3 py-1.5 text-xs bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-md hover:bg-purple-500/30 transition-colors flex items-center gap-1 cursor-pointer"
+                                                        className="px-3 py-1.5 text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-md hover:bg-emerald-500/30 transition-colors flex items-center gap-1 cursor-pointer"
                                                     >
                                                         <Eye size={14} />
                                                         Ver detalle
@@ -317,49 +349,53 @@ export function CustomerTableAdvanced({ showFilters: externalShowFilters, setSho
                                                             Agregar consumo
                                                         </button>
                                                     </DialogTrigger>
-                                                    <DialogContent className="bg-popover border-border/40 max-w-md shadow-2xl">
-                                                        <DialogHeader>
-                                                            <DialogTitle className="text-xl font-display">Agregar Consumo</DialogTitle>
-                                                            <DialogDescription className="text-emerald-600 dark:text-emerald-400 font-medium">
-                                                                Cliente: {customer.name}
-                                                            </DialogDescription>
+                                                    <DialogContent className="sm:max-w-[480px] bg-[#0a0a0a] border-white/5 p-0 overflow-hidden rounded-[2.5rem] shadow-2xl text-foreground">
+                                                        <DialogHeader className="p-8 pb-2">
+                                                            <DialogTitle className="text-3xl font-black tracking-tighter text-white">Agregar Consumo</DialogTitle>
+                                                            <div className="flex items-center gap-2 mt-2">
+                                                                <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">Cliente</span>
+                                                                <span className="text-[10px] text-emerald-500 uppercase font-black tracking-widest">{customer.name} {customer.lastName}</span>
+                                                            </div>
                                                         </DialogHeader>
 
-                                                        <div className="space-y-4 py-4">
-                                                            <div className="space-y-2">
-                                                                <Label htmlFor="amount" className="text-sm text-muted-foreground">
+                                                        <div className="px-8 py-6 space-y-6">
+                                                            <div className="space-y-3">
+                                                                <Label htmlFor="amount" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">
                                                                     Monto del consumo
                                                                 </Label>
-                                                                <Input
-                                                                    id="amount"
-                                                                    type="number"
-                                                                    placeholder="0.00"
-                                                                    value={amount}
-                                                                    onChange={(e) => setAmount(e.target.value)}
-                                                                    className="bg-secondary/30 border-border h-11 text-lg font-bold text-foreground focus-visible:ring-emerald-500/20"
-                                                                />
+                                                                <div className="relative">
+                                                                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-700 font-black">{currency}</span>
+                                                                    <Input
+                                                                        id="amount"
+                                                                        type="number"
+                                                                        placeholder="0.00"
+                                                                        value={amount}
+                                                                        onChange={(e) => setAmount(e.target.value)}
+                                                                        className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-black pl-12 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-800 text-lg outline-none"
+                                                                    />
+                                                                </div>
                                                             </div>
                                                         </div>
 
-                                                        <DialogFooter>
+                                                        <div className="px-8 pb-10">
                                                             <button
                                                                 onClick={handleAddConsumption}
                                                                 disabled={!amount || parseFloat(amount) <= 0 || isProcessing}
-                                                                className="w-full px-4 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/20 disabled:text-emerald-400/50 text-white rounded-md transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                                                                className="w-full h-14 rounded-2xl bg-white text-black font-black text-base transition-all hover:bg-zinc-200 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-[0_20px_40px_-15px_rgba(255,255,255,0.1)]"
                                                             >
                                                                 {isProcessing ? (
                                                                     <>
-                                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                                        <Loader2 className="h-5 w-5 animate-spin" />
                                                                         Procesando...
                                                                     </>
                                                                 ) : (
                                                                     <>
-                                                                        <CheckCircle2 className="h-4 w-4" />
+                                                                        <CheckCircle2 className="h-5 w-5" />
                                                                         Validar consumo
                                                                     </>
                                                                 )}
                                                             </button>
-                                                        </DialogFooter>
+                                                        </div>
                                                     </DialogContent>
                                                 </Dialog>
 

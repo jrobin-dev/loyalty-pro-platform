@@ -43,7 +43,7 @@ export function DashboardStatsAdvanced({ dateRange }: { dateRange?: { start: str
     const { stats, loading } = useDashboardStats({ dateRange })
     const { settings } = useTenantSettings()
 
-    const currency = settings?.branding.currency || '$'
+    const currency = settings?.tenant.currency || '$'
 
     if (loading) {
         return (

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useState } from "react"
 import { useTheme } from "next-themes"
+import { useTenantSettings } from "@/hooks/use-tenant-settings"
 
 const dataDays = [
     { name: "Lun", total: 400 },
@@ -40,7 +41,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-primary" />
                     <p className="text-muted-foreground">
-                        Ventas: <span className="font-mono font-bold text-foreground">S/ {payload[0].value}</span>
+                        Ventas: <span className="font-mono font-bold text-foreground">{payload[0].payload.currency || '$'} {payload[0].value}</span>
                     </p>
                 </div>
             </div>
@@ -52,6 +53,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export function DashboardCharts() {
     const [period, setPeriod] = useState("daily")
     const { theme } = useTheme()
+    const { settings } = useTenantSettings()
+    const currency = settings?.tenant.currency || '$'
+
+    // Inject currency into data for CustomTooltip to access
+    const enrichData = (data: any[]) => data.map(item => ({ ...item, currency }))
 
     // Dynamic Chart Color based on logic or simpler css variable usage via CSS classes
     // Recharts needs hex, so we'll just stick to a CSS variable-like hex or simple logic
@@ -76,7 +82,7 @@ export function DashboardCharts() {
             <CardContent className="pl-0">
                 <ResponsiveContainer width="100%" height={300} id="dashboard-responsive-container">
                     {period === "daily" ? (
-                        <BarChart id="dashboard-bar-chart" data={dataDays} barSize={20} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                        <BarChart id="dashboard-bar-chart" data={enrichData(dataDays)} barSize={20} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                             <Tooltip cursor={{ fill: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)' }} content={<CustomTooltip />} />
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
                             <XAxis
@@ -95,7 +101,7 @@ export function DashboardCharts() {
                             />
                         </BarChart>
                     ) : (
-                        <AreaChart id="dashboard-area-chart" data={period === 'weekly' ? dataWeeks : dataMonths} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                        <AreaChart id="dashboard-area-chart" data={enrichData(period === 'weekly' ? dataWeeks : dataMonths)} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />

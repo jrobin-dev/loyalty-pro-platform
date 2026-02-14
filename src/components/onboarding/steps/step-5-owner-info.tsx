@@ -17,55 +17,62 @@ export default function Step5OwnerInfo() {
     return (
         <div className="space-y-6">
             <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
+                <h2 className="text-3xl font-black text-white tracking-tighter">
                     Datos de Contacto
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <p className="text-zinc-500 text-sm font-medium">
                     Para que tus clientes sepan quién les premia.
                 </p>
             </div>
 
             <div className="space-y-4">
                 <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tu Nombre</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Tu Nombre</Label>
                     <Input
                         placeholder="Ej: Juan Pérez"
                         value={data.ownerName}
                         onChange={(e) => updateData({ ownerName: e.target.value })}
+                        className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold px-6 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-800 outline-none"
                         autoFocus
                     />
                 </div>
 
                 <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">WhatsApp del Negocio</Label>
-                    <div className="flex gap-2">
-                        <CountryCodeSelect
-                            value={data.country || "+51"}
-                            onChange={(value) => updateData({ country: value })}
-                        />
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">WhatsApp del Negocio</Label>
+                    <div className="relative group">
+                        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center gap-3 z-10">
+                            <CountryCodeSelect
+                                value={data.country || "+51"}
+                                onChange={(value) => updateData({ country: value })}
+                            />
+                            <div className="w-[1px] h-6 bg-white/10" />
+                        </div>
                         <Input
                             placeholder="999 999 999"
                             value={data.whatsapp}
                             type="tel"
                             onChange={(e) => updateData({ whatsapp: e.target.value })}
-                            className="flex-1"
+                            className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold pl-40 pr-6 focus-visible:ring-1 focus-visible:ring-white/20 transition-all placeholder:text-zinc-800 outline-none w-full"
                         />
                     </div>
                 </div>
             </div>
 
             <div className="flex gap-4 pt-4">
-                <Button variant="ghost" className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 transition-colors" onClick={prevStep}>
+                <Button
+                    variant="ghost"
+                    className="flex-1 h-15 rounded-2xl hover:bg-white/5 text-zinc-500 hover:text-white transition-all font-bold"
+                    onClick={prevStep}
+                >
                     Atrás
                 </Button>
-                <Button
-                    className="flex-1 text-lg font-bold"
-                    size="lg"
+                <button
                     onClick={handleContinue}
                     disabled={!data.ownerName || !data.whatsapp}
+                    className="flex-1 h-15 rounded-2xl bg-emerald-500 text-black font-black text-xl transition-all hover:bg-emerald-400 active:scale-95 shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] flex items-center justify-center py-4 disabled:opacity-50"
                 >
                     Continuar
-                </Button>
+                </button>
             </div>
         </div>
     )

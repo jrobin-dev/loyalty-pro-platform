@@ -24,8 +24,8 @@ const stats = [
         value: "432",
         change: "+8%",
         icon: Ticket,
-        color: "text-purple-500",
-        bg: "bg-purple-500/10"
+        color: "text-emerald-500",
+        bg: "bg-emerald-500/10"
     },
     {
         title: "Retención",

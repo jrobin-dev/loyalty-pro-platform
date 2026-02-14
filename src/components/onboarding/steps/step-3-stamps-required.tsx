@@ -11,10 +11,10 @@ export default function Step3StampsRequired() {
     return (
         <div className="space-y-6">
             <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
+                <h2 className="text-3xl font-black text-white tracking-tighter">
                     Meta de Sellos
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <p className="text-zinc-500 text-sm font-medium">
                     ¿Cuántos sellos debe juntar el cliente para ganar su premio?
                 </p>
             </div>
@@ -27,17 +27,17 @@ export default function Step3StampsRequired() {
                             key={num}
                             onClick={() => updateData({ stampsRequired: num })}
                             className={`
-                        relative flex flex-col items-center justify-center p-6 rounded-3xl border transition-all duration-300
+                        relative flex flex-col items-center justify-center p-6 rounded-3xl border transition-all duration-300 cursor-pointer
                         ${isSelected
-                                    ? 'bg-primary/20 border-primary shadow-[0_0_20px_rgba(16,185,129,0.3)] scale-105'
-                                    : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10 hover:border-primary/50'
+                                    ? 'bg-emerald-500/10 border-emerald-500/30 scale-105'
+                                    : 'bg-[#1c1c1c] border-white/5 hover:bg-white/5 hover:border-white/10'
                                 }
                     `}
                         >
-                            <span className={`text-5xl font-bold tracking-tighter ${isSelected ? 'text-primary' : 'text-gray-900 dark:text-white'}`}>
+                            <span className={`text-5xl font-black tracking-tighter ${isSelected ? 'text-emerald-500' : 'text-white'}`}>
                                 {num}
                             </span>
-                            <span className={`text-xs mt-2 uppercase tracking-widest font-medium ${isSelected ? 'text-primary' : 'text-gray-500 dark:text-white/40'}`}>
+                            <span className={`text-[10px] mt-2 uppercase tracking-widest font-black ${isSelected ? 'text-emerald-500' : 'text-zinc-600'}`}>
                                 Sellos
                             </span>
                         </button>
@@ -46,16 +46,19 @@ export default function Step3StampsRequired() {
             </div>
 
             <div className="flex gap-4 pt-4">
-                <Button variant="ghost" className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 transition-colors" onClick={prevStep}>
+                <Button
+                    variant="ghost"
+                    className="flex-1 h-15 rounded-2xl hover:bg-white/5 text-zinc-500 hover:text-white transition-all font-bold"
+                    onClick={prevStep}
+                >
                     Atrás
                 </Button>
-                <Button
-                    className="flex-1 text-lg font-bold"
-                    size="lg"
+                <button
                     onClick={nextStep}
+                    className="flex-1 h-15 rounded-2xl bg-emerald-500 text-black font-black text-xl transition-all hover:bg-emerald-400 active:scale-95 shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] flex items-center justify-center py-4"
                 >
                     Continuar
-                </Button>
+                </button>
             </div>
         </div>
     )

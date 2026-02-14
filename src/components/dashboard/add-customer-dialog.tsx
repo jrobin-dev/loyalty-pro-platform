@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
+import { Loader2 } from "lucide-react"
 
 import { CountryCodeSelect } from "@/components/ui/country-code-select"
 
@@ -99,27 +100,28 @@ export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomer
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px] bg-popover border-border/40 shadow-2xl">
-                <DialogHeader>
-                    <DialogTitle className="text-xl font-display">Nuevo Cliente</DialogTitle>
-                    <DialogDescription className="text-muted-foreground">
+            <DialogContent className="sm:max-w-[480px] bg-[#0a0a0a] border-white/5 p-0 overflow-hidden rounded-[2.5rem] shadow-2xl text-foreground">
+                <DialogHeader className="p-8 pb-4">
+                    <DialogTitle className="text-3xl font-medium tracking-tighter text-white">Nuevo Cliente</DialogTitle>
+                    <DialogDescription className="text-zinc-500 text-sm font-medium">
                         Registra un nuevo cliente en tu programa de lealtad.
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit}>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="name">Nombre completo</Label>
+                <form onSubmit={handleSubmit} className="px-8 pb-10 space-y-6">
+                    <div className="space-y-5">
+                        <div className="space-y-2">
+                            <Label htmlFor="name" className="text-xs font-black uppercase tracking-tight text-zinc-500">Nombre completo</Label>
                             <Input
                                 id="name"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 placeholder="Juan Pérez"
                                 required
+                                className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold px-5 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-700 focus:border-white/10"
                             />
                         </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-xs font-black uppercase tracking-tight text-zinc-500">Email</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -127,39 +129,46 @@ export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomer
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 placeholder="juan@example.com"
                                 required
+                                className="bg-[#1c1c1c] border-white/5 h-14 rounded-2xl text-white font-bold px-5 focus-visible:ring-1 focus-visible:ring-white/10 transition-all placeholder:text-zinc-700 focus:border-white/10"
                             />
                         </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="phone">Teléfono</Label>
-                            <div className="flex gap-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="phone" className="text-xs font-black uppercase tracking-tight text-zinc-500">Teléfono</Label>
+                            <div className="flex gap-0 bg-[#1c1c1c] border border-white/5 rounded-2xl overflow-hidden focus-within:ring-1 focus-within:ring-white/10 transition-all">
                                 <CountryCodeSelect
                                     value={countryCode}
                                     onChange={setCountryCode}
+                                    className="h-14 bg-transparent border-none rounded-none font-bold w-[100px] hover:bg-white/5 focus:ring-0"
                                 />
+                                <div className="w-[1px] h-8 bg-white/10 self-center" />
                                 <Input
                                     id="phone"
                                     type="tel"
                                     value={formData.phone}
                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                     placeholder="900 000 000"
-                                    className="flex-1"
+                                    className="flex-1 bg-transparent border-none h-14 text-white font-bold px-5 focus:ring-0 focus-visible:ring-1 focus-visible:ring-white/10"
                                     required
                                 />
                             </div>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                    <div className="flex items-center gap-6 pt-6">
+                        <button
+                            type="button"
+                            onClick={() => onOpenChange(false)}
+                            className="flex-1 text-zinc-500 hover:text-white font-medium transition-colors text-lg"
+                        >
                             Cancelar
-                        </Button>
-                        <Button
+                        </button>
+                        <button
                             type="submit"
                             disabled={loading}
-                            className="bg-emerald-500 text-white dark:text-black hover:bg-emerald-400 border-0 shadow-lg shadow-emerald-500/20 font-bold cursor-pointer transition-all hover:scale-[1.02]"
+                            className="flex-[2] h-14 rounded-2xl bg-white text-black font-bold transition-all hover:bg-zinc-200 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 shadow-xl cursor-pointer"
                         >
-                            {loading ? "Guardando..." : "Guardar Cliente"}
-                        </Button>
-                    </DialogFooter>
+                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Guardar Cliente"}
+                        </button>
+                    </div>
                 </form>
             </DialogContent>
         </Dialog>

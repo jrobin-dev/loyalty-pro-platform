@@ -76,7 +76,7 @@ export default function LoginPage() {
                                     placeholder="tu@email.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="pl-10 bg-white dark:bg-input text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                                    className="pl-10"
                                     required
                                     autoFocus
                                 />
@@ -93,7 +93,7 @@ export default function LoginPage() {
                                     placeholder="Tu contraseña"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="pl-10 pr-10 bg-white dark:bg-input text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                                    className="pl-10 pr-10"
                                     required
                                 />
                                 <button

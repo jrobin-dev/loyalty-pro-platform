@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Wallet, QrCode, Coffee, Pizza, ShoppingBag, Dumbbell, Scissors, Star, Check, Lock } from "lucide-react"
 import { QRCodeSVG } from "qrcode.react"
+import { motion, AnimatePresence } from "framer-motion"
 
 interface WalletCardProps {
     tenant: any
@@ -72,7 +73,7 @@ export const WalletCard = ({ tenant, customer, stamps, maxStamps, primaryColor, 
     const progress = Math.min((stamps / maxStamps) * 100, 100)
 
     return (
-        <div className="relative w-full h-auto min-h-[240px] rounded-3xl overflow-hidden shadow-2xl border border-white/10 group transition-all duration-500 hover:scale-[1.02]"
+        <div className="relative w-full h-auto min-h-[240px] rounded-2xl overflow-hidden shadow-2xl border border-white/10 group transition-all duration-500 hover:scale-[1.02]"
             style={{
                 background: `radial-gradient(circle at top right, ${primaryColor}40, transparent 60%), linear-gradient(to bottom right, #18181b, #000000)`
             }}
@@ -90,7 +91,7 @@ export const WalletCard = ({ tenant, customer, stamps, maxStamps, primaryColor, 
                 {/* Header */}
                 <div className="flex justify-between items-start">
                     <div>
-                        <h2 className="text-xl font-bold text-white font-[family-name:var(--font-funnel-display)] tracking-tight flex items-center gap-1 group/header">
+                        <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-1 group/header">
                             Hola:
                             <span className="font-[200] ml-1" style={{ color: primaryColor }}>
                                 <TypewriterText text={customer.name || 'Cliente'} color={primaryColor} />
@@ -105,12 +106,15 @@ export const WalletCard = ({ tenant, customer, stamps, maxStamps, primaryColor, 
                     </div>
                     <div
                         onClick={onAvatarClick}
-                        className="bg-white/10 rounded-full backdrop-blur-md border border-white/5 w-10 h-10 flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform hover:ring-2 hover:ring-white/20"
+                        className="bg-white/10 rounded-full backdrop-blur-md border border-white/5 w-10 h-10 flex items-center justify-center overflow-hidden cursor-pointer hover:scale-105 transition-transform hover:ring-2 hover:ring-white/20 shadow-xl"
                     >
                         {customer?.avatarUrl ? (
                             <img src={customer.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (
-                            <span className="font-bold text-white">{customer.name?.[0] || 'C'}</span>
+                            <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-white font-black text-xs">
+                                {(customer.name?.[0] || 'C').toUpperCase()}
+                                {(customer.lastName?.[0] || '').toUpperCase()}
+                            </div>
                         )}
                     </div>
                 </div>
@@ -199,34 +203,53 @@ export const WalletCard = ({ tenant, customer, stamps, maxStamps, primaryColor, 
                     </button>
                 </div>
 
-                {/* QR Code Overlay - Internal "Modal" */}
-                {showQr && (
-                    <div className="absolute inset-0 z-50 bg-zinc-950 flex flex-col items-center justify-center p-8 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                        <button
-                            onClick={() => setShowQr(false)}
-                            className="absolute top-4 right-4 text-white/50 hover:text-white p-2"
+                {/* QR Code Overlay - Integrated View */}
+                <AnimatePresence>
+                    {showQr && (
+                        <motion.div
+                            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                            animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
+                            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                            className="absolute inset-0 z-50 bg-black/80 flex flex-col items-center justify-center p-6 gap-4"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-                        </button>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); setShowQr(false); }}
+                                className="absolute top-4 right-4 text-white/40 hover:text-white p-2 bg-white/5 rounded-full transition-colors"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                            </button>
 
-                        <div className="text-center space-y-2">
-                            <h3 className="text-white font-bold text-xl font-[family-name:var(--font-funnel-display)]">
-                                {tenant?.name}
-                            </h3>
-                            <p className="text-white/50 text-sm">Escanea para sumar puntos</p>
-                        </div>
-                        <div className="p-4 bg-white rounded-2xl shadow-2xl shadow-white/5 w-full aspect-square max-w-[200px]">
-                            <QRCodeSVG
-                                value={customer?.id || ""}
-                                width="100%"
-                                height="100%"
-                            />
-                        </div>
-                        <div className="text-center">
-                            <p className="text-white/30 text-xs font-mono">{customer?.id}</p>
-                        </div>
-                    </div>
-                )}
+                            <motion.div
+                                initial={{ scale: 0.8, y: 10 }}
+                                animate={{ scale: 1, y: 0 }}
+                                className="text-center space-y-2 mb-2"
+                            >
+                                <h3 className="text-white font-black text-lg tracking-tight">
+                                    {tenant?.name}
+                                </h3>
+                                <p className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Escanea para sumar puntos</p>
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ scale: 0.5, rotate: -10 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{ type: "spring", damping: 15 }}
+                                className="p-4 bg-white rounded-3xl shadow-[0_0_40px_rgba(255,255,255,0.1)] w-full aspect-square max-w-[180px] flex items-center justify-center"
+                            >
+                                <QRCodeSVG
+                                    value={customer?.id || ""}
+                                    width="100%"
+                                    height="100%"
+                                    fgColor="#000000"
+                                />
+                            </motion.div>
+
+                            <div className="text-center mt-2">
+                                <p className="text-white/20 text-[10px] font-mono tracking-tighter opacity-50">{customer?.id}</p>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div >
         </div >
     )

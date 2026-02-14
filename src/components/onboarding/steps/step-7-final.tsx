@@ -119,7 +119,7 @@ export default function Step8Final() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="text-5xl font-black font-[family-name:var(--font-funnel-display)] tracking-tight text-foreground"
+                        className="text-5xl font-black tracking-tighter text-white"
                     >
                         ¡Enhorabuena!
                     </motion.h2>
@@ -127,7 +127,7 @@ export default function Step8Final() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="text-muted-foreground text-xl leading-relaxed"
+                        className="text-zinc-500 text-xl font-medium tracking-tight"
                     >
                         Tu tarjeta de lealtad ha sido creada exitosamente. Estamos listos para despegar.
                     </motion.p>
@@ -162,8 +162,8 @@ export default function Step8Final() {
                     transition={{ delay: 0.6 }}
                     className="pt-12"
                 >
-                    <p className="text-sm text-muted-foreground">
-                        Impulsado por <span className="text-primary font-bold">LoyaltyPro</span> &bull; 2026
+                    <p className="text-sm text-zinc-500">
+                        Impulsado por <span className="text-emerald-500 font-bold">LoyaltyPro</span> &bull; 2026
                     </p>
                 </motion.div>
             </motion.div>
@@ -178,16 +178,17 @@ export default function Step8Final() {
                         <Sparkles className="h-8 w-8 text-primary" />
                     </div>
                 </div>
-                <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
+                <h2 className="text-3xl font-black text-white tracking-tighter">
                     ¡Todo Listo!
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    Revisa tu configuración antes de continuar
+                <p className="text-zinc-500 text-sm font-medium">
+                    Revisa tu configuración antes de continuar. <br />
+                    <span className="text-emerald-500/80">Podrás editar estos datos luego desde tu cuenta.</span>
                 </p>
             </div>
 
             {/* Summary Card */}
-            <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-6 space-y-4">
+            <div className="w-full max-w-[450px] bg-[#1c1c1c] border border-white/5 rounded-3xl p-8 space-y-6 shadow-2xl mx-auto">
                 <div className="flex justify-between items-center text-sm md:text-base">
                     <span className="text-gray-600 dark:text-white/60">Negocio:</span>
                     <span className="font-bold text-foreground text-right">{data.businessName}</span>
@@ -230,29 +231,28 @@ export default function Step8Final() {
             <div className="flex gap-4 pt-4">
                 <Button
                     variant="ghost"
-                    className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 transition-colors"
+                    className="flex-1 h-15 rounded-2xl hover:bg-white/5 text-zinc-500 hover:text-white transition-all font-bold"
                     onClick={prevStep}
                     disabled={isLoading}
                 >
                     Atrás
                 </Button>
-                <Button
-                    className="flex-1 text-lg font-bold"
-                    size="lg"
+                <button
                     onClick={handleComplete}
                     disabled={isLoading}
+                    className="h-15 w-full max-w-[200px] rounded-2xl bg-emerald-500 text-black font-black text-xl transition-all hover:bg-emerald-400 active:scale-95 shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] flex items-center justify-center py-4 px-8 disabled:opacity-50"
                 >
                     {isLoading ? (
                         <>
-                            <Loader2 className="animate-spin mr-2" />
+                            <Loader2 className="animate-spin mr-2 h-6 w-6" />
                             Guardando...
                         </>
                     ) : (
                         <>
-                            Confirmar y Finalizar <ArrowRight className="ml-2 h-5 w-5" />
+                            Finalizar <ArrowRight className="ml-2 h-6 w-6" />
                         </>
                     )}
-                </Button>
+                </button>
             </div>
         </div>
     )

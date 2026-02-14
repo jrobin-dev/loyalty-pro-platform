@@ -40,6 +40,8 @@ model Tenant {
   owner       User     @relation(fields: [ownerId], references: [id])
   plan        String   @default("FREE")
   status      String   @default("ACTIVE") // ACTIVE, SUSPENDED, PENDING
+  currency    String   @default("$")
+  phone       String?
   
   branding    Branding?
   loyalty     LoyaltyProgram?
@@ -60,7 +62,8 @@ model Branding {
   logoUrl        String?
   fontFamily     String @default("Funnel Display")
   
-  gradient       Boolean @default(false)
+  gradient          Boolean @default(false)
+  gradientDirection String  @default("to bottom right")
 }
 
 model LoyaltyProgram {
@@ -69,6 +72,7 @@ model LoyaltyProgram {
   tenant         Tenant @relation(fields: [tenantId], references: [id])
   
   stampIcon      String @default("star") 
+  customIconUrl  String?
   stampsRequired Int    @default(6)
   rewardTitle    String @default("Free Reward")
 }

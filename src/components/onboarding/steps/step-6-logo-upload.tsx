@@ -10,10 +10,10 @@ export default function Step6LogoUpload() {
     return (
         <div className="space-y-6">
             <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold font-[family-name:var(--font-funnel-display)]">
+                <h2 className="text-3xl font-black text-white tracking-tighter">
                     Sube tu Logo
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <p className="text-zinc-500 text-sm font-medium">
                     Lo mostraremos en la cabecera de la tarjeta.
                 </p>
             </div>
@@ -34,16 +34,19 @@ export default function Step6LogoUpload() {
             </div>
 
             <div className="flex gap-4 pt-4">
-                <Button variant="ghost" className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:text-emerald-600 transition-colors" onClick={prevStep}>
+                <Button
+                    variant="ghost"
+                    className="flex-1 h-15 rounded-2xl hover:bg-white/5 text-zinc-500 hover:text-white transition-all font-bold"
+                    onClick={prevStep}
+                >
                     Atrás
                 </Button>
-                <Button
-                    className="flex-1 text-lg font-bold"
-                    size="lg"
+                <button
                     onClick={nextStep}
+                    className="flex-1 h-15 rounded-2xl bg-emerald-500 text-black font-black text-xl transition-all hover:bg-emerald-400 active:scale-95 shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] flex items-center justify-center py-4"
                 >
                     {data.logoUrl ? 'Continuar' : 'Saltar por ahora'}
-                </Button>
+                </button>
             </div>
         </div>
     )
