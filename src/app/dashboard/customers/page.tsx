@@ -55,19 +55,19 @@ export default function CustomersPage() {
                 <div>
                     <h2 className="text-xl font-bold text-muted-foreground/40 font-sans uppercase tracking-wider text-sm">Gestión de Base de Datos</h2>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto">
                     <Button
                         onClick={() => setShowFilters(!showFilters)}
                         variant="outline"
                         size="sm"
                         className={cn(
-                            "bg-white/5 border-white/10 text-white hover:bg-white/10",
+                            "bg-white/5 border-white/10 text-white hover:bg-white/10 flex-1 sm:flex-none",
                             showFilters && "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
                         )}
                     >
                         <Filter size={14} className="mr-2" /> Filtros
                     </Button>
-                    <Button onClick={handleExportCSV} variant="outline" size="sm" className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+                    <Button onClick={handleExportCSV} variant="outline" size="sm" className="bg-white/5 border-white/10 text-white hover:bg-white/10 flex-1 sm:flex-none">
                         <Download size={14} className="mr-2" /> Exportar
                     </Button>
                     <Button
@@ -75,12 +75,12 @@ export default function CustomersPage() {
                         disabled={isRefreshing}
                         variant="outline"
                         size="sm"
-                        className="bg-white/5 border-white/10 text-white hover:bg-white/10"
+                        className="bg-white/5 border-white/10 text-white hover:bg-white/10 flex-1 sm:flex-none"
                     >
                         <RefreshCw size={14} className={cn("mr-2", isRefreshing && "animate-spin")} />
-                        {isRefreshing ? "Refrescando..." : "Refrescar"}
+                        {isRefreshing ? "Refrescando" : "Refrescar"}
                     </Button>
-                    <Button onClick={() => setIsAddCustomerOpen(true)} size="sm" className="btn-cosmic">
+                    <Button onClick={() => setIsAddCustomerOpen(true)} size="sm" className="btn-cosmic flex-1 sm:flex-none whitespace-nowrap">
                         <Plus size={16} className="mr-2" /> Nuevo Cliente
                     </Button>
                 </div>

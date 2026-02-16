@@ -27,6 +27,8 @@ import { useUserProfile } from "@/hooks/use-user-profile"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { UpgradeProBanner } from "./upgrade-banner"
+import { useLanguage } from "@/contexts/language-context"
+import { LanguageSwitcher } from "./language-switcher"
 
 interface SidebarProps {
     isOpen: boolean
@@ -37,11 +39,27 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: SidebarProps) {
     const pathname = usePathname()
+    const { t } = useLanguage()
     const { settings } = useTenantSettings()
     const { profile } = useUserProfile()
     const router = useRouter()
     const [isLoggingOut, setIsLoggingOut] = useState(false)
     const [userName, setUserName] = useState("Usuario")
+    const [isFullyExpanded, setIsFullyExpanded] = useState(false)
+
+    // Handle delayed expansion state for smooth content appearance
+    useEffect(() => {
+        if (!isCollapsed) {
+            // Opening: Wait for width transition (300ms) then show content
+            const timer = setTimeout(() => {
+                setIsFullyExpanded(true)
+            }, 300)
+            return () => clearTimeout(timer)
+        } else {
+            // Closing: Hide content immediately
+            setIsFullyExpanded(false)
+        }
+    }, [isCollapsed])
 
     useEffect(() => {
         if (profile) {
@@ -50,6 +68,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
             setUserName(fullName || profile.email?.split("@")[0] || "Usuario")
         }
     }, [profile])
+
 
     const handleLogout = async () => {
         try {
@@ -66,12 +85,12 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
     }
 
     const menuItems = [
-        { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-        { icon: Users, label: "Clientes", href: "/dashboard/customers" },
-        { icon: QrCode, label: "Escanear", href: "/dashboard/scan" },
-        { icon: Gift, label: "Premios", href: "/dashboard/rewards" },
-        { icon: GraduationCap, label: "Academia", href: "/dashboard/academy" },
-        { icon: Settings, label: "Configuración", href: "/dashboard/settings" },
+        { icon: LayoutDashboard, label: t('sidebar.dashboard'), href: "/dashboard" },
+        { icon: Users, label: t('sidebar.customers'), href: "/dashboard/customers" },
+        { icon: QrCode, label: t('sidebar.qrScanner'), href: "/dashboard/scan" },
+        { icon: Gift, label: t('sidebar.rewards'), href: "/dashboard/rewards" },
+        { icon: GraduationCap, label: t('sidebar.academy'), href: "/dashboard/academy" },
+        { icon: Settings, label: t('sidebar.settings'), href: "/dashboard/settings" },
     ]
 
 
@@ -82,7 +101,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
             {/* Mobile Overlay */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden"
                     onClick={() => setIsOpen(false)}
                 />
             )}
@@ -92,7 +111,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 className={cn(
                     "fixed top-0 left-0 h-full bg-background border-r border-border z-50 transition-all duration-300 flex flex-col",
                     isCollapsed ? "w-20" : "w-64",
-                    isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+                    isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
                 )}
             >
                 {/* Header - Logo & Close Button (Mobile) */}
@@ -103,23 +122,36 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                 <Zap className="h-5 w-5 text-white fill-white" />
                             </div>
                         ) : (
-                            <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
-                                LoyaltyPro
-                            </h1>
+                            <AnimatePresence mode="wait">
+                                {isFullyExpanded && (
+                                    <motion.h1
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="text-xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent group-hover:scale-105 transition-transform"
+                                    >
+                                        LoyaltyPro
+                                    </motion.h1>
+                                )}
+                            </AnimatePresence>
                         )}
                     </Link>
 
-                    {/* Close Button only for mobile/tablet */}
-                    {!isCollapsed && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setIsOpen(false)}
-                            className="lg:hidden h-8 w-8 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-full"
-                        >
-                            <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                    )}
+                    {/* Close Button Only */}
+                    <div className="flex items-center gap-2">
+
+                        {!isCollapsed && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsOpen(false)}
+                                className="md:hidden h-8 w-8 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-full"
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Navigation */}
@@ -133,7 +165,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                 {/* Indicador Neón Lateral - Separado del recuadro */}
                                 {isActive && (
                                     <motion.div
-                                        layoutId="activeIndicator"
+                                        layoutId={`activeIndicator-${isCollapsed ? 'collapsed' : 'expanded'}`}
                                         className="absolute z-10"
                                         style={{
                                             left: "-16px",
@@ -157,6 +189,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                 <Link
                                     key={item.href}
                                     href={item.href}
+                                    onClick={() => setIsOpen(false)}
                                     className={cn(
                                         "group flex items-center rounded-xl transition-all duration-300 relative h-12 overflow-hidden",
                                         isActive
@@ -214,13 +247,18 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 </nav>
 
                 {/* Footer */}
-                <div className="p-4 border-t border-border mt-auto space-y-4">
+                <div className={cn(
+                    "p-4 mt-auto space-y-4 transition-all duration-300",
+                    // Only show border when fully expanded to avoid "jumping" line
+                    isFullyExpanded ? "border-t border-border" : "border-t-0"
+                )}>
                     {/* Premium Upgrade Banner */}
                     <AnimatePresence mode="wait">
                         {!isCollapsed && (
                             <UpgradeProBanner />
                         )}
                     </AnimatePresence>
+
 
                     {/* Simple Logout Action */}
                     <div className="flex items-center">

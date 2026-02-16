@@ -82,7 +82,7 @@ export function useCustomers() {
 
             setTenantSlug(tenantData.slug)
 
-            // Fetch customers for this tenant with user data
+            // Fetch customers for this tenant with user data and transactions
             const { data, error } = await supabase
                 .from('Customer')
                 .select(`
@@ -94,6 +94,9 @@ export function useCustomers() {
                         phone,
                         birthday,
                         avatarUrl
+                    ),
+                    transactions:StampTransaction (
+                        createdAt
                     )
                 `)
                 .eq('tenantId', tenantData.id)
@@ -108,25 +111,46 @@ export function useCustomers() {
                 toast.error("Error cargando clientes actualizados.")
             } else {
                 // Transform data to match expected format
-                const transformedData = (data || []).map((customer: any) => ({
-                    id: customer.id,
-                    userId: customer.userId,
-                    tenantId: customer.tenantId,
-                    totalStamps: customer.totalStamps,
-                    currentStamps: customer.currentStamps,
-                    joinedAt: customer.joinedAt,
-                    // Compatibility fields
-                    name: customer.user?.name || 'Cliente',
-                    lastName: customer.user?.lastName || '',
-                    email: customer.user?.email || '',
-                    phone: customer.user?.phone || '',
-                    birthday: customer.user?.birthday ? new Date(customer.user.birthday) : null,
-                    avatarUrl: customer.user?.avatarUrl,
-                    stamps: customer.currentStamps,
-                    visits: customer.totalStamps, // Approximate
-                    last_visit: customer.joinedAt,
-                    status: 'active'
-                }))
+                const transformedData = (data || []).map((customer: any) => {
+                    // Calculate last visit from transactions
+                    let lastVisitDate = customer.joinedAt
+
+                    if (customer.transactions && customer.transactions.length > 0) {
+                        // Find the most recent transaction
+                        const latestTransaction = customer.transactions.reduce((latest: string, current: any) => {
+                            return new Date(current.createdAt) > new Date(latest)
+                                ? current.createdAt
+                                : latest
+                        }, customer.joinedAt)
+                        lastVisitDate = latestTransaction
+                    }
+
+                    return {
+                        id: customer.id,
+                        userId: customer.userId,
+                        tenantId: customer.tenantId,
+                        totalStamps: customer.totalStamps,
+                        currentStamps: customer.currentStamps,
+                        joinedAt: customer.joinedAt,
+                        // Compatibility fields
+                        name: customer.user?.name || 'Cliente',
+                        lastName: customer.user?.lastName || '',
+                        email: customer.user?.email || '',
+                        phone: customer.user?.phone || '',
+                        birthday: customer.user?.birthday ? new Date(customer.user.birthday) : null,
+                        avatarUrl: customer.user?.avatarUrl,
+                        stamps: customer.currentStamps,
+                        visits: customer.totalStamps, // Approximate
+                        last_visit: lastVisitDate,
+                        status: 'active'
+                    }
+                })
+
+                // Global Sort: Recent Activity First
+                // Sort by last_visit descending
+                transformedData.sort((a: Customer, b: Customer) => {
+                    return new Date(b.last_visit).getTime() - new Date(a.last_visit).getTime()
+                })
 
                 setCustomers(transformedData)
 

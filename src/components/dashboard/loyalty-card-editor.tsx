@@ -56,13 +56,13 @@ export function LoyaltyCardEditor({ settings, onSave }: LoyaltyCardEditorProps) 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Editor */}
             <div className="bg-zinc-900/40 rounded-[2rem] border border-white/5 shadow-2xl overflow-hidden h-full">
-                <div className="p-8 border-b border-white/5 bg-[#141414]">
+                <div className="p-5 md:p-8 border-b border-white/5 bg-[#141414]">
                     <h3 className="flex items-center gap-4 text-xl font-bold text-white tracking-tight">
                         <Sparkles className="h-6 w-6 text-emerald-400" />
                         Configuración de Tarjeta
                     </h3>
                 </div>
-                <div className="p-8 space-y-10">
+                <div className="p-5 md:p-8 space-y-10">
                     {/* Stamp Icon & Type */}
                     <div className="space-y-3">
                         <Label htmlFor="stamp-type">Diseño del Sello</Label>
@@ -160,7 +160,7 @@ export function LoyaltyCardEditor({ settings, onSave }: LoyaltyCardEditorProps) 
             {/* Live Preview - Modern iPhone Style */}
             <div className="flex flex-col items-center justify-center p-4 lg:p-8 h-full">
                 {/* Modern Frameless Look - Maximize View */}
-                <div className="relative w-[380px] h-[750px] bg-black rounded-[55px] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden border-[8px] border-zinc-900 ring-1 ring-white/10">
+                <div className="relative w-full max-w-[380px] h-[750px] bg-black rounded-[55px] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden border-[8px] border-zinc-900 ring-1 ring-white/10">
 
                     {/* Dynamic Island / Notch Area */}
                     <div className="absolute top-0 w-full h-14 flex items-center justify-between px-8 text-white text-xs z-20 bg-gradient-to-b from-black/60 to-transparent pointer-events-none">

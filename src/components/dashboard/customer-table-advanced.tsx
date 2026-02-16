@@ -89,6 +89,45 @@ export function CustomerTableAdvanced({
 
 
 
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 10
+
+    // Reset pagination when filters change
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [searchQuery, statusFilter])
+
+    // Sync pagination with Global Search selection (highlightedId)
+    // If the highlighted user is in the list but not on the current page, jump to their page.
+    useEffect(() => {
+        if (highlightedId && filteredCustomers.length > 0) {
+            const index = filteredCustomers.findIndex(c => c.id === highlightedId)
+            if (index !== -1) {
+                const targetPage = Math.ceil((index + 1) / itemsPerPage)
+                if (targetPage !== currentPage) {
+                    setCurrentPage(targetPage)
+                }
+            }
+        }
+    }, [highlightedId, filteredCustomers, itemsPerPage, currentPage])
+
+    const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage)
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const paginatedCustomers = filteredCustomers.slice(startIndex, startIndex + itemsPerPage)
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(prev => prev - 1)
+        }
+    }
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(prev => prev + 1)
+        }
+    }
+
     const handleAddConsumption = async () => {
         if (!selectedCustomer) return
 
@@ -240,7 +279,7 @@ export function CustomerTableAdvanced({
                                     </td>
                                 </tr>
                             ) : (
-                                filteredCustomers.map((customer) => (
+                                paginatedCustomers.map((customer) => (
                                     <tr
                                         key={customer.id}
                                         className={cn(
@@ -415,16 +454,37 @@ export function CustomerTableAdvanced({
                 </div>
             </div>
 
-            <div className="text-center">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => window.location.reload()}
-                    className="text-muted-foreground hover:text-foreground text-xs cursor-pointer"
-                >
-                    Cargar más clientes
-                </Button>
-            </div>
+            {/* Pagination Controls */}
+            {filteredCustomers.length > 0 && (
+                <div className="flex items-center justify-between px-2">
+                    <div className="text-xs text-zinc-500 font-medium">
+                        Mostrando {startIndex + 1} - {Math.min(startIndex + itemsPerPage, filteredCustomers.length)} de {filteredCustomers.length} clientes
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handlePreviousPage}
+                            disabled={currentPage === 1}
+                            className="h-8 text-xs bg-zinc-900 border-white/10 text-zinc-400 hover:bg-zinc-800 hover:text-white disabled:opacity-50"
+                        >
+                            Anterior
+                        </Button>
+                        <div className="flex items-center justify-center min-w-[30px] h-8 rounded-lg bg-zinc-900/50 border border-white/5 text-xs font-bold text-zinc-300">
+                            {currentPage}
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleNextPage}
+                            disabled={currentPage === totalPages}
+                            className="h-8 text-xs bg-zinc-900 border-white/10 text-zinc-400 hover:bg-zinc-800 hover:text-white disabled:opacity-50"
+                        >
+                            Siguiente
+                        </Button>
+                    </div>
+                </div>
+            )}
 
             {/* Add Customer Dialog */}
             <AddCustomerDialog

@@ -68,7 +68,7 @@ export function NotificationsPopover() {
                     )}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-0 mr-4 bg-[#0F0F10] border-zinc-800 shadow-2xl rounded-2xl overflow-hidden" align="end" sideOffset={8}>
+            <PopoverContent className="w-[96vw] sm:w-80 p-0 bg-[#0F0F10] border-zinc-800 shadow-2xl rounded-2xl overflow-hidden ml-2 sm:ml-0 sm:mr-4" align="end" sideOffset={8}>
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-zinc-900/50 backdrop-blur-sm">
                     <h4 className="font-semibold text-sm text-white flex items-center gap-2">
                         Notificaciones

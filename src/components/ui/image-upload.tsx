@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Upload, X, Loader2, Image as ImageIcon } from "lucide-react"
 import { toast } from "sonner"
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 
 interface ImageUploadProps {
     value: string
@@ -13,9 +14,10 @@ interface ImageUploadProps {
     disabled?: boolean
     onRemove?: () => void
     bucket?: string
+    className?: string
 }
 
-export function ImageUpload({ value, onChange, disabled, onRemove, bucket = "course-covers" }: ImageUploadProps) {
+export function ImageUpload({ value, onChange, disabled, onRemove, bucket = "course-covers", className }: ImageUploadProps) {
     const [isLoading, setIsLoading] = useState(false)
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -64,7 +66,7 @@ export function ImageUpload({ value, onChange, disabled, onRemove, bucket = "cou
 
     if (value) {
         return (
-            <div className="relative h-32 w-full overflow-hidden rounded-lg border border-border bg-black/20">
+            <div className={cn("relative h-32 w-full overflow-hidden rounded-lg border border-border bg-black/20", className)}>
                 <div className="absolute top-2 right-2 z-10">
                     <Button
                         type="button"
@@ -91,12 +93,12 @@ export function ImageUpload({ value, onChange, disabled, onRemove, bucket = "cou
     return (
         <div
             {...getRootProps()}
-            className={`
+            className={cn(`
                 border-2 border-dashed rounded-lg p-6 cursor-pointer hover:bg-muted/50 transition-colors
                 flex flex-col items-center justify-center gap-2 text-center h-48
                 ${isDragActive ? "border-primary bg-primary/10" : "border-muted-foreground/25"}
                 ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-            `}
+            `, className)}
         >
             <input {...getInputProps()} />
             {isLoading ? (

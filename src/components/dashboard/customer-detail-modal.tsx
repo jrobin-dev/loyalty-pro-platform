@@ -222,17 +222,18 @@ export function CustomerDetailModal({ customer, open, onOpenChange, onUpdate }: 
                             <div className="space-y-2">
                                 <p className="text-zinc-500 font-black uppercase tracking-tight text-[10px]">WhatsApp</p>
                                 {isEditing ? (
-                                    <div className="flex gap-2">
-                                        <div className="shrink-0">
+                                    <div className="flex gap-0 bg-[#1c1c1c] border border-white/5 rounded-xl h-12 items-center focus-within:ring-1 focus-within:ring-white/10 focus-within:border-white/20 transition-all overflow-hidden">
+                                        <div className="shrink-0 border-r border-white/5 h-full">
                                             <CountryCodeSelect
                                                 value={editData.countryCode}
                                                 onChange={(code) => setEditData({ ...editData, countryCode: code })}
+                                                className="border-0 bg-transparent h-full rounded-none shadow-none focus-visible:ring-0 active:scale-100 w-[110px] hover:bg-white/5"
                                             />
                                         </div>
                                         <Input
                                             value={editData.phone}
                                             onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
-                                            className="bg-[#1c1c1c] border-white/5 h-12 rounded-xl text-white font-bold px-4 flex-1 focus-visible:ring-1 focus-visible:ring-white/10"
+                                            className="border-0 bg-transparent h-full rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 px-4 flex-1 text-white font-bold placeholder:text-zinc-600"
                                             placeholder="900 000 000"
                                         />
                                     </div>

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { GlobalSearch } from "./global-search";
 import { NotificationsPopover } from "./notifications-popover";
+import { LanguageSwitcher } from "./language-switcher";
 import { useUserProfile } from "@/hooks/use-user-profile";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,35 @@ interface DashboardNavbarProps {
     isOpen: boolean;
     toggleCollapse: () => void;
     onOpenMobileSidebar: () => void;
+}
+
+import { useLanguage } from "@/contexts/language-context"; // Ensure this matches
+
+// Internal component for language toggle to use the hook
+function LanguageToggle() {
+    const { language, setLanguage } = useLanguage()
+    return (
+        <>
+            <button
+                onClick={(e) => { e.preventDefault(); setLanguage('es') }}
+                className={cn(
+                    "px-2 py-1 text-xs font-bold rounded-md transition-all",
+                    language === 'es' ? "bg-emerald-500 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
+                )}
+            >
+                ES
+            </button>
+            <button
+                onClick={(e) => { e.preventDefault(); setLanguage('en') }}
+                className={cn(
+                    "px-2 py-1 text-xs font-bold rounded-md transition-all",
+                    language === 'en' ? "bg-emerald-500 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
+                )}
+            >
+                EN
+            </button>
+        </>
+    )
 }
 
 export function DashboardNavbar({
@@ -81,10 +111,16 @@ export function DashboardNavbar({
                         <div className={cn("h-[2px] w-full bg-current rounded-full transition-all duration-300", isCollapsed && "w-2 self-end")} />
                     </div>
                 </Button>
+
+                <div className="h-6 w-px bg-white/10 mx-2 hidden lg:block" />
+
+                <div className="hidden lg:block">
+                    <LanguageSwitcher />
+                </div>
             </div>
 
             {/* CENTER: Global Search */}
-            <div className="flex justify-center w-full max-w-2xl mx-auto">
+            <div className="flex justify-center w-full max-w-2xl mx-auto px-2 md:px-0">
                 <div className="w-full">
                     <GlobalSearch />
                 </div>
@@ -116,8 +152,8 @@ export function DashboardNavbar({
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="relative h-12 w-auto flex items-center gap-3 px-3 hover:bg-white/5 rounded-xl transition-all border border-transparent hover:border-white/10 group">
-                            <div className="hidden md:flex flex-col items-end">
+                        <Button variant="ghost" className="relative h-12 w-auto flex items-center gap-3 px-3 rounded-xl transition-all hover:!bg-[#00bb7f0d] focus-visible:ring-0 focus-visible:ring-offset-0 focus:bg-white/[0.01] data-[state=open]:bg-white/[0.01] border-none outline-none group">
+                            <div className="hidden lg:flex flex-col items-end">
                                 <span className="text-sm font-bold text-white leading-none">
                                     {(profile?.name && profile?.lastName) ? `${profile.name} ${profile.lastName}` : (profile?.name || "Usuario")}
                                 </span>
@@ -150,6 +186,14 @@ export function DashboardNavbar({
                             </p>
                         </div>
 
+                        {/* Mobile/Tablet Language Selector */}
+                        <div className="lg:hidden px-4 pb-3 mb-2 border-b border-white/5 flex items-center justify-between">
+                            <span className="text-xs font-medium text-zinc-400">Idioma</span>
+                            <div className="flex bg-white/5 rounded-lg p-0.5 border border-white/10">
+                                <LanguageToggle />
+                            </div>
+                        </div>
+
                         <div className="px-2 pb-2 space-y-2">
                             <Button
                                 className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl flex items-center justify-between px-4 group shadow-[0_0_20px_rgba(16,185,129,0.2)]"
@@ -167,7 +211,7 @@ export function DashboardNavbar({
                             </Button>
 
                             <DropdownMenuGroup className="pt-2">
-                                <DropdownMenuItem asChild className="h-12 rounded-xl cursor-pointer focus:bg-white/5 focus:text-white transition-all px-4">
+                                <DropdownMenuItem asChild className="h-12 rounded-xl cursor-pointer focus:bg-emerald-500/5 focus:text-white transition-all px-4">
                                     <Link href="/dashboard/billing" className="flex items-center gap-3 w-full">
                                         <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center border border-orange-500/20">
                                             <CreditCard className="h-4 w-4 text-orange-500" />
@@ -176,7 +220,7 @@ export function DashboardNavbar({
                                     </Link>
                                 </DropdownMenuItem>
 
-                                <DropdownMenuItem asChild className="h-12 rounded-xl cursor-pointer focus:bg-white/5 focus:text-white transition-all px-4">
+                                <DropdownMenuItem asChild className="h-12 rounded-xl cursor-pointer focus:bg-emerald-500/5 focus:text-white transition-all px-4">
                                     <Link href="/dashboard/settings" className="flex items-center gap-3 w-full">
                                         <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
                                             <Settings className="h-4 w-4 text-white/70" />

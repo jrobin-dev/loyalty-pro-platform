@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Customer } from "@/hooks/use-customers"
 import { History, TrendingUp, TrendingDown, Award } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
@@ -9,6 +9,7 @@ import { useTenantSettings } from "@/hooks/use-tenant-settings"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { formatNumber } from "@/lib/utils"
+import { formatInTimezone } from "@/lib/date-utils"
 
 interface CustomerHistoryModalProps {
     customer: Customer | null
@@ -28,7 +29,7 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [loading, setLoading] = useState(false)
 
-    const { settings } = useTenantSettings()
+    const { settings, loading: settingsLoading } = useTenantSettings()
     const currency = settings?.tenant.currency || '$'
 
     useEffect(() => {
@@ -92,6 +93,9 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
                         <span className="w-1 h-1 rounded-full bg-zinc-800" />
                         <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">{transactions.length} transacciones</span>
                     </div>
+                    <DialogDescription className="sr-only">
+                        Historial completo de transacciones y canjes de {customer.name}
+                    </DialogDescription>
                 </DialogHeader>
 
                 <div className="px-8 pb-10 space-y-3 max-h-[500px] overflow-y-auto custom-scrollbar">
@@ -125,11 +129,26 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
                                             <p className="font-medium text-foreground">
                                                 {transaction.type === 'reward' ? 'Premio Canjeado' : 'Consumo'}
                                             </p>
+
+
+
+
                                             <p className="text-xs text-muted-foreground">
-                                                {format(new Date(transaction.created_at), "d 'de' MMMM, yyyy 'a las' HH:mm", { locale: es })}
+                                                {settingsLoading ? (
+                                                    <span className="animate-pulse bg-white/10 rounded h-3 w-32 inline-block" />
+                                                ) : (
+                                                    formatInTimezone(
+                                                        transaction.created_at.endsWith('Z') ? transaction.created_at : `${transaction.created_at}Z`,
+                                                        settings?.tenant.timeFormat === '24h'
+                                                            ? "d 'de' MMMM, yyyy 'a las' HH:mm"
+                                                            : "d 'de' MMMM, yyyy 'a las' hh:mm a",
+                                                        settings?.tenant.timezone
+                                                    )
+                                                )}
                                             </p>
                                         </div>
                                     </div>
+
                                     <div className="text-right">
                                         <p className="font-bold text-foreground">
                                             {currency} {formatNumber(transaction.amount)}
@@ -146,6 +165,7 @@ export function CustomerHistoryModal({ customer, open, onOpenChange }: CustomerH
                                     </div>
                                 </div>
                             </div>
+
                         ))
                     )}
                 </div>

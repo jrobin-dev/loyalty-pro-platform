@@ -54,6 +54,8 @@ export async function GET(request: Request) {
                 category: tenant.category ?? undefined,
                 plan: tenant.plan,
                 currency: (tenant as any).currency,
+                timezone: (tenant as any).timezone || 'UTC',
+                timeFormat: (tenant as any).timeFormat || '12h',
             },
             branding: tenant.branding || null,
             loyaltyProgram: tenant.loyalty || null
@@ -81,6 +83,7 @@ export async function PATCH(request: Request) {
 
         const userId = session.user.id
         const body = await request.json()
+        console.log("API Settings PATCH received:", body)
 
         // Verify ownership
         const existingTenant = await prisma.tenant.findFirst({
@@ -98,6 +101,8 @@ export async function PATCH(request: Request) {
             data: {
                 name: body.tenant?.name,
                 currency: body.tenant?.currency,
+                timezone: body.tenant?.timezone,
+                timeFormat: body.tenant?.timeFormat,
             } as any
         })
 

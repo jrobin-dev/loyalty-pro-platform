@@ -13,6 +13,8 @@ export interface TenantSettings {
         category?: string
         plan: string
         currency: string
+        timezone: string
+        timeFormat: string
     }
     // Branding data
     branding: {
@@ -57,6 +59,7 @@ export function useTenantSettings() {
             }
 
             const data = await response.json()
+            console.log("useTenantSettings - Fetched Data:", data)
 
             // Combine all data
             setSettings({
@@ -69,7 +72,9 @@ export function useTenantSettings() {
                     fontFamily: 'Funnel Display',
                     gradient: false,
                     gradientDirection: 'to right',
-                    currency: '$'
+                    currency: '$',
+                    timezone: 'UTC',
+                    timeFormat: '12h'
                 },
                 loyaltyProgram: data.loyaltyProgram || {
                     id: '',
