@@ -41,10 +41,18 @@ export async function POST(request: Request) {
         // If successful, upgrade tenant locally
         // Note: Ideally we wait for webhook, but for instant feedback we can optimize optimistic UI
         if (charge.capture) {
-            await prisma.tenant.update({
+            // Find owner of this tenant
+            const tenant = await prisma.tenant.findUnique({
                 where: { id: tenantId },
-                data: { plan: 'PRO' }
+                select: { ownerId: true }
             })
+
+            if (tenant) {
+                await prisma.user.update({
+                    where: { id: tenant.ownerId },
+                    data: { plan: 'PRO' }
+                })
+            }
         }
 
         return NextResponse.json({ success: true, charge })

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { useTenant } from "@/contexts/tenant-context"
 
 export interface TenantSettings {
     // Tenant data
@@ -28,7 +29,6 @@ export interface TenantSettings {
         currency: string
     }
     // Loyalty Program data
-    // Loyalty Program data
     loyaltyProgram: {
         id: string
         stampIcon: string
@@ -40,14 +40,17 @@ export interface TenantSettings {
 }
 
 export function useTenantSettings() {
+    const { activeTenantId } = useTenant()
     const [settings, setSettings] = useState<TenantSettings | null>(null)
     const [loading, setLoading] = useState(true)
 
     const fetchSettings = async () => {
+        if (!activeTenantId) return
+
         try {
             if (!settings) setLoading(true)
 
-            const response = await fetch(`/api/settings?t=${Date.now()}`)
+            const response = await fetch(`/api/settings?tenantId=${activeTenantId}&t=${Date.now()}`)
 
             if (!response.ok) {
                 if (response.status === 401) {
@@ -61,11 +64,10 @@ export function useTenantSettings() {
             const data = await response.json()
             console.log("useTenantSettings - Fetched Data:", data)
 
-            // Combine all data
             setSettings({
                 tenant: data.tenant,
                 branding: data.branding || {
-                    id: '', // Will be ignored in upsert
+                    id: '',
                     primaryColor: '#00FF94',
                     secondaryColor: '#000000',
                     logoUrl: null,
@@ -73,8 +75,6 @@ export function useTenantSettings() {
                     gradient: false,
                     gradientDirection: 'to right',
                     currency: '$',
-                    timezone: 'UTC',
-                    timeFormat: '12h'
                 },
                 loyaltyProgram: data.loyaltyProgram || {
                     id: '',
@@ -94,13 +94,16 @@ export function useTenantSettings() {
     }
 
     const updateTenant = async (updates: Partial<TenantSettings['tenant']>) => {
-        if (!settings) return false
+        if (!activeTenantId || !settings) return false
 
         try {
             const response = await fetch('/api/settings', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tenant: updates })
+                body: JSON.stringify({
+                    tenantId: activeTenantId,
+                    tenant: updates
+                })
             })
 
             if (!response.ok) throw new Error('Error updating tenant')
@@ -116,13 +119,16 @@ export function useTenantSettings() {
     }
 
     const updateBranding = async (updates: Partial<TenantSettings['branding']>) => {
-        if (!settings) return false
+        if (!activeTenantId || !settings) return false
 
         try {
             const response = await fetch('/api/settings', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ branding: updates })
+                body: JSON.stringify({
+                    tenantId: activeTenantId,
+                    branding: updates
+                })
             })
 
             if (!response.ok) throw new Error('Error updating branding')
@@ -138,40 +144,32 @@ export function useTenantSettings() {
     }
 
     const updateLoyaltyProgram = async (updates: Partial<TenantSettings['loyaltyProgram']>) => {
-        if (!settings) return false
+        if (!activeTenantId || !settings) return false
 
         try {
             const supabase = createClient()
-            // Check if exists
             const { data: existing } = await supabase
                 .from('LoyaltyProgram')
                 .select('id')
-                .eq('tenantId', settings.tenant.id)
+                .eq('tenantId', activeTenantId)
                 .single()
 
             let error;
 
-            console.log('Updating Loyalty Program with:', updates)
-
             if (existing) {
-                const { data: updatedData, error: updateError } = await supabase
+                const { error: updateError } = await supabase
                     .from('LoyaltyProgram')
                     .update(updates)
                     .eq('id', existing.id)
-                    .select()
-
-                console.log('Supabase Update Result:', { updatedData, updateError })
-
-                if (updateError) console.error('Supabase Update Error:', updateError)
                 error = updateError
             } else {
                 const { error: insertError } = await supabase
                     .from('LoyaltyProgram')
                     .insert({
-                        tenantId: settings.tenant.id,
+                        id: crypto.randomUUID(), // Ensure ID is generated
+                        tenantId: activeTenantId,
                         ...updates
                     })
-                if (insertError) console.error('Supabase Insert Error:', insertError)
                 error = insertError
             }
 
@@ -181,9 +179,7 @@ export function useTenantSettings() {
                 return false
             }
 
-            console.log('Update successful, fetching settings...')
             await fetchSettings()
-            console.log('Settings fetched')
             toast.success('Programa de lealtad actualizado correctamente')
             return true
         } catch (error) {
@@ -194,8 +190,10 @@ export function useTenantSettings() {
     }
 
     useEffect(() => {
-        fetchSettings()
-    }, [])
+        if (activeTenantId) {
+            fetchSettings()
+        }
+    }, [activeTenantId])
 
     return {
         settings,

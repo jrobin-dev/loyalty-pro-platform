@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
+import { useTenant } from "@/contexts/tenant-context"
 
 export interface DashboardStats {
     totalRevenue: number
@@ -19,6 +20,7 @@ interface UseDashboardStatsProps {
 }
 
 export function useDashboardStats({ dateRange }: UseDashboardStatsProps = {}) {
+    const { activeTenantId } = useTenant()
     const [stats, setStats] = useState<DashboardStats>({
         totalRevenue: 0,
         totalCustomers: 0,
@@ -32,41 +34,26 @@ export function useDashboardStats({ dateRange }: UseDashboardStatsProps = {}) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        fetchStats()
-    }, [dateRange])
+        if (activeTenantId) {
+            fetchStats()
+        }
+    }, [dateRange, activeTenantId])
 
     const fetchStats = async () => {
         try {
+            if (!activeTenantId) {
+                setLoading(false)
+                return
+            }
+
             setLoading(true)
             const supabase = createClient()
-
-            // Get authenticated user
-            const { data: { session } } = await supabase.auth.getSession()
-
-            if (!session?.user) {
-                console.error('No authenticated user')
-                setLoading(false)
-                return
-            }
-
-            // Get user's tenant
-            const { data: tenantData, error: tenantError } = await supabase
-                .from('Tenant')
-                .select('id')
-                .eq('ownerId', session.user.id)
-                .single()
-
-            if (tenantError || !tenantData) {
-                console.error('Tenant error:', tenantError)
-                setLoading(false)
-                return
-            }
 
             // Fetch customers for this tenant
             const { data: customers, error: customersError } = await supabase
                 .from('Customer')
                 .select('*')
-                .eq('tenantId', tenantData.id)
+                .eq('tenantId', activeTenantId)
 
             if (customersError) {
                 console.error('Customers error:', customersError)
@@ -76,7 +63,7 @@ export function useDashboardStats({ dateRange }: UseDashboardStatsProps = {}) {
             const { data: transactions, error: transactionsError } = await supabase
                 .from('StampTransaction')
                 .select('amount, stampsEarned')
-                .eq('tenantId', tenantData.id)
+                .eq('tenantId', activeTenantId)
                 .eq('type', 'EARNED')
 
             if (transactionsError) {
@@ -87,7 +74,7 @@ export function useDashboardStats({ dateRange }: UseDashboardStatsProps = {}) {
             const { data: redeemedTransactions, error: redeemedError } = await supabase
                 .from('StampTransaction')
                 .select('id')
-                .eq('tenantId', tenantData.id)
+                .eq('tenantId', activeTenantId)
                 .eq('type', 'REDEEMED')
 
             if (redeemedError) {

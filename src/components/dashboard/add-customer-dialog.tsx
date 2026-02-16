@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/client"
 import { Loader2 } from "lucide-react"
 
 import { CountryCodeSelect } from "@/components/ui/country-code-select"
+import { useTenant } from "@/contexts/tenant-context"
 
 interface AddCustomerDialogProps {
     open: boolean
@@ -25,6 +26,7 @@ interface AddCustomerDialogProps {
 }
 
 export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomerDialogProps) {
+    const { activeTenantId } = useTenant()
     const [loading, setLoading] = useState(false)
     const [countryCode, setCountryCode] = useState("+51")
     const [formData, setFormData] = useState({
@@ -35,6 +37,12 @@ export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomer
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        if (!activeTenantId) {
+            toast.error("No hay un negocio seleccionado")
+            return
+        }
+
         setLoading(true)
 
         try {
@@ -47,17 +55,6 @@ export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomer
                 throw new Error('No hay sesión activa')
             }
 
-            // Get user's tenant
-            const { data: tenantData, error: tenantError } = await supabase
-                .from('Tenant')
-                .select('id')
-                .eq('ownerId', session.user.id)
-                .single()
-
-            if (tenantError || !tenantData) {
-                throw new Error('No se encontró el negocio asociado')
-            }
-
             // Call API to create customer
             const fullPhone = `${countryCode} ${formData.phone}`.trim()
 
@@ -68,7 +65,7 @@ export function AddCustomerDialog({ open, onOpenChange, onSuccess }: AddCustomer
                     email: formData.email,
                     name: formData.name,
                     phone: fullPhone,
-                    tenantId: tenantData.id,
+                    tenantId: activeTenantId,
                 })
             })
 

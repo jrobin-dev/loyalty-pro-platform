@@ -13,7 +13,8 @@ export async function getTenants(limit?: number) {
                         name: true,
                         lastName: true,
                         email: true,
-                        avatarUrl: true
+                        avatarUrl: true,
+                        plan: true
                     }
                 },
                 branding: {
@@ -39,28 +40,48 @@ export async function createTenant(formData: FormData) {
         const name = formData.get("name") as string
         const slug = formData.get("slug") as string
         const ownerEmail = formData.get("ownerEmail") as string
-        const plan = formData.get("plan") as string || "FREE"
+        // Note: we might still receive a plan if the user is being created for the first time
+        // but if the owner exists, we use their plan.
+        const requestedPlan = formData.get("plan") as string || "FREE"
 
         if (!name || !slug || !ownerEmail) {
             return { success: false, error: "Faltan campos requeridos" }
         }
 
-        const owner = await prisma.user.findUnique({
+        const owner = await prisma.user.findFirst({
             where: { email: ownerEmail }
         })
 
         if (!owner) {
-            return { success: false, error: "No existe usuario con ese email" }
+            return { success: false, error: "No existe usuario con ese email. Crea el usuario primero o regístralo." }
         }
 
+        // Create Tenant with initial Branding and LoyaltyProgram
         const newTenant = await prisma.tenant.create({
             data: {
                 name,
                 slug,
                 ownerId: owner.id,
-                plan,
-                status: 'ACTIVE'
-            } as any
+                status: 'ACTIVE',
+                branding: {
+                    create: {
+                        primaryColor: "#00FF94",
+                        secondaryColor: "#000000",
+                        fontFamily: "Funnel Display",
+                    }
+                },
+                loyalty: {
+                    create: {
+                        stampIcon: "star",
+                        stampsRequired: 6,
+                        rewardTitle: "¡Premio gratis!"
+                    }
+                }
+            },
+            include: {
+                branding: true,
+                loyalty: true
+            }
         })
 
         revalidatePath("/admin/tenants")
@@ -87,25 +108,54 @@ export async function updateTenantStatus(tenantId: string, status: string) {
 
 export async function updateTenantPlan(tenantId: string, plan: string) {
     try {
-        await prisma.tenant.update({
+        // Since plan is now on User, we find the owner of this tenant
+        const tenant = await prisma.tenant.findUnique({
             where: { id: tenantId },
+            select: { ownerId: true }
+        })
+
+        if (!tenant) return { success: false, error: "Negocio no encontrado" }
+
+        await prisma.user.update({
+            where: { id: tenant.ownerId },
             data: { plan }
         })
+
         revalidatePath("/admin/tenants")
         revalidatePath("/admin")
         return { success: true }
     } catch (error) {
-        return { success: false, error: "Error updating plan" }
+        console.error("Error updating plan:", error)
+        return { success: false, error: "Error al actualizar el plan" }
     }
 }
 
-export async function updateTenant(tenantId: string, data: { name?: string, slug?: string, plan?: string, status?: string }) {
+export async function updateTenant(tenantId: string, inputData: { name?: string, slug?: string, plan?: string, status?: string }) {
     try {
+        const { plan, ...tenantData } = inputData
+
+        // Update tenant fields
         await prisma.tenant.update({
             where: { id: tenantId },
-            data
+            data: tenantData
         })
+
+        // If plan is provided, update owner's plan
+        if (plan) {
+            const tenant = await prisma.tenant.findUnique({
+                where: { id: tenantId },
+                select: { ownerId: true }
+            })
+            if (tenant) {
+                await prisma.user.update({
+                    where: { id: tenant.ownerId },
+                    data: { plan }
+                })
+            }
+        }
+
         revalidatePath("/admin/tenants")
+        revalidatePath("/admin")
         return { success: true }
     } catch (error) {
         console.error("Error updating tenant:", error)

@@ -12,6 +12,7 @@ export interface UserProfile {
     birthday: Date | null
     avatarUrl: string | null
     role: "SUPER_ADMIN" | "BUSINESS_OWNER" | "END_USER"
+    plan: string
     tenants?: {
         id: string
         name: string

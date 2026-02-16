@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
+import { TenantSelector } from "./tenant-selector";
 
 interface DashboardNavbarProps {
     isCollapsed: boolean;
@@ -209,6 +210,10 @@ export function DashboardNavbar({
                                     <ChevronDown className="w-4 h-4 -rotate-90 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                                 </Link>
                             </Button>
+
+                            <div className="w-full py-1">
+                                <TenantSelector />
+                            </div>
 
                             <DropdownMenuGroup className="pt-2">
                                 <DropdownMenuItem asChild className="h-12 rounded-xl cursor-pointer focus:bg-emerald-500/5 focus:text-white transition-all px-4">

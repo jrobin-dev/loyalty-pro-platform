@@ -29,6 +29,7 @@ import { useRouter } from "next/navigation"
 import { UpgradeProBanner } from "./upgrade-banner"
 import { useLanguage } from "@/contexts/language-context"
 import { LanguageSwitcher } from "./language-switcher"
+import { TenantSelector } from "./tenant-selector"
 
 interface SidebarProps {
     isOpen: boolean
@@ -153,6 +154,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                         )}
                     </div>
                 </div>
+
 
                 {/* Navigation */}
                 <nav className="flex-1 px-4 pt-6 space-y-3 overflow-y-auto custom-scrollbar relative">

@@ -6,9 +6,16 @@ import { BusinessSettingsForm } from "@/components/dashboard/business-settings-f
 import { LoyaltyCardEditor } from "@/components/dashboard/loyalty-card-editor"
 import { AccountSettingsForm } from "@/components/dashboard/account-settings-form"
 import { Loader2, Building2, Award, User } from "lucide-react"
+import { useUserProfile } from "@/hooks/use-user-profile"
 
 export default function SettingsPage() {
+    const { profile } = useUserProfile()
     const { settings, loading, updateTenant, updateBranding, updateLoyaltyProgram } = useTenantSettings()
+
+    // Primary tenant is the first one created (index 0)
+    const isPrimaryTenant = profile?.tenants && profile.tenants.length > 0
+        ? profile.tenants[0].id === settings?.tenant.id
+        : true
 
     if (loading) {
         return (
@@ -42,10 +49,12 @@ export default function SettingsPage() {
                         <Award className="h-4 w-4 mr-2" />
                         Tarjeta de Lealtad
                     </TabsTrigger>
-                    <TabsTrigger value="account" className="flex-1 min-w-[100px] data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400">
-                        <User className="h-4 w-4 mr-2" />
-                        Cuenta
-                    </TabsTrigger>
+                    {isPrimaryTenant && (
+                        <TabsTrigger value="account" className="flex-1 min-w-[100px] data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400">
+                            <User className="h-4 w-4 mr-2" />
+                            Cuenta
+                        </TabsTrigger>
+                    )}
                 </TabsList>
 
                 <TabsContent value="business" className="mt-6">
@@ -63,9 +72,11 @@ export default function SettingsPage() {
                     />
                 </TabsContent>
 
-                <TabsContent value="account" className="mt-6">
-                    <AccountSettingsForm />
-                </TabsContent>
+                {isPrimaryTenant && (
+                    <TabsContent value="account" className="mt-6">
+                        <AccountSettingsForm />
+                    </TabsContent>
+                )}
             </Tabs>
         </div>
     )

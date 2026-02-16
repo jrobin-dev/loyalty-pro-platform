@@ -25,6 +25,8 @@ import { createClient } from "@/lib/supabase/client"
 import { CustomerDetailModal } from "./customer-detail-modal"
 import { CustomerHistoryModal } from "./customer-history-modal"
 import { useTenantSettings } from "@/hooks/use-tenant-settings"
+import { useUserProfile } from "@/hooks/use-user-profile"
+import { useTenant } from "@/contexts/tenant-context"
 import { formatNumber } from "@/lib/utils"
 
 interface CustomerTableProps {
@@ -45,6 +47,7 @@ export function CustomerTableAdvanced({
     tenantSlug: externalTenantSlug
 }: CustomerTableProps) {
     const internalHook = useCustomers()
+    const { activeTenantId } = useTenant()
 
     // Use props if provided, otherwise fallback to internal hook (for backward compatibility if used elsewhere)
     const customers = externalCustomers ?? internalHook.customers
@@ -55,6 +58,8 @@ export function CustomerTableAdvanced({
     const highlightedId = searchParams.get('id')
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
     const [amount, setAmount] = useState("")
+    const { profile } = useUserProfile()
+    const activeTenantSlug = profile?.tenants?.find(t => t.id === activeTenantId)?.slug
     const [isAddConsumptionOpen, setIsAddConsumptionOpen] = useState(false)
     const [isAddCustomerOpen, setIsAddCustomerOpen] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
@@ -142,15 +147,8 @@ export function CustomerTableAdvanced({
                 throw new Error('No hay sesión activa')
             }
 
-            // Get user's tenant
-            const { data: tenantData, error: tenantError } = await supabase
-                .from('Tenant')
-                .select('id')
-                .eq('ownerId', session.user.id)
-                .single()
-
-            if (tenantError || !tenantData) {
-                throw new Error('No se encontró el negocio asociado')
+            if (!activeTenantId) {
+                throw new Error('No hay un negocio seleccionado')
             }
 
             // Call API to add stamp transaction
@@ -160,7 +158,7 @@ export function CustomerTableAdvanced({
                 body: JSON.stringify({
                     customerId: selectedCustomer.id,
                     amount: parseFloat(amount),
-                    tenantId: tenantData.id
+                    tenantId: activeTenantId
                 })
             })
 
@@ -355,10 +353,10 @@ export function CustomerTableAdvanced({
                                                         <History size={14} />
                                                         Ver historial
                                                     </button>
-                                                    {tenantSlug && (
+                                                    {activeTenantSlug && (
                                                         <button
                                                             onClick={() => {
-                                                                const url = `${window.location.origin}/c/${tenantSlug}?email=${encodeURIComponent(customer.email)}&auto=true`
+                                                                const url = `${window.location.origin}/c/${activeTenantSlug}?email=${encodeURIComponent(customer.email)}&auto=true`
                                                                 window.open(url, '_blank')
                                                             }}
                                                             className="px-3 py-1.5 text-xs bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-md hover:bg-orange-500/30 transition-colors flex items-center gap-1 cursor-pointer"

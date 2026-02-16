@@ -15,11 +15,43 @@ export async function getAdminStats() {
             prisma.tenant.count({ where: { status: 'ACTIVE' } }),
         ])
 
-        // Mock revenue calculation based on plans
-        // In a real app, this would query a Payments/Invoices table
-        const proTenants = await prisma.tenant.count({ where: { plan: 'PRO' } })
-        const plusTenants = await prisma.tenant.count({ where: { plan: 'PLUS' } })
-        const estimatedMRR = (proTenants * 29) + (plusTenants * 49)
+        // Calculate 6-month revenue history
+        const revenueHistory = []
+        const now = new Date()
+
+        for (let i = 5; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1)
+            const monthLabel = date.toLocaleString('default', { month: 'short' })
+
+            // End of this month
+            const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59)
+
+            const [proCount, plusCount] = await Promise.all([
+                prisma.user.count({
+                    where: {
+                        plan: 'PRO',
+                        createdAt: { lte: endOfMonth }
+                    }
+                }),
+                prisma.user.count({
+                    where: {
+                        plan: 'PLUS',
+                        createdAt: { lte: endOfMonth }
+                    }
+                })
+            ])
+
+            revenueHistory.push({
+                month: monthLabel,
+                mrr: (proCount * 29) + (plusCount * 49)
+            })
+        }
+
+        // Get current counts for the final MRR total
+        const [currentProUsers, currentPlusUsers] = await Promise.all([
+            prisma.user.count({ where: { plan: 'PRO' } }),
+            prisma.user.count({ where: { plan: 'PLUS' } })
+        ])
 
         return {
             success: true,
@@ -27,7 +59,8 @@ export async function getAdminStats() {
                 totalTenants,
                 totalUsers,
                 activeRate: totalTenants > 0 ? Math.round((activeTenants / totalTenants) * 100) : 0,
-                mrr: estimatedMRR
+                mrr: (currentProUsers * 29) + (currentPlusUsers * 49),
+                revenueHistory
             }
         }
     } catch (error: any) {

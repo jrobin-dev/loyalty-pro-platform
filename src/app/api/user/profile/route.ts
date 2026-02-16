@@ -23,6 +23,15 @@ export async function GET(request: NextRequest) {
                 birthday: true,
                 avatarUrl: true,
                 role: true,
+                plan: true,
+                tenants: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        status: true,
+                    }
+                }
             },
         })
 
@@ -70,6 +79,15 @@ export async function PATCH(request: NextRequest) {
                 birthday: true,
                 avatarUrl: true,
                 role: true,
+                plan: true,
+                tenants: {
+                    select: {
+                        id: true,
+                        name: true,
+                        slug: true,
+                        status: true,
+                    }
+                }
             },
         })
 

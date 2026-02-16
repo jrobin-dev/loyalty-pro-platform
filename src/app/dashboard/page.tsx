@@ -11,6 +11,8 @@ import Link from "next/link"
 import { DashboardHero } from "@/components/dashboard/dashboard-hero"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTenant } from "@/contexts/tenant-context"
+import { useUserProfile } from "@/hooks/use-user-profile"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,6 +22,10 @@ import {
 
 export default function DashboardPage() {
     const [selectedMonth, setSelectedMonth] = useState("Enero 2026")
+    const { activeTenantId } = useTenant()
+    const { profile } = useUserProfile()
+
+    const activeTenant = profile?.tenants?.find(t => t.id === activeTenantId) || profile?.tenants?.[0]
 
     const handleDownloadReport = () => {
         toast.success("Generando reporte...", {
@@ -68,7 +74,13 @@ export default function DashboardPage() {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h1 className="text-3xl font-bold font-sans">Dashboard</h1>
-                        <p className="text-muted-foreground">Monitorea en tiempo real el rendimiento de tu programa.</p>
+                        <div className="flex flex-col md:flex-row md:items-center gap-x-2 text-muted-foreground text-sm">
+                            <p>Monitorea en tiempo real el rendimiento de tu programa.</p>
+                            <span className="hidden md:inline opacity-20">|</span>
+                            <p className="flex items-center gap-1.5">
+                                Negocio activo: <span className="text-emerald-500 font-bold">{activeTenant?.name || "Cargando..."}</span>
+                            </p>
+                        </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <DropdownMenu>

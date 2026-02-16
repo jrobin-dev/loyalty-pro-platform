@@ -32,17 +32,31 @@ export async function POST(request: NextRequest) {
 
         if (authError) {
             // If user already exists, try to get their ID
-            if (authError.message.includes("already been registered") || authError.status === 400) {
-                console.log("⚠️ User already exists, fetching ID...")
-                const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
-                const existingUser = existingUsers.users.find(u => u.email === body.email)
+            // Supabase returns 400 for already registered users
+            if (authError.message.toLowerCase().includes("already") || authError.status === 400) {
+                console.log("⚠️ User might already exist, attempting to retrieve ID by email...")
+
+                // Fetch users to find the existing one
+                // Note: listUsers is paginated, but for onboarding failures, they are likely recent
+                const { data: userData, error: listError } = await supabaseAdmin.auth.admin.listUsers()
+
+                if (listError) {
+                    console.error('❌ Failed to list users:', listError)
+                    return NextResponse.json({ success: false, error: 'Error al verificar usuario existente' }, { status: 500 })
+                }
+
+                const existingUser = userData.users.find(u => u.email?.toLowerCase() === body.email.toLowerCase())
 
                 if (existingUser) {
+                    console.log('✅ Found existing user ID:', existingUser.id)
                     userId = existingUser.id
                 } else {
-                    // Generic error if we can't find them but creation failed
-                    console.error('❌ Auth error:', authError)
-                    return NextResponse.json({ success: false, error: authError.message }, { status: 400 })
+                    // If not in first batch, try a more targeted search or return the original error
+                    console.error('❌ User registered but not found in first batch of listUsers')
+                    return NextResponse.json({
+                        success: false,
+                        error: "El usuario ya existe pero no se pudo recuperar su información. Por favor, intenta iniciar sesión o usa otro email."
+                    }, { status: 400 })
                 }
             } else {
                 console.error('❌ Auth error:', authError)
@@ -63,13 +77,15 @@ export async function POST(request: NextRequest) {
             where: { email: body.email },
             update: {
                 id: userId, // Ensure ID sync if needed (though email is unique)
-                role: 'BUSINESS_OWNER'
+                role: 'BUSINESS_OWNER',
+                plan: 'FREE' // New users/onboarding default to FREE
             },
             create: {
                 id: userId,
                 email: body.email,
                 name: body.ownerName || body.businessName,
                 role: 'BUSINESS_OWNER',
+                plan: 'FREE',
                 phone: `${body.country || ''} ${body.whatsapp || ''}`.trim() || null,
             }
         })
@@ -90,7 +106,6 @@ export async function POST(request: NextRequest) {
                 name: body.businessName,
                 category: body.category,
                 ownerId: userId,
-                plan: 'FREE',
                 currency: body.currency || '$',
                 phone: `${body.country || ''}${body.whatsapp || ''}`.trim() || null,
             }

@@ -120,7 +120,7 @@ export default function TenantsPage() {
         const matchesStatus = statusFilter.includes("ALL") || statusFilter.includes(tenant.status)
 
         // 3. Plan Filter
-        const matchesPlan = planFilter.includes("ALL") || planFilter.includes(tenant.plan)
+        const matchesPlan = planFilter.includes("ALL") || planFilter.includes(tenant.owner?.plan)
 
         return matchesSearch && matchesStatus && matchesPlan
     })
@@ -168,7 +168,8 @@ export default function TenantsPage() {
         formData.append("name", newName)
         formData.append("slug", newSlug)
         formData.append("ownerEmail", newOwnerEmail)
-        formData.append("plan", newPlan)
+        // Plan is inherited from owner, so we don't send it here if owner exists
+        // but the backend takes it if it's a new registration (handled in API usually)
 
         const result = await createTenant(formData)
         if (result.success) {
@@ -396,19 +397,9 @@ export default function TenantsPage() {
                                     <div className="space-y-2">
                                         <Label>Email del Dueño (Debe existir)</Label>
                                         <Input placeholder="dueno@email.com" value={newOwnerEmail} onChange={e => setNewOwnerEmail(e.target.value)} />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Plan Inicial</Label>
-                                        <select
-                                            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                            value={newPlan}
-                                            onChange={e => setNewPlan(e.target.value)}
-                                        >
-                                            <option value="FREE">Free</option>
-                                            <option value="STARTER">Starter</option>
-                                            <option value="PRO">Pro</option>
-                                            <option value="AGENCY">Agency</option>
-                                        </select>
+                                        <p className="text-[10px] text-muted-foreground italic">
+                                            * El nuevo negocio heredará automáticamente el plan PRO/STARTER/FREE activo en la cuenta del dueño.
+                                        </p>
                                     </div>
                                 </div>
                                 <DialogFooter>
@@ -564,10 +555,10 @@ export default function TenantsPage() {
                                                     variant="outline"
                                                     className={cn(
                                                         "cursor-pointer font-bold uppercase tracking-wider rounded-lg px-2 py-0.5 border-t-white/10 transition-all text-[10px]",
-                                                        getPlanStyles(tenant.plan)
+                                                        getPlanStyles(tenant.owner?.plan)
                                                     )}
                                                 >
-                                                    {tenant.plan}
+                                                    {tenant.owner?.plan || 'FREE'}
                                                 </Badge>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent>
@@ -587,11 +578,11 @@ export default function TenantsPage() {
                                                         )} />
                                                         <span className={cn(
                                                             "text-[11px] font-bold uppercase tracking-wide",
-                                                            p === tenant.plan ? "text-primary" : "text-muted-foreground"
+                                                            p === tenant.owner?.plan ? "text-primary" : "text-muted-foreground"
                                                         )}>
                                                             {p}
                                                         </span>
-                                                        {p === tenant.plan && (
+                                                        {p === tenant.owner?.plan && (
                                                             <div className="ml-auto w-1 h-1 rounded-full bg-primary" />
                                                         )}
                                                     </DropdownMenuItem>

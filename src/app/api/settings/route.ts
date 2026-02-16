@@ -15,12 +15,23 @@ export async function GET(request: Request) {
 
         const userId = session.user.id
 
-        // Fetch Tenant with relations
+        // Get tenantId from query params
+        const { searchParams } = new URL(request.url)
+        const tenantId = searchParams.get('tenantId')
+
+        // Fetch Tenant with relations and owner (for plan)
         const tenant = await prisma.tenant.findFirst({
-            where: { ownerId: userId },
+            where: tenantId
+                ? { id: tenantId, ownerId: userId }
+                : { ownerId: userId },
             include: {
                 branding: true,
-                loyalty: true
+                loyalty: true,
+                owner: {
+                    select: {
+                        plan: true
+                    }
+                }
             }
         })
 
@@ -52,7 +63,7 @@ export async function GET(request: Request) {
                 slug: tenant.slug,
                 name: tenant.name,
                 category: tenant.category ?? undefined,
-                plan: tenant.plan,
+                plan: (tenant.owner as any).plan,
                 currency: (tenant as any).currency,
                 timezone: (tenant as any).timezone || 'UTC',
                 timeFormat: (tenant as any).timeFormat || '12h',
@@ -83,11 +94,16 @@ export async function PATCH(request: Request) {
 
         const userId = session.user.id
         const body = await request.json()
-        console.log("API Settings PATCH received:", body)
+        const tenantId = body.tenantId || body.tenant?.id
+
+        console.log("API Settings PATCH received for tenant:", tenantId)
 
         // Verify ownership
         const existingTenant = await prisma.tenant.findFirst({
-            where: { ownerId: userId }
+            where: {
+                id: tenantId,
+                ownerId: userId
+            }
         })
 
         if (!existingTenant) {

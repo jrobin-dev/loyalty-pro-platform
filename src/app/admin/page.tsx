@@ -5,6 +5,10 @@ import { getTenants } from "@/app/actions/admin-tenants"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Eye } from "lucide-react"
+import { AdminMRRChart } from "@/components/admin/admin-mrr-chart"
 
 export default async function AdminDashboardPage() {
     const statsResult = await getAdminStats()
@@ -12,7 +16,8 @@ export default async function AdminDashboardPage() {
         totalTenants: 0,
         totalUsers: 0,
         activeRate: 0,
-        mrr: 0
+        mrr: 0,
+        revenueHistory: []
     }
 
     const metrics = [
@@ -59,6 +64,7 @@ export default async function AdminDashboardPage() {
     const recentTenants = tenantsResult.success && tenantsResult.data
         ? tenantsResult.data.slice(0, 5).map(t => ({
             name: t.name,
+            slug: t.slug,
             plan: t.plan,
             date: new Date(t.createdAt).toLocaleDateString(),
             // @ts-ignore
@@ -111,9 +117,7 @@ export default async function AdminDashboardPage() {
                         <CardTitle>Crecimiento de MRR</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
-                        <div className="h-[300px] flex items-center justify-center border-2 border-dashed border-border rounded-xl bg-muted/20">
-                            <p className="text-muted-foreground text-sm">Gráfica de Revenue (Próximamente)</p>
-                        </div>
+                        <AdminMRRChart data={stats.revenueHistory || []} />
                     </CardContent>
                 </Card>
 
@@ -154,15 +158,12 @@ export default async function AdminDashboardPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex flex-col items-end">
-                                            <Badge variant="outline" className={cn(
-                                                "text-[10px] h-5 px-1.5 font-mono uppercase",
-                                                tenant.plan === 'PRO' || tenant.plan === 'AGENCY'
-                                                    ? "bg-primary/10 text-primary border-primary/20"
-                                                    : "bg-muted text-muted-foreground"
-                                            )}>
-                                                {tenant.plan}
-                                            </Badge>
+                                        <div className="flex items-center">
+                                            <Button asChild variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all">
+                                                <Link href={`/admin/tenants?search=${tenant.slug}`} title="Ver detalles">
+                                                    <Eye size={16} />
+                                                </Link>
+                                            </Button>
                                         </div>
                                     </div>
                                 ))

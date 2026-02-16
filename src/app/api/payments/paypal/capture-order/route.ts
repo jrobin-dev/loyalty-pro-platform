@@ -35,11 +35,18 @@ export async function POST(request: Request) {
         const data = await response.json()
 
         if (data.status === 'COMPLETED') {
-            // Upgrade Tenant
-            await prisma.tenant.update({
+            // Find owner of this tenant
+            const tenant = await prisma.tenant.findUnique({
                 where: { id: tenantId },
-                data: { plan: 'PRO' }
+                select: { ownerId: true }
             })
+
+            if (tenant) {
+                await prisma.user.update({
+                    where: { id: tenant.ownerId },
+                    data: { plan: 'PRO' }
+                })
+            }
             return NextResponse.json({ success: true, data })
         }
 

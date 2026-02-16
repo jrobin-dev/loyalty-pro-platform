@@ -37,13 +37,13 @@ export async function POST(request: Request) {
 
         // 2. Transaction: Create User, Tenant, Branding, LoyaltyProgram in DB
         const result = await prisma.$transaction(async (tx) => {
-            // Create User Record
             const user = await tx.user.create({
                 data: {
                     id: userId,
                     email: email,
                     name: businessData.ownerName,
                     role: 'BUSINESS_OWNER',
+                    plan: 'FREE',
                 }
             })
 
@@ -57,7 +57,6 @@ export async function POST(request: Request) {
                     slug: cleanSlug,
                     category: businessData.category,
                     ownerId: user.id,
-                    plan: 'FREE',
                     branding: {
                         create: {
                             primaryColor: businessData.primaryColor,

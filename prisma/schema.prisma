@@ -21,6 +21,7 @@ model User {
   birthday  DateTime?
   avatarUrl String?
   role      String   @default("BUSINESS_OWNER")
+  plan      String   @default("FREE")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
@@ -38,7 +39,6 @@ model Tenant {
   category    String?
   ownerId     String
   owner       User     @relation(fields: [ownerId], references: [id])
-  plan        String   @default("FREE")
   status      String   @default("ACTIVE") // ACTIVE, SUSPENDED, PENDING
   currency    String   @default("$")
   timezone    String   @default("America/Lima") // Global Timezone
