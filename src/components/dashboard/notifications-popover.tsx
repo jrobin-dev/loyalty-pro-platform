@@ -51,6 +51,30 @@ export function NotificationsPopover() {
         }
     }
 
+    const getNotificationTheme = (title: string = "") => {
+        const t = title.toLowerCase()
+        if (t.includes("bienvenido") || t.includes("registro") && !t.includes("cliente")) {
+            return {
+                bg: "bg-indigo-500/10 hover:bg-indigo-500/20",
+                dot: "bg-indigo-500",
+                title: "text-indigo-400"
+            }
+        }
+        if (t.includes("cliente")) {
+            return {
+                bg: "bg-amber-500/10 hover:bg-amber-500/20",
+                dot: "bg-amber-500",
+                title: "text-amber-400"
+            }
+        }
+        // Default to emerald (stamps/activity)
+        return {
+            bg: "bg-emerald-500/10 hover:bg-emerald-500/20",
+            dot: "bg-emerald-500",
+            title: "text-emerald-400"
+        }
+    }
+
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -104,37 +128,40 @@ export function NotificationsPopover() {
                         </div>
                     ) : (
                         <div className="flex flex-col">
-                            {notifications.map((notification) => (
-                                <button
-                                    key={notification.id}
-                                    onClick={() => handleNotificationClick(notification)}
-                                    className={cn(
-                                        "w-full text-left px-4 py-3 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors group relative",
-                                        !notification.read && "bg-emerald-500/5 hover:bg-emerald-500/10"
-                                    )}
-                                >
-                                    <div className="flex gap-3">
-                                        <div className={cn(
-                                            "mt-1 w-2 h-2 rounded-full flex-shrink-0",
-                                            !notification.read ? "bg-emerald-500" : "bg-transparent"
-                                        )} />
-                                        <div className="flex-1 space-y-1">
-                                            <p className={cn("text-xs font-medium leading-none", !notification.read ? "text-emerald-400" : "text-zinc-400")}>
-                                                {notification.title || "No Title"}
-                                            </p>
-                                            <p className="text-xs text-zinc-500 line-clamp-2 group-hover:text-zinc-400 transition-colors">
-                                                {notification.message || "No Message"}
-                                            </p>
-                                            <div className="flex items-center gap-2 pt-1">
-                                                <Clock className="w-3 h-3 text-zinc-600" />
-                                                <span className="text-[10px] text-zinc-600 capitalize">
-                                                    {formatDate(notification.createdAt)}
-                                                </span>
+                            {notifications.map((notification) => {
+                                const theme = getNotificationTheme(notification.title)
+                                return (
+                                    <button
+                                        key={notification.id}
+                                        onClick={() => handleNotificationClick(notification)}
+                                        className={cn(
+                                            "w-full text-left px-4 py-3 border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors group relative",
+                                            !notification.read && theme.bg
+                                        )}
+                                    >
+                                        <div className="flex gap-3">
+                                            <div className={cn(
+                                                "mt-1 w-2 h-2 rounded-full flex-shrink-0",
+                                                !notification.read ? theme.dot : "bg-transparent"
+                                            )} />
+                                            <div className="flex-1 space-y-1">
+                                                <p className={cn("text-xs font-medium leading-none", !notification.read ? theme.title : "text-zinc-400")}>
+                                                    {notification.title || "No Title"}
+                                                </p>
+                                                <p className="text-xs text-zinc-500 line-clamp-2 group-hover:text-zinc-400 transition-colors">
+                                                    {notification.message || "No Message"}
+                                                </p>
+                                                <div className="flex items-center gap-2 pt-1">
+                                                    <Clock className="w-3 h-3 text-zinc-600" />
+                                                    <span className="text-[10px] text-zinc-600 capitalize">
+                                                        {formatDate(notification.createdAt)}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </button>
-                            ))}
+                                    </button>
+                                )
+                            })}
                         </div>
                     )}
                 </div>

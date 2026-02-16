@@ -143,12 +143,12 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
                                 <ImageIcon className="h-3 w-3" />
                                 Logotipo
                             </Label>
-                            <div className="flex-1">
+                            <div className="flex-1 lg:max-h-[162px]">
                                 <ImageUpload
                                     value={logoUrl}
                                     onChange={setLogoUrl}
                                     onRemove={() => setLogoUrl("")}
-                                    className="h-full min-h-[140px]"
+                                    className="h-full min-h-[140px] lg:max-h-[162px]"
                                 />
                             </div>
                         </div>

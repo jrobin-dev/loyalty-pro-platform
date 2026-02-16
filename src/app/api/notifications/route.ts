@@ -17,14 +17,24 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
         }
 
+        const currentUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { role: true }
+        })
+
+        const isSuperAdmin = currentUser?.role === 'SUPER_ADMIN'
+
+        // If Super Admin, fetch all (unless filtering for a DIFFERENT user).
+        const whereClause = isSuperAdmin
+            ? (manualUserId && manualUserId !== user.id ? { userId: manualUserId } : {})
+            : { userId: targetUserId } // Normal user sees only own
+
         const notifications = await prisma.notification.findMany({
-            where: {
-                userId: targetUserId
-            },
+            where: whereClause,
             orderBy: {
                 createdAt: 'desc'
             },
-            take: 20
+            take: 50 // Increased limit for admin
         })
 
         return NextResponse.json({ notifications })

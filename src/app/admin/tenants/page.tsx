@@ -29,39 +29,75 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Label } from "@/components/ui/label"
-import { Search, Filter, MoreVertical, Edit, Trash2, Ban, CheckCircle2 } from "lucide-react"
+import { Search, Filter, MoreVertical, Edit, Trash2, Ban, CheckCircle2, Zap, ChevronLeft, ChevronRight, RefreshCw, Download, Plus, LogIn } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getTenants, createTenant, updateTenantPlan, updateTenantStatus, updateTenant, deleteTenant } from "@/app/actions/admin-tenants"
 import { toast } from "sonner"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useSearchParams, useRouter } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
 
+const ITEMS_PER_PAGE = 15
 
 export default function TenantsPage() {
-    const [searchTerm, setSearchTerm] = useState("")
+    const searchParams = useSearchParams()
+    const router = useRouter()
+
+    // Data State
     const [tenants, setTenants] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
+
+    // Filter & Search State
+    const [searchTerm, setSearchTerm] = useState("")
+    const [showFilters, setShowFilters] = useState(false)
+    const [statusFilter, setStatusFilter] = useState<string[]>(["ALL"])
+    const [planFilter, setPlanFilter] = useState<string[]>(["ALL"])
+
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1)
+
+    // Form Modals State
     const [isCreateOpen, setIsCreateOpen] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
-
-    // Edit Logic
     const [isEditOpen, setIsEditOpen] = useState(false)
-    const [editingTenant, setEditingTenant] = useState<{ id: string, name: string, slug: string } | null>(null)
+    const [editingTenant, setEditingTenant] = useState<any | null>(null)
 
-    // Form States
+    // Safety Alert States
+    const [suspendAlertOpen, setSuspendAlertOpen] = useState(false)
+    const [deleteAlertOpen, setDeleteAlertOpen] = useState(false)
+    const [targetTenant, setTargetTenant] = useState<any>(null)
+    const [confirmInput, setConfirmInput] = useState("")
+
+    // New Tenant Form State
     const [newName, setNewName] = useState("")
     const [newSlug, setNewSlug] = useState("")
     const [newOwnerEmail, setNewOwnerEmail] = useState("")
     const [newPlan, setNewPlan] = useState("FREE")
 
+    // deep link handling
     useEffect(() => {
+        const querySearch = searchParams.get('search')
+        if (querySearch) {
+            setSearchTerm(querySearch)
+        }
         fetchTenants()
-    }, [])
+    }, [searchParams])
 
     const fetchTenants = async () => {
         setIsLoading(true)
         try {
             const result = await getTenants()
-            console.log("[TenantsPage] Result:", result) // Debug log
             if (result.success && result.data) {
                 setTenants(result.data)
             }
@@ -72,236 +108,447 @@ export default function TenantsPage() {
         }
     }
 
-    const handleCreateClient = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setIsSubmitting(true)
-        try {
-            const formData = new FormData()
-            formData.append("name", newName)
-            formData.append("slug", newSlug)
-            formData.append("ownerEmail", newOwnerEmail)
-            formData.append("plan", newPlan)
+    // --- Filtering Logic ---
+    const filteredTenants = tenants.filter(tenant => {
+        // 1. Search Term
+        const matchesSearch =
+            tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tenant.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tenant.owner.email.toLowerCase().includes(searchTerm.toLowerCase())
 
-            const result = await createTenant(formData)
+        // 2. Status Filter
+        const matchesStatus = statusFilter.includes("ALL") || statusFilter.includes(tenant.status)
 
-            if (result.success) {
-                setIsCreateOpen(false)
-                setNewName("")
-                setNewSlug("")
-                setNewOwnerEmail("")
-                fetchTenants()
-            } else {
-                alert(result.error || "Error al crear cliente")
-            }
-        } catch (error) {
-            console.error(error)
-            alert("Ocurrió un error inesperado")
-        } finally {
-            setIsSubmitting(false)
-        }
-    }
+        // 3. Plan Filter
+        const matchesPlan = planFilter.includes("ALL") || planFilter.includes(tenant.plan)
 
-    const handleStatusChange = async (tenantId: string, newStatus: string) => {
-        if (!confirm(`¿Estás seguro de cambiar el estado a ${newStatus}?`)) return
-        try {
-            const result = await updateTenantStatus(tenantId, newStatus)
-            if (result.success) {
-                fetchTenants()
-            } else {
-                alert("Error al actualizar estado")
-            }
-        } catch (error) {
-            console.error(error)
-        }
-    }
+        return matchesSearch && matchesStatus && matchesPlan
+    })
 
-    // Delete Logic
-    const handleDeleteTenant = async (tenantId: string) => {
-        if (!confirm("PELIGRO: ¿Estás seguro de eliminar este negocio y TODOS sus datos? Esta acción no se puede deshacer.")) return
-        if (!confirm("¿De verdad? Se borrarán clientes, stamps y configuraciones.")) return
-
-        try {
-            const result = await deleteTenant(tenantId)
-            if (result.success) {
-                toast.success("Negocio eliminado correctamente")
-                fetchTenants()
-            } else {
-                toast.error(result.error || "Error al eliminar")
-            }
-        } catch (error) {
-            console.error(error)
-            toast.error("Error inesperado")
-        }
-    }
-
-    const handleEditTenant = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (!editingTenant) return
-        setIsSubmitting(true)
-        try {
-            const result = await updateTenant(editingTenant.id, {
-                name: editingTenant.name,
-                slug: editingTenant.slug
-            })
-
-            if (result.success) {
-                setIsEditOpen(false)
-                setEditingTenant(null)
-                fetchTenants()
-                toast.success("Negocio actualizado")
-            } else {
-                toast.error(result.error || "Error al actualizar")
-            }
-        } catch (error) {
-            console.error(error)
-            toast.error("Error inesperado")
-        } finally {
-            setIsSubmitting(false)
-        }
-    }
-
-    const filteredTenants = tenants.filter(tenant =>
-        tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tenant.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (tenant.owner?.email || "").toLowerCase().includes(searchTerm.toLowerCase())
+    // --- Pagination Logic ---
+    const totalPages = Math.ceil(filteredTenants.length / ITEMS_PER_PAGE)
+    const paginatedTenants = filteredTenants.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
     )
+
+    // --- Handlers ---
+
+    const handleFilterToggle = (type: 'status' | 'plan', value: string) => {
+        const currentFilter = type === 'status' ? statusFilter : planFilter
+        const setFilter = type === 'status' ? setStatusFilter : setPlanFilter
+
+        if (value === "ALL") {
+            setFilter(["ALL"])
+            return
+        }
+
+        let newFilter = [...currentFilter]
+        if (newFilter.includes("ALL")) {
+            newFilter = []
+        }
+
+        if (newFilter.includes(value)) {
+            newFilter = newFilter.filter(item => item !== value)
+        } else {
+            newFilter.push(value)
+        }
+
+        if (newFilter.length === 0) {
+            newFilter = ["ALL"]
+        }
+
+        setFilter(newFilter)
+        setCurrentPage(1)
+    }
+
+    const onCreateTenant = async () => {
+        setIsSubmitting(true)
+        const formData = new FormData()
+        formData.append("name", newName)
+        formData.append("slug", newSlug)
+        formData.append("ownerEmail", newOwnerEmail)
+        formData.append("plan", newPlan)
+
+        const result = await createTenant(formData)
+        if (result.success) {
+            toast.success("Negocio creado exitosamente")
+            setIsCreateOpen(false)
+            fetchTenants()
+            // Reset form
+            setNewName("")
+            setNewSlug("")
+            setNewOwnerEmail("")
+            setNewPlan("FREE")
+        } else {
+            toast.error(result.error)
+        }
+        setIsSubmitting(false)
+    }
+
+    const onUpdatePlan = async (tenantId: string, newPlan: string) => {
+        const result = await updateTenantPlan(tenantId, newPlan)
+        if (result.success) {
+            toast.success("Plan actualizado")
+            fetchTenants()
+        } else {
+            toast.error("Error al actualizar plan")
+        }
+    }
+
+    const onSuspendClick = (tenant: any) => {
+        if (tenant.status === 'SUSPENDED') {
+            // If already suspended, verify reactivation directly (maybe add alert later too)
+            onUpdateStatus(tenant.id, 'ACTIVE')
+        } else {
+            setTargetTenant(tenant)
+            setConfirmInput("")
+            setSuspendAlertOpen(true)
+        }
+    }
+
+    const confirmSuspend = async () => {
+        if (!targetTenant) return
+        const result = await updateTenantStatus(targetTenant.id, 'SUSPENDED')
+        if (result.success) {
+            toast.success("Negocio suspendido correctamente")
+            fetchTenants()
+        } else {
+            toast.error("Error al suspender negocio")
+        }
+        setSuspendAlertOpen(false)
+    }
+
+    const onUpdateStatus = async (tenantId: string, newStatus: string) => {
+        const result = await updateTenantStatus(tenantId, newStatus)
+        if (result.success) {
+            toast.success(`Estado actualizado a ${newStatus}`)
+            fetchTenants()
+        } else {
+            toast.error("Error al actualizar estado")
+        }
+    }
+
+
+    const onDeleteClick = (tenant: any) => {
+        setTargetTenant(tenant)
+        setConfirmInput("")
+        setDeleteAlertOpen(true)
+    }
+
+    const confirmDelete = async () => {
+        if (!targetTenant) return
+        const result = await deleteTenant(targetTenant.id)
+        if (result.success) {
+            toast.success("Negocio eliminado permanentemente")
+            fetchTenants()
+        } else {
+            toast.error("Error al eliminar negocio")
+        }
+        setDeleteAlertOpen(false)
+    }
+
+    // --- Export Functionality ---
+    const handleExport = () => {
+        if (tenants.length === 0) {
+            toast.error("No hay datos para exportar")
+            return
+        }
+
+        const headers = ["ID", "Nombre", "Slug", "Plan", "Estado", "Creado", "Dueño Nombre", "Dueño Email"]
+        const csvContent = [
+            headers.join(","),
+            ...tenants.map(t => [
+                t.id,
+                `"${t.name}"`, // Quote to handle commas
+                t.slug,
+                t.plan,
+                t.status,
+                new Date(t.createdAt).toISOString(),
+                `"${t.owner?.name} ${t.owner?.lastName || ''}"`,
+                t.owner?.email
+            ].join(","))
+        ].join("\n")
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a")
+        link.setAttribute("href", url)
+        link.setAttribute("download", `negocios_${new Date().toISOString().split('T')[0]}.csv`)
+        link.style.visibility = 'hidden'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        toast.success("Archivo CSV descargado")
+    }
+
+    // --- Autologin Functionality ---
+    const [impersonateOpen, setImpersonateOpen] = useState(false)
+    const [impersonationLink, setImpersonationLink] = useState("")
+    const [isGeneratingLink, setIsGeneratingLink] = useState(false)
+
+    const onImpersonateClick = async (tenant: any) => {
+        setTargetTenant(tenant)
+        setImpersonationLink("")
+        setImpersonateOpen(true)
+        setIsGeneratingLink(true)
+
+        // Call Server Action
+        try {
+            const { generateImpersonationLink } = await import("@/app/actions/admin-auth")
+            const result = await generateImpersonationLink(tenant.id)
+
+            if (result.success && result.link) {
+                setImpersonationLink(result.link)
+            } else {
+                toast.error(result.error || "Error generando enlace")
+                setImpersonateOpen(false)
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error("Error de conexión")
+            setImpersonateOpen(false)
+        } finally {
+            setIsGeneratingLink(false)
+        }
+    }
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(impersonationLink)
+        toast.success("Enlace copiado al portapapeles")
+    }
+
+    const getPlanStyles = (plan: string = 'FREE') => {
+        switch (plan.toUpperCase()) {
+            case 'FREE':
+                return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20 hover:bg-zinc-500/20"
+            case 'STARTER':
+                return "bg-sky-500/15 text-sky-400 border-sky-500/20 hover:bg-sky-500/25 shadow-[0_0_15px_-3px_rgba(14,165,233,0.15)]"
+            case 'PRO':
+                return "bg-emerald-500/15 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/25 shadow-[0_0_15px_-3px_rgba(16,185,129,0.15)]"
+            case 'AGENCY':
+                return "bg-violet-500/20 text-violet-400 border-violet-500/30 hover:bg-violet-500/30 shadow-[0_0_20px_-3px_rgba(139,92,246,0.2)]"
+            default:
+                return "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
+        }
+    }
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold font-[family-name:var(--font-funnel-display)] tracking-tight">Gestión de Clientes</h1>
-                    <p className="text-muted-foreground mt-1">Administra todos los negocios registrados en la plataforma.</p>
-                </div>
+            <div className="flex flex-col gap-4">
+                {/* Header Row: Search + Actions */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    {/* Search Bar - Large */}
+                    <div className="relative flex-1 w-full md:max-w-xl">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                        <Input
+                            placeholder="Buscar por nombre, email o slug..."
+                            className="pl-10 h-10 bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
 
-                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogTrigger asChild>
-                        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
-                            + Nuevo Cliente
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                        <Button
+                            variant="outline"
+                            className={cn("gap-2 border-dashed h-9", showFilters && "bg-accent text-accent-foreground border-solid")}
+                            onClick={() => setShowFilters(!showFilters)}
+                        >
+                            <Filter size={16} />
+                            Filtros
                         </Button>
-                    </DialogTrigger>
-                    <DialogContent className="bg-card border-border">
-                        <DialogHeader>
-                            <DialogTitle>Registrar Nuevo Cliente SaaS</DialogTitle>
-                            <DialogDescription>
-                                Crea un nuevo espacio de trabajo (Tenant) asignado a un usuario existente.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <form onSubmit={handleCreateClient} className="space-y-4 py-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Nombre del Negocio</Label>
-                                <Input
-                                    id="name"
-                                    placeholder="Ej: Cafetería Central"
-                                    value={newName}
-                                    onChange={(e) => {
-                                        setNewName(e.target.value)
-                                        setNewSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-'))
-                                    }}
-                                    required
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="slug">Slug (URL)</Label>
-                                <Input
-                                    id="slug"
-                                    placeholder="cafeteria-central"
-                                    value={newSlug}
-                                    onChange={(e) => setNewSlug(e.target.value)}
-                                    required
-                                />
-                                <p className="text-xs text-muted-foreground">URL: loyalty.app/{newSlug}</p>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email del Dueño (Usuario Existente)</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="usuario@email.com"
-                                    value={newOwnerEmail}
-                                    onChange={(e) => setNewOwnerEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="plan">Plan Inicial</Label>
-                                <select
-                                    id="plan"
-                                    className="w-full h-10 rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                                    value={newPlan}
-                                    onChange={(e) => setNewPlan(e.target.value)}
-                                >
-                                    <option value="FREE" className="bg-card text-foreground">Free</option>
-                                    <option value="PRO" className="bg-card text-foreground">Pro</option>
-                                    <option value="PLUS" className="bg-card text-foreground">Plus</option>
-                                </select>
-                            </div>
 
-                            <DialogFooter className="pt-4">
-                                <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90">
-                                    {isSubmitting ? "Creando..." : "Crear Cliente"}
+                        <Button variant="outline" className="gap-2 h-9" onClick={handleExport}>
+                            <Download size={16} />
+                            Exportar
+                        </Button>
+
+                        <Button variant="outline" className="gap-2 h-9" onClick={fetchTenants}>
+                            <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
+                            Refrescar
+                        </Button>
+
+                        <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                            <DialogTrigger asChild>
+                                <Button className="gap-2 h-9 bg-green-600 hover:bg-green-700 text-white border-0">
+                                    <Plus size={16} />
+                                    Nuevo Cliente
                                 </Button>
-                            </DialogFooter>
-                        </form>
-                    </DialogContent>
-                </Dialog>
-            </div>
-
-            {/* Filters */}
-            <div className="flex items-center gap-4 bg-card p-4 rounded-xl border border-border shadow-sm">
-                <div className="flex-1 relative max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Buscar por nombre, email o slug..."
-                        className="pl-9 bg-background/50 border-input"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Crear Nuevo Negocio</DialogTitle>
+                                    <DialogDescription>
+                                        Ingresa los detalles iniciales del negocio y su dueño.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4 py-4">
+                                    <div className="space-y-2">
+                                        <Label>Nombre del Negocio</Label>
+                                        <Input placeholder="Ej: Restaurante Mexicano" value={newName} onChange={e => setNewName(e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Slug (URL)</Label>
+                                        <Input placeholder="restaurante-mexicano" value={newSlug} onChange={e => setNewSlug(e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Email del Dueño (Debe existir)</Label>
+                                        <Input placeholder="dueno@email.com" value={newOwnerEmail} onChange={e => setNewOwnerEmail(e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Plan Inicial</Label>
+                                        <select
+                                            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            value={newPlan}
+                                            onChange={e => setNewPlan(e.target.value)}
+                                        >
+                                            <option value="FREE">Free</option>
+                                            <option value="STARTER">Starter</option>
+                                            <option value="PRO">Pro</option>
+                                            <option value="AGENCY">Agency</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancelar</Button>
+                                    <Button onClick={onCreateTenant} disabled={isSubmitting}>
+                                        {isSubmitting ? "Creando..." : "Crear Negocio"}
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                 </div>
-                <Button variant="outline" className="gap-2">
-                    <Filter size={16} />
-                    Filtros
-                </Button>
+
+                {/* Inline Filters Area (Collapsible) */}
+                <AnimatePresence>
+                    {showFilters && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="bg-muted/30 border border-border/50 rounded-lg overflow-hidden"
+                        >
+                            <div className="p-4 space-y-4">
+                                {/* Status Row */}
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <span className="text-xs font-bold text-muted-foreground w-16 uppercase tracking-wider">Estado:</span>
+                                    {['ALL', 'ACTIVE', 'SUSPENDED', 'PENDING'].map((status) => {
+                                        const label = { 'ALL': 'TODOS', 'ACTIVE': 'ACTIVOS', 'SUSPENDED': 'INACTIVOS', 'PENDING': 'PENDIENTES' }[status] || status
+                                        const isActive = statusFilter.includes(status)
+                                        return (
+                                            <Button
+                                                key={status}
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleFilterToggle('status', status)}
+                                                className={cn(
+                                                    "rounded-full text-xs h-7 px-3 border border-transparent transition-all",
+                                                    isActive
+                                                        ? "bg-primary/20 text-primary border-primary/30 font-semibold hover:bg-primary/30"
+                                                        : "bg-background/50 hover:bg-background border-border/50 text-muted-foreground"
+                                                )}
+                                            >
+                                                {label}
+                                            </Button>
+                                        )
+                                    })}
+                                </div>
+
+                                {/* Plan Row */}
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <span className="text-xs font-bold text-muted-foreground w-16 uppercase tracking-wider">Plan:</span>
+                                    {['ALL', 'FREE', 'STARTER', 'PRO', 'AGENCY'].map((plan) => {
+                                        const label = plan === 'ALL' ? 'TODOS' : plan
+                                        const isActive = planFilter.includes(plan)
+
+                                        // Colores para el filtro activo
+                                        const activeColors = {
+                                            'ALL': "bg-primary/20 text-primary border-primary/30",
+                                            'FREE': "bg-zinc-500/20 text-zinc-400 border-zinc-500/30",
+                                            'STARTER': "bg-sky-500/20 text-sky-400 border-sky-500/30",
+                                            'PRO': "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+                                            'AGENCY': "bg-violet-500/25 text-violet-400 border-violet-500/40"
+                                        }[plan] || "bg-primary/20 text-primary border-primary/30"
+
+                                        return (
+                                            <Button
+                                                key={plan}
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleFilterToggle('plan', plan)}
+                                                className={cn(
+                                                    "rounded-full text-[11px] h-7 px-4 border border-transparent transition-all font-bold tracking-tight",
+                                                    isActive
+                                                        ? activeColors
+                                                        : "bg-background/50 hover:bg-background border-border/50 text-muted-foreground"
+                                                )}
+                                            >
+                                                {label}
+                                            </Button>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
-            {/* Table */}
-            <div className="rounded-xl bg-card overflow-hidden shadow-sm border border-border">
-                <Table className="min-w-[800px]">
+            <div className="border border-border rounded-lg overflow-hidden bg-background shadow-sm">
+                <Table>
                     <TableHeader className="bg-muted/50">
                         <TableRow>
-                            <TableHead>Negocio / Slug</TableHead>
+                            <TableHead className="w-[300px]">Negocio / Slug</TableHead>
                             <TableHead>Dueño</TableHead>
                             <TableHead>Plan</TableHead>
                             <TableHead>Estado</TableHead>
-                            <TableHead className="text-right">Creado</TableHead>
+                            <TableHead>Creado</TableHead>
                             <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {isLoading ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                                    Cargando datos...
+                                <TableCell colSpan={6} className="h-24 text-center">
+                                    Cargando negocios...
                                 </TableCell>
                             </TableRow>
-                        ) : filteredTenants.length === 0 ? (
+                        ) : paginatedTenants.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                                    No se encontraron clientes registrados.
+                                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                                    No se encontraron resultados
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            filteredTenants.map((tenant) => (
-                                <TableRow key={tenant.id} className="group hover:bg-muted/30 transition-colors">
+                            paginatedTenants.map((tenant) => (
+                                <TableRow
+                                    key={tenant.id}
+                                    className={cn(
+                                        "transition-colors",
+                                        searchParams.get('search') === tenant.slug && "bg-primary/5 animate-pulse-once"
+                                    )}
+                                >
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center font-bold text-xs text-muted-foreground">
-                                                {tenant.name.substring(0, 2).toUpperCase()}
+                                            <Avatar className="w-10 h-10 border border-border/50 bg-muted">
+                                                <AvatarImage src={tenant.owner?.avatarUrl} alt={tenant.owner?.name} className="object-cover" />
+                                                <AvatarFallback className="font-bold text-xs text-muted-foreground">
+                                                    {(tenant.owner?.name || tenant.name).substring(0, 2).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex flex-col">
+                                                <span className="font-medium text-foreground">{tenant.name}</span>
+                                                <span className="text-xs text-muted-foreground font-mono">/{tenant.slug}</span>
                                             </div>
-                                            <div>
-                                                <div className="font-medium">{tenant.name}</div>
-                                                <div className="text-xs text-muted-foreground font-mono">/{tenant.slug}</div>
-                                            </div>
+                                            {searchParams.get('search') === tenant.slug && (
+                                                <Badge variant="default" className="ml-2 h-5 px-1.5 text-[10px] animate-bounce">
+                                                    New
+                                                </Badge>
+                                            )}
                                         </div>
                                     </TableCell>
                                     <TableCell>
@@ -311,78 +558,82 @@ export default function TenantsPage() {
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <span className={cn(
-                                            "font-mono text-xs px-2 py-1 rounded-md border",
-                                            tenant.plan === 'PRO'
-                                                ? 'bg-primary/10 text-primary border-primary/20'
-                                                : tenant.plan === 'PLUS'
-                                                    ? 'bg-purple-500/10 text-purple-500 border-purple-500/20'
-                                                    : 'bg-zinc-800 text-zinc-400 border-zinc-700'
-                                        )}>
-                                            {tenant.plan}
-                                        </span>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Badge
+                                                    variant="outline"
+                                                    className={cn(
+                                                        "cursor-pointer font-bold uppercase tracking-wider rounded-lg px-2 py-0.5 border-t-white/10 transition-all text-[10px]",
+                                                        getPlanStyles(tenant.plan)
+                                                    )}
+                                                >
+                                                    {tenant.plan}
+                                                </Badge>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent>
+                                                <DropdownMenuLabel className="text-[10px] uppercase text-muted-foreground tracking-widest font-bold">Cambiar Plan</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                {['FREE', 'STARTER', 'PRO', 'AGENCY'].map((p) => (
+                                                    <DropdownMenuItem
+                                                        key={p}
+                                                        onClick={() => onUpdatePlan(tenant.id, p)}
+                                                        className="flex items-center gap-2 group cursor-pointer h-9 px-3"
+                                                    >
+                                                        <div className={cn(
+                                                            "w-2 h-2 rounded-full ring-1 ring-white/10 shadow-sm transition-transform group-hover:scale-125",
+                                                            p === 'FREE' ? 'bg-zinc-400' :
+                                                                p === 'STARTER' ? 'bg-sky-400' :
+                                                                    p === 'PRO' ? 'bg-emerald-400' : 'bg-violet-400'
+                                                        )} />
+                                                        <span className={cn(
+                                                            "text-[11px] font-bold uppercase tracking-wide",
+                                                            p === tenant.plan ? "text-primary" : "text-muted-foreground"
+                                                        )}>
+                                                            {p}
+                                                        </span>
+                                                        {p === tenant.plan && (
+                                                            <div className="ml-auto w-1 h-1 rounded-full bg-primary" />
+                                                        )}
+                                                    </DropdownMenuItem>
+                                                ))}
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant="secondary" className={`
-                                            ${tenant.status === 'ACTIVE' ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20' : ''}
-                                            ${tenant.status === 'SUSPENDED' ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20' : ''}
-                                            ${tenant.status === 'PENDING' ? 'bg-orange-500/10 text-orange-500 hover:bg-orange-500/20' : ''}
-                                        `}>
-                                            {tenant.status === 'ACTIVE' && 'Activo'}
-                                            {tenant.status === 'SUSPENDED' && 'Suspendido'}
-                                            {tenant.status === 'PENDING' && 'Pendiente'}
-                                            {!tenant.status && 'Activo'} {/* Fallback */}
+                                        <Badge variant={tenant.status === 'ACTIVE' ? 'default' : 'destructive'} className={cn(
+                                            tenant.status === 'ACTIVE' ? "bg-green-500/15 text-green-500 hover:bg-green-500/25 border-green-500/20" : "bg-red-500/15 text-red-500 hover:bg-red-500/25 border-red-500/20"
+                                        )}>
+                                            {tenant.status}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="text-right text-xs text-muted-foreground">
+                                    <TableCell className="text-sm text-muted-foreground">
                                         {new Date(tenant.createdAt).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                                                    <MoreVertical size={16} />
+                                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                    <MoreVertical className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem
-                                                    className="gap-2 cursor-pointer"
-                                                    onClick={() => {
-                                                        setEditingTenant({
-                                                            id: tenant.id,
-                                                            name: tenant.name,
-                                                            slug: tenant.slug
-                                                        })
-                                                        setIsEditOpen(true)
-                                                    }}
-                                                >
-                                                    <Edit size={14} /> Editar Detalles
+                                                <DropdownMenuItem onClick={() => {
+                                                    setEditingTenant(tenant)
+                                                    setIsEditOpen(true)
+                                                }}>
+                                                    <Edit className="mr-2 h-4 w-4" /> Editar Detalles
                                                 </DropdownMenuItem>
-                                                {tenant.status !== 'ACTIVE' && (
-                                                    <DropdownMenuItem
-                                                        className="gap-2 cursor-pointer text-green-500 focus:text-green-500 focus:bg-green-500/10"
-                                                        onClick={() => handleStatusChange(tenant.id, 'ACTIVE')}
-                                                    >
-                                                        <CheckCircle2 size={14} /> Activar / Verificar
-                                                    </DropdownMenuItem>
-                                                )}
+                                                <DropdownMenuItem onClick={() => onImpersonateClick(tenant)} className="text-blue-600 focus:text-blue-600">
+                                                    <LogIn className="mr-2 h-4 w-4" /> Ingresar como Dueño
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => onSuspendClick(tenant)} className="text-amber-500 focus:text-amber-500">
+                                                    <Ban className="mr-2 h-4 w-4" />
+                                                    {tenant.status === 'SUSPENDED' ? "Reactivar Servicio" : "Suspender Servicio"}
+                                                </DropdownMenuItem>
                                                 <DropdownMenuSeparator />
-                                                {tenant.status !== 'SUSPENDED' && (
-                                                    <DropdownMenuItem
-                                                        className="gap-2 text-destructive cursor-pointer focus:text-destructive focus:bg-destructive/10"
-                                                        onClick={() => handleStatusChange(tenant.id, 'SUSPENDED')}
-                                                    >
-                                                        <Ban size={14} /> Suspender Servicio
-                                                    </DropdownMenuItem>
-                                                )}
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem
-                                                    className="gap-2 text-destructive cursor-pointer focus:text-destructive focus:bg-destructive/10"
-                                                    onClick={() => handleDeleteTenant(tenant.id)}
-                                                >
-                                                    <Trash2 size={14} /> Eliminar Cuenta
+                                                <DropdownMenuItem onClick={() => onDeleteClick(tenant)} className="text-destructive focus:text-destructive">
+                                                    <Trash2 className="mr-2 h-4 w-4" /> Eliminar Cuenta
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
@@ -392,44 +643,227 @@ export default function TenantsPage() {
                         )}
                     </TableBody>
                 </Table>
+
+                {/* Pagination Controls */}
+                {filteredTenants.length > 0 && (
+                    <div className="flex items-center justify-between p-4 border-t border-border bg-muted/20">
+                        <div className="text-sm text-muted-foreground">
+                            Mostrando {((currentPage - 1) * ITEMS_PER_PAGE) + 1} a {Math.min(currentPage * ITEMS_PER_PAGE, filteredTenants.length)} de {filteredTenants.length} negocios
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                                className="h-8 w-8 p-0"
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                            <span className="text-sm font-medium px-2">
+                                Página {currentPage} de {totalPages || 1}
+                            </span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages || totalPages === 0}
+                                className="h-8 w-8 p-0"
+                            >
+                                <ChevronRight className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
 
-            {/* Edit Dialog */}
+            {/* Edit Tenant Dialog */}
             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-                <DialogContent className="bg-card border-border">
+                <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Editar Negocio</DialogTitle>
                         <DialogDescription>
                             Modifica los detalles principales del negocio.
                         </DialogDescription>
                     </DialogHeader>
-                    <form onSubmit={handleEditTenant} className="space-y-4 py-4">
+
+                    <div className="space-y-4 py-4">
                         <div className="space-y-2">
-                            <Label htmlFor="edit-name">Nombre del Negocio</Label>
+                            <Label>Nombre del Negocio</Label>
                             <Input
-                                id="edit-name"
                                 value={editingTenant?.name || ""}
                                 onChange={(e) => setEditingTenant(prev => prev ? { ...prev, name: e.target.value } : null)}
-                                required
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="edit-slug">Slug (URL)</Label>
+                            <Label>Slug (URL)</Label>
                             <Input
-                                id="edit-slug"
                                 value={editingTenant?.slug || ""}
                                 onChange={(e) => setEditingTenant(prev => prev ? { ...prev, slug: e.target.value } : null)}
-                                required
                             />
                         </div>
-                        <DialogFooter className="pt-4">
-                            <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90">
-                                {isSubmitting ? "Guardando..." : "Guardar Cambios"}
-                            </Button>
-                        </DialogFooter>
-                    </form>
+                        {/* Owner email usually shouldn't be changed this simply as it links to Auth, 
+                             keeping it read-only for now or adding specific mutation if requested */}
+                        <div className="space-y-2">
+                            <Label>Email del Dueño (Solo Lectura)</Label>
+                            <Input
+                                value={editingTenant?.owner?.email || ""}
+                                disabled
+                                className="bg-muted"
+                            />
+                        </div>
+                    </div>
+
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsEditOpen(false)}>Cancelar</Button>
+                        <Button onClick={async () => {
+                            if (!editingTenant) return
+                            setIsSubmitting(true)
+                            try {
+                                const { updateTenant } = await import("@/app/actions/admin-tenants")
+                                const result = await updateTenant(editingTenant.id, {
+                                    name: editingTenant.name,
+                                    slug: editingTenant.slug
+                                })
+
+                                if (result.success) {
+                                    toast.success("Negocio actualizado")
+                                    setIsEditOpen(false)
+                                    fetchTenants()
+                                } else {
+                                    toast.error(result.error || "Error al actualizar")
+                                }
+                            } catch (e) {
+                                console.error(e)
+                                toast.error("Error de conexión")
+                            } finally {
+                                setIsSubmitting(false)
+                            }
+                        }} disabled={isSubmitting}>
+                            {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* Suspend Alert Dialog */}
+            <AlertDialog open={suspendAlertOpen} onOpenChange={setSuspendAlertOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2 text-amber-500">
+                            <Ban className="h-5 w-5" />
+                            ¿Suspender Negocio?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Estás a punto de suspender <strong>{targetTenant?.name}</strong>. Esto revocará el acceso inmediatamente.
+                            <br /><br />
+                            Para confirmar, escribe <strong>SUSPENDER</strong> abajo:
+                        </AlertDialogDescription>
+                        <Input
+                            value={confirmInput}
+                            onChange={(e) => setConfirmInput(e.target.value)}
+                            placeholder="Escribe SUSPENDER"
+                            className="mt-4"
+                        />
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <Button
+                            variant="destructive"
+                            disabled={confirmInput !== "SUSPENDER"}
+                            onClick={confirmSuspend}
+                            className="bg-amber-600 hover:bg-amber-700 text-white"
+                        >
+                            Suspender Negocio
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Delete Alert Dialog */}
+            <AlertDialog open={deleteAlertOpen} onOpenChange={setDeleteAlertOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+                            <Trash2 className="h-5 w-5" />
+                            ¿ELIMINAR Negocio Permanentemente?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Esta acción es <strong>IRREVERSIBLE</strong>. Se eliminarán permanentemente el negocio <strong>{targetTenant?.name}</strong> y TODOS sus datos asociados (clientes, stamps, configuraciones).
+                            <br /><br />
+                            Para confirmar que entiendes las consecuencias, escribe <strong>ELIMINAR</strong> abajo:
+                        </AlertDialogDescription>
+                        <Input
+                            value={confirmInput}
+                            onChange={(e) => setConfirmInput(e.target.value)}
+                            placeholder="Escribe ELIMINAR"
+                            className="mt-4 border-destructive/50 focus-visible:ring-destructive"
+                        />
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <Button
+                            variant="destructive"
+                            disabled={confirmInput !== "ELIMINAR"}
+                            onClick={confirmDelete}
+                        >
+                            ELIMINAR DEFINITIVAMENTE
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Autologin Dialog */}
+            <Dialog open={impersonateOpen} onOpenChange={setImpersonateOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <LogIn className="h-5 w-5 text-blue-600" />
+                            Ingresar como Dueño
+                        </DialogTitle>
+                        <DialogDescription>
+                            Accede a la cuenta de <strong>{targetTenant?.name}</strong> sin contraseña.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    {isGeneratingLink ? (
+                        <div className="flex flex-col items-center justify-center py-6 gap-3">
+                            <RefreshCw className="h-8 w-8 animate-spin text-primary" />
+                            <p className="text-sm text-muted-foreground">Generando llave de acceso...</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-800 flex gap-2">
+                                <span className="text-lg">⚠️</span>
+                                <div>
+                                    <strong>AVISO:</strong> Al entrar ahora, se cerrará tu sesión actual de Administrador para abrir la del cliente.
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <Input value={impersonationLink} readOnly className="font-mono text-xs bg-muted" />
+                                <Button size="icon" variant="outline" onClick={copyToClipboard}>
+                                    <span className="sr-only">Copiar</span>
+                                    <CheckCircle2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+
+                            <Button
+                                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-11"
+                                onClick={() => {
+                                    if (impersonationLink) {
+                                        window.location.href = impersonationLink
+                                    }
+                                }}
+                            >
+                                <Zap className="w-4 h-4 mr-2" />
+                                Entrar Ahora
+                            </Button>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
+
         </div>
     )
 }

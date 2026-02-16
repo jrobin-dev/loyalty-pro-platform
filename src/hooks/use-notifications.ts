@@ -109,11 +109,26 @@ export function useNotifications(manualUserId?: string, onNewNotification?: (n: 
         const initialize = async () => {
             try {
                 let activeUserId = manualUserId
+                let userRole: string | null = null
 
-                // 1. Resolve User ID
+                // 1. Resolve User ID and Role
                 if (!activeUserId) {
                     const { data } = await supabase.auth.getUser()
                     activeUserId = data.user?.id
+                    userRole = data.user?.user_metadata?.role || null
+                }
+
+                // Fallback: If role is still null, try fetching from profile API
+                if (activeUserId && !userRole) {
+                    try {
+                        const res = await fetch("/api/user/profile")
+                        if (res.ok) {
+                            const data = await res.json()
+                            userRole = data.user?.role || null
+                        }
+                    } catch (e) {
+                        console.error("Failed to fetch role fallback:", e)
+                    }
                 }
 
                 if (!mounted) return
@@ -124,7 +139,7 @@ export function useNotifications(manualUserId?: string, onNewNotification?: (n: 
                     return
                 }
 
-                console.log("🔔 Initializing notifications for:", activeUserId)
+                console.log("🔔 Initializing notifications for:", activeUserId, "Role:", userRole)
 
                 // 2. Fetch Initial Data
                 try {
@@ -161,9 +176,18 @@ export function useNotifications(manualUserId?: string, onNewNotification?: (n: 
                         (payload) => {
                             // Verify payload is for this user (Client-side filtering security)
                             const newNotif = mapNotificationFromPayload(payload.new)
-                            console.log("🔔 Realtime Event Received:", newNotif.userId === activeUserId ? "ACCEPTED" : "IGNORED", newNotif)
 
-                            if (newNotif.userId !== activeUserId) return
+                            // If userRole is SUPER_ADMIN, allow everything
+                            const isSuperAdmin = userRole === 'SUPER_ADMIN'
+
+                            console.log("🔔 Realtime Event:", {
+                                eventType: payload.eventType,
+                                forUser: newNotif.userId,
+                                currentUser: activeUserId,
+                                isSuperAdmin
+                            })
+
+                            if (!isSuperAdmin && newNotif.userId !== activeUserId) return
 
                             setNotifications(prev => [newNotif, ...prev])
                             setUnreadCount(prev => prev + 1)

@@ -2,6 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Store, Users, DollarSign, TrendingUp, Activity } from "lucide-react"
 import { getAdminStats } from "@/app/actions/admin-stats"
 import { getTenants } from "@/app/actions/admin-tenants"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default async function AdminDashboardPage() {
     const statsResult = await getAdminStats()
@@ -14,7 +17,7 @@ export default async function AdminDashboardPage() {
 
     const metrics = [
         {
-            title: "Total Tenants (Negocios)",
+            title: "Total Negocios",
             value: stats.totalTenants.toString(),
             change: "+12%", // TODO: implementation for historical comparison
             trend: "up",
@@ -51,15 +54,17 @@ export default async function AdminDashboardPage() {
         },
     ]
 
-    // Fetch recent tenants
-    const tenantsResult = await getTenants()
+    // Fetch recent tenants (Optimized: Only first 5)
+    const tenantsResult = await getTenants(5)
     const recentTenants = tenantsResult.success && tenantsResult.data
         ? tenantsResult.data.slice(0, 5).map(t => ({
             name: t.name,
             plan: t.plan,
             date: new Date(t.createdAt).toLocaleDateString(),
             // @ts-ignore
-            status: t.status || "active"
+            status: t.status || "active",
+            logoUrl: t.branding?.logoUrl,
+            owner: t.owner
         }))
         : []
 
@@ -115,7 +120,7 @@ export default async function AdminDashboardPage() {
                 {/* Recent Tenants */}
                 <Card className="col-span-3 bg-card border-border">
                     <CardHeader>
-                        <CardTitle>Nuevos Negocios (Tenants)</CardTitle>
+                        <CardTitle>Nuevos Negocios</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-6">
@@ -125,21 +130,39 @@ export default async function AdminDashboardPage() {
                                 recentTenants.map((tenant, i) => (
                                     <div key={i} className="flex items-center justify-between group">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/10 flex items-center justify-center font-bold text-xs text-muted-foreground group-hover:text-white group-hover:border-primary/50 transition-all">
-                                                {tenant.name.substring(0, 2).toUpperCase()}
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">{tenant.name}</p>
-                                                <p className="text-xs text-muted-foreground mt-1">{tenant.date}</p>
+                                            <Avatar className="w-10 h-10 border border-border/50 bg-muted">
+                                                <AvatarImage
+                                                    src={tenant.owner?.avatarUrl || ""}
+                                                    alt={tenant.owner?.name || tenant.name}
+                                                    className="object-cover"
+                                                />
+                                                <AvatarFallback className="font-bold text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                                                    {(tenant.owner?.name || tenant.name).substring(0, 2).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex flex-col">
+                                                <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">
+                                                    {tenant.name}
+                                                </p>
+                                                <div className="flex flex-col gap-0.5 mt-1">
+                                                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                                        {tenant.owner?.name || "Sin Dueño"}
+                                                    </span>
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {tenant.date}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="flex flex-col items-end">
-                                            <div className={`text-xs font-bold px-2 py-0.5 rounded-full ${tenant.plan === 'PRO' || tenant.plan === 'PLUS'
-                                                ? 'bg-[#00FF94]/10 text-[#00FF94] border border-[#00FF94]/20'
-                                                : 'bg-white/5 text-white/40'
-                                                }`}>
+                                            <Badge variant="outline" className={cn(
+                                                "text-[10px] h-5 px-1.5 font-mono uppercase",
+                                                tenant.plan === 'PRO' || tenant.plan === 'AGENCY'
+                                                    ? "bg-primary/10 text-primary border-primary/20"
+                                                    : "bg-muted text-muted-foreground"
+                                            )}>
                                                 {tenant.plan}
-                                            </div>
+                                            </Badge>
                                         </div>
                                     </div>
                                 ))

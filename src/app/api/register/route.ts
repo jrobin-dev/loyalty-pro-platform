@@ -76,10 +76,22 @@ export async function POST(request: Request) {
                 }
             })
 
-            // 3. Create Notification for Admin (or User)
-            // Note: Since we don't have a SUPER_ADMIN ID handy without fetching, we might just notify the user themselves 
-            // OR if there is a system notification mechanism. 
-            // For now, let's notify the NEW USER that their account is ready.
+            // 3. Create Notification for Admin
+            // Find all Super Admins to notify
+            const superAdmins = await tx.user.findMany({
+                where: { role: 'SUPER_ADMIN' }
+            })
+
+            for (const admin of superAdmins) {
+                await createNotification(
+                    admin.id,
+                    "Nuevo Registro de Negocio",
+                    `El negocio "${businessData.businessName}" ha completado el onboarding.`,
+                    "info"
+                )
+            }
+
+            // Also notify the user
             await createNotification(
                 user.id,
                 "¡Bienvenido a LoyaltyPro!",

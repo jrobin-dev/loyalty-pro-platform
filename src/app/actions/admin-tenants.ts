@@ -3,15 +3,22 @@
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
-export async function getTenants() {
+export async function getTenants(limit?: number) {
     try {
         const tenants = await prisma.tenant.findMany({
+            take: limit, // Optimization: Limit rows if requested
             include: {
                 owner: {
                     select: {
                         name: true,
                         lastName: true,
-                        email: true
+                        email: true,
+                        avatarUrl: true
+                    }
+                },
+                branding: {
+                    select: {
+                        logoUrl: true
                     }
                 }
             },

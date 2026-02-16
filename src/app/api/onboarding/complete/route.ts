@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import prisma from '@/lib/prisma'
+import { createNotification } from '@/lib/notifications'
 
 // Server-side Supabase client with service role for admin operations
 const supabaseAdmin = createClient(
@@ -136,6 +137,33 @@ export async function POST(request: NextRequest) {
         }
 
         console.log('🎉 Onboarding completed successfully!')
+
+        // Step 7: Create Notifications (Real-time)
+        try {
+            // 1. Notify the new user
+            await createNotification(
+                userId,
+                "¡Bienvenido a LoyaltyPro!",
+                "Tu cuenta ha sido creada exitosamente. Completa tu configuración para empezar.",
+                "success"
+            )
+
+            // 2. Notify all Super Admins
+            const superAdmins = await prisma.user.findMany({
+                where: { role: 'SUPER_ADMIN' }
+            })
+
+            for (const admin of superAdmins) {
+                await createNotification(
+                    admin.id,
+                    "Nuevo Registro de Negocio",
+                    `El negocio "${body.businessName}" ha completado el onboarding.`,
+                    "info"
+                )
+            }
+        } catch (notifError) {
+            console.error('⚠️ Notification error (non-critical):', notifError)
+        }
 
         return NextResponse.json({
             success: true,

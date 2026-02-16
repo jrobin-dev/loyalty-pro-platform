@@ -3,48 +3,38 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-    CreditCard,
     LayoutDashboard,
     LogOut,
     Settings,
     Users,
-    QrCode,
-    Gift,
+    Store,
+    Megaphone,
+    BarChart3,
     ChevronLeft,
     ChevronRight,
-    Zap,
     Loader2,
-    GraduationCap
+    Shield
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useTenantSettings } from "@/hooks/use-tenant-settings"
 import { useUserProfile } from "@/hooks/use-user-profile"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
-import { UpgradeProBanner } from "./upgrade-banner"
-import { useLanguage } from "@/contexts/language-context"
-import { LanguageSwitcher } from "./language-switcher"
 
-interface SidebarProps {
+interface AdminSidebarProps {
     isOpen: boolean
     setIsOpen: (open: boolean) => void
     isCollapsed: boolean
     toggleCollapse: () => void
 }
 
-export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: SidebarProps) {
+export function AdminSidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: AdminSidebarProps) {
     const pathname = usePathname()
-    const { t } = useLanguage()
-    const { settings } = useTenantSettings()
     const { profile } = useUserProfile()
     const router = useRouter()
     const [isLoggingOut, setIsLoggingOut] = useState(false)
-    const [userName, setUserName] = useState("Usuario")
     const [isFullyExpanded, setIsFullyExpanded] = useState(false)
 
     // Handle delayed expansion state for smooth content appearance
@@ -61,15 +51,6 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
         }
     }, [isCollapsed])
 
-    useEffect(() => {
-        if (profile) {
-            console.log("Dashboard Sidebar Profile:", profile) // Debugging
-            const fullName = [profile.name, profile.lastName].filter(Boolean).join(" ")
-            setUserName(fullName || profile.email?.split("@")[0] || "Usuario")
-        }
-    }, [profile])
-
-
     const handleLogout = async () => {
         try {
             setIsLoggingOut(true)
@@ -85,16 +66,13 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
     }
 
     const menuItems = [
-        { icon: LayoutDashboard, label: t('sidebar.dashboard'), href: "/dashboard" },
-        { icon: Users, label: t('sidebar.customers'), href: "/dashboard/customers" },
-        { icon: QrCode, label: t('sidebar.qrScanner'), href: "/dashboard/scan" },
-        { icon: Gift, label: t('sidebar.rewards'), href: "/dashboard/rewards" },
-        { icon: GraduationCap, label: t('sidebar.academy'), href: "/dashboard/academy" },
-        { icon: Settings, label: t('sidebar.settings'), href: "/dashboard/settings" },
+        { icon: LayoutDashboard, label: "Vista General", href: "/admin" },
+        { icon: Store, label: "Negocios", href: "/admin/tenants" },
+        { icon: Users, label: "Usuarios Globales", href: "/admin/users" },
+        { icon: Megaphone, label: "Banners", href: "/admin/banners" },
+        { icon: BarChart3, label: "Ingresos", href: "/admin/revenue" },
+        { icon: Settings, label: "Configuración", href: "/admin/settings" },
     ]
-
-
-
 
     return (
         <>
@@ -116,23 +94,25 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
             >
                 {/* Header - Logo & Close Button (Mobile) */}
                 <div className="h-20 flex items-center justify-between px-4 border-b border-border transition-all duration-300">
-                    <Link href="/" className={cn("group cursor-pointer transition-all duration-300", isCollapsed ? "w-12 flex justify-center" : "px-2")}>
+                    <Link href="/admin" className={cn("group cursor-pointer transition-all duration-300", isCollapsed ? "w-12 flex justify-center" : "px-2")}>
                         {isCollapsed ? (
-                            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                                <Zap className="h-5 w-5 text-white fill-white" />
+                            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+                                <Shield className="h-5 w-5 text-white fill-white" />
                             </div>
                         ) : (
                             <AnimatePresence mode="wait">
                                 {isFullyExpanded && (
-                                    <motion.h1
+                                    <motion.div
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0 }}
                                         transition={{ duration: 0.2 }}
-                                        className="text-xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 dark:from-emerald-400 dark:to-green-400 bg-clip-text text-transparent group-hover:scale-105 transition-transform"
+                                        className="flex flex-col"
                                     >
-                                        LoyaltyPro
-                                    </motion.h1>
+                                        <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent group-hover:scale-105 transition-transform">
+                                            SuperAdmin
+                                        </h1>
+                                    </motion.div>
                                 )}
                             </AnimatePresence>
                         )}
@@ -140,7 +120,6 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
 
                     {/* Close Button Only */}
                     <div className="flex items-center gap-2">
-
                         {!isCollapsed && (
                             <Button
                                 variant="ghost"
@@ -158,11 +137,11 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 <nav className="flex-1 px-4 pt-6 space-y-3 overflow-y-auto custom-scrollbar relative">
                     {menuItems.map((item) => {
                         const Icon = item.icon
-                        const isActive = pathname === item.href
+                        const isActive = pathname === item.href // Exact match usually fine for admin roots, or uses startsWith if needed
 
                         return (
                             <div key={item.href} className="relative flex items-center group">
-                                {/* Indicador Neón Lateral - Separado del recuadro */}
+                                {/* Indicador Neón Lateral - Purple for Admin */}
                                 {isActive && (
                                     <motion.div
                                         className="absolute z-10"
@@ -170,9 +149,9 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                             left: "-16px",
                                             width: "6px",
                                             height: "32px",
-                                            backgroundColor: "lab(78 -63.38 35.21)",
+                                            backgroundColor: "lab(65 40 -50)", // Purplish
                                             borderRadius: "0px 25px 25px 0px",
-                                            boxShadow: "-4px 0 10px 2px #3bc295, 0 0 15px rgba(16, 185, 129, 0.8)",
+                                            boxShadow: "-4px 0 10px 2px #818cf8, 0 0 15px rgba(99, 102, 241, 0.8)",
                                             pointerEvents: "none"
                                         }}
                                         initial={{ opacity: 0 }}
@@ -192,20 +171,20 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                     className={cn(
                                         "group flex items-center rounded-xl transition-all duration-300 relative h-12 overflow-hidden px-1.5 gap-3",
                                         isActive
-                                            ? "bg-emerald-500/10 text-emerald-500 dark:bg-emerald-500/10 dark:text-[#19E28C]"
-                                            : "text-muted-foreground hover:bg-emerald-500/5 hover:text-emerald-500",
-                                        isCollapsed ? "w-12" : "w-full"
+                                            ? "bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/10 dark:text-indigo-400"
+                                            : "text-muted-foreground hover:bg-indigo-500/5 hover:text-indigo-500",
+                                        isCollapsed ? "w-12 justify-center" : "w-full"
                                     )}
                                     title={isCollapsed ? item.label : ""}
                                 >
                                     <div className={cn(
                                         "flex items-center justify-center w-9 h-9 transition-colors duration-300 flex-shrink-0",
-                                        isActive ? "bg-emerald-500/10 dark:bg-emerald-500/20 rounded-lg" : "bg-transparent group-hover:bg-accent rounded-full"
+                                        isActive ? "bg-indigo-500/10 dark:bg-indigo-500/20 rounded-lg" : "bg-transparent group-hover:bg-accent rounded-full"
                                     )}
                                     >
                                         <Icon className={cn(
                                             "h-5 w-5 transition-transform duration-300",
-                                            isActive ? "text-emerald-600 dark:text-emerald-400 scale-110" : "group-hover:text-foreground"
+                                            isActive ? "text-indigo-600 dark:text-indigo-400 scale-110" : "group-hover:text-foreground"
                                         )} />
                                     </div>
 
@@ -221,7 +200,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                                 <span
                                                     className={cn(
                                                         "flex-1 font-medium text-[16px] transition-colors duration-300",
-                                                        isActive ? "text-emerald-700 dark:text-[#7ed4b9]" : "group-hover:text-foreground"
+                                                        isActive ? "text-indigo-700 dark:text-indigo-300" : "group-hover:text-foreground"
                                                     )}
                                                 >
                                                     {item.label}
@@ -230,7 +209,7 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                                                     <ChevronRight
                                                         className="animate-in fade-in slide-in-from-left-2 duration-300"
                                                         style={{
-                                                            color: "color-mix(in oklab, lab(85 -28.78 13.88) 50%, transparent)",
+                                                            color: "color-mix(in oklab, lab(65 40 -50) 50%, transparent)",
                                                             width: "20px",
                                                             height: "20px"
                                                         }}
@@ -248,17 +227,8 @@ export function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }: Side
                 {/* Footer */}
                 <div className={cn(
                     "p-4 mt-auto space-y-4 transition-all duration-300",
-                    // Only show border when fully expanded to avoid "jumping" line
                     isFullyExpanded ? "border-t border-border" : "border-t-0"
                 )}>
-                    {/* Premium Upgrade Banner */}
-                    <AnimatePresence mode="wait">
-                        {!isCollapsed && (
-                            <UpgradeProBanner />
-                        )}
-                    </AnimatePresence>
-
-
                     {/* Simple Logout Action */}
                     <div className="flex items-center">
                         <button
