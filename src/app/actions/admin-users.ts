@@ -112,9 +112,52 @@ export async function getAdminUserDetails(userId: string) {
 
         if (!user) return { success: false, error: "Usuario no encontrado" }
 
-        return { success: true, data: user }
+        // Fetch stamps sum for each tenant
+        const tenantsWithStamps = await Promise.all(user.tenants.map(async (tenant) => {
+            const aggregate = await prisma.stampTransaction.aggregate({
+                where: {
+                    tenantId: tenant.id,
+                    type: 'EARNED'
+                },
+                _sum: {
+                    stampsEarned: true
+                }
+            })
+            return {
+                ...tenant,
+                totalDistributedStamps: aggregate._sum.stampsEarned || 0
+            }
+        }))
+
+        return { success: true, data: { ...user, tenants: tenantsWithStamps } }
     } catch (error) {
         console.error("Error fetching user details:", error)
         return { success: false, error: "Error al obtener los detalles del usuario" }
+    }
+}
+
+export async function getAdminTenantCustomers(tenantId: string) {
+    try {
+        const customers = await prisma.customer.findMany({
+            where: { tenantId },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        email: true,
+                        phone: true,
+                        avatarUrl: true
+                    }
+                }
+            },
+            orderBy: {
+                joinedAt: 'desc'
+            }
+        })
+
+        return { success: true, data: customers }
+    } catch (error) {
+        console.error("Error fetching tenant customers:", error)
+        return { success: false, error: "Error al obtener clientes del negocio" }
     }
 }

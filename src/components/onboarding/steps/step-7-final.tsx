@@ -106,7 +106,7 @@ export default function Step8Final() {
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
                         className="w-32 h-32 rounded-full bg-emerald-500/10 flex items-center justify-center relative z-10"
                     >
-                        <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center shadow-[0_0_50px_rgba(0,255,148,0.4)]">
+                        <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center">
                             <CheckCircle2 className="h-12 w-12 text-black" strokeWidth={3} />
                         </div>
                     </motion.div>
@@ -141,7 +141,7 @@ export default function Step8Final() {
                 >
                     <Button
                         size="lg"
-                        className="w-full text-lg font-bold h-16 rounded-2xl bg-primary text-black hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-primary/20"
+                        className="w-full text-lg font-bold h-16 rounded-2xl bg-primary text-black hover:scale-[1.02] active:scale-95 transition-all"
                         onClick={goToDashboard}
                     >
                         Acceder al Dashboard <Rocket className="ml-2 h-5 w-5" />
@@ -240,7 +240,7 @@ export default function Step8Final() {
                 <button
                     onClick={handleComplete}
                     disabled={isLoading}
-                    className="h-15 w-full max-w-[200px] rounded-2xl bg-emerald-500 text-black font-black text-xl transition-all hover:bg-emerald-400 active:scale-95 shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] flex items-center justify-center py-4 px-8 disabled:opacity-50"
+                    className="h-15 w-full max-w-[200px] rounded-2xl bg-emerald-500 text-black font-black text-xl transition-all hover:bg-emerald-400 active:scale-95 flex items-center justify-center py-4 px-8 disabled:opacity-50"
                 >
                     {isLoading ? (
                         <>

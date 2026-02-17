@@ -244,13 +244,13 @@ export default function UsersPage() {
     const getPlanStyles = (plan: string = 'FREE') => {
         switch (plan.toUpperCase()) {
             case 'FREE':
-                return "bg-emerald-500/15 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/25 shadow-[0_0_15px_-3px_rgba(16,185,129,0.15)]"
+                return "bg-emerald-500/15 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/25"
             case 'STARTER':
-                return "bg-violet-500/20 text-violet-400 border-violet-500/30 hover:bg-violet-500/30 shadow-[0_0_20px_-3px_rgba(139,92,246,0.2)]"
+                return "bg-violet-500/20 text-violet-400 border-violet-500/30 hover:bg-violet-500/30"
             case 'PRO':
-                return "bg-amber-500/15 text-amber-500 border-amber-500/20 hover:bg-amber-500/25 shadow-[0_0_15px_-3px_rgba(245,158,11,0.15)]"
+                return "bg-amber-500/15 text-amber-500 border-amber-500/20 hover:bg-amber-500/25"
             case 'AGENCY':
-                return "bg-cyan-500/15 text-cyan-400 border-cyan-500/20 hover:bg-cyan-500/25 shadow-[0_0_15px_-3px_rgba(34,211,238,0.15)]"
+                return "bg-cyan-500/15 text-cyan-400 border-cyan-500/20 hover:bg-cyan-500/25"
             default:
                 return "bg-muted/50 text-muted-foreground border-border"
         }
@@ -611,7 +611,7 @@ export default function UsersPage() {
                             Cancelar
                         </Button>
                         <Button
-                            className="flex-[1.5] h-12 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl shadow-lg shadow-emerald-500/20"
+                            className="flex-[1.5] h-12 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl"
                             onClick={handleBulkInvite}
                             disabled={isSubmitting}
                         >
@@ -660,7 +660,7 @@ export default function UsersPage() {
                         <AlertDialogAction
                             onClick={confirmDelete}
                             disabled={confirmInput !== "eliminar" || isSubmitting}
-                            className="flex-[1.5] h-12 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl shadow-lg shadow-red-500/20 border-none transition-all"
+                            className="flex-[1.5] h-12 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl border-none transition-all"
                         >
                             {isSubmitting ? (
                                 <RefreshCw className="h-4 w-4 animate-spin" />

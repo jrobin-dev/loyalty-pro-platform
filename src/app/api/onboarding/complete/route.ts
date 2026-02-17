@@ -183,13 +183,15 @@ export async function POST(request: NextRequest) {
 
         // Step 7: Create Notifications (Real-time)
         try {
-            // 1. Notify the new user
-            await createNotification(
-                userId,
-                "¡Bienvenido a LoyaltyPro!",
-                "Tu cuenta ha sido creada exitosamente. Completa tu configuración para empezar.",
-                "success"
-            )
+            // 1. Notify the new user (only if not a Super Admin to avoid redundancy)
+            if (prismaUser.role !== 'SUPER_ADMIN') {
+                await createNotification(
+                    userId,
+                    "¡Bienvenido a LoyaltyPro!",
+                    "Tu cuenta ha sido creada exitosamente. Completa tu configuración para empezar.",
+                    "success"
+                )
+            }
 
             // 2. Notify all Super Admins
             const superAdmins = await prisma.user.findMany({

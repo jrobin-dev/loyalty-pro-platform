@@ -122,9 +122,9 @@ export function TenantSelector({ isCollapsed }: TenantSelectorProps) {
                                     <span className={cn(
                                         "text-[9px] font-bold px-2 py-0.5 rounded-full border flex items-center gap-1",
                                         currentActiveTenant.isSuspended
-                                            ? "bg-destructive/10 text-destructive border-destructive/20 shadow-[0_0_15px_-5px_theme(colors.destructive.500/0.4)] animate-pulse"
+                                            ? "bg-destructive/10 text-destructive border-destructive/20 animate-pulse"
                                             : processedTenants.length >= planLimit
-                                                ? "bg-amber-500/10 text-amber-500 border-amber-500/20 shadow-[0_0_15px_-5px_theme(colors.amber.500/0.3)]"
+                                                ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
                                                 : "bg-zinc-800 text-zinc-500 border-white/5"
                                     )}>
                                         {currentActiveTenant.isSuspended ? (
@@ -198,38 +198,34 @@ export function TenantSelector({ isCollapsed }: TenantSelectorProps) {
             <AnimatePresence>
                 {isUpgradeModalOpen && (
                     <Dialog open={isUpgradeModalOpen} onOpenChange={setIsUpgradeModalOpen}>
-                        <DialogContent className="bg-transparent border-none text-white max-w-md overflow-hidden p-0 rounded-[2rem] shadow-2xl gap-0">
-                            {/* Rotating Border Beam Container */}
-                            <div className="absolute inset-0 rounded-[2rem] p-[1.5px] overflow-hidden pointer-events-none">
-                                <motion.div
-                                    animate={{ rotate: 360 }}
-                                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                                    className="absolute inset-[-150%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_280deg,theme(colors.emerald.400)_360deg)] opacity-70"
-                                />
-                                <div className="absolute inset-[1.5px] bg-zinc-950/95 backdrop-blur-2xl rounded-[calc(2rem-1.5px)] shadow-inner" />
-                            </div>
+                        <DialogContent className="bg-transparent border-none text-white max-w-md p-0 rounded-[2rem] shadow-2xl gap-0 overflow-visible">
+                            {/* 1. Base Background with Blur */}
+                            <div className="absolute inset-0 bg-zinc-950/98 backdrop-blur-3xl rounded-[2rem] shadow-2xl" />
 
-                            <div className="relative overflow-hidden w-full rounded-[2rem] flex flex-col">
+                            <div className="relative overflow-hidden w-full rounded-[2rem] flex flex-col z-10 bg-zinc-950/50">
                                 <DialogTitle className="sr-only">Límite de negocios alcanzado</DialogTitle>
 
-                                {/* Premium Banner Header - Background Image Style */}
+                                {/* 2. Premium Banner Header with Enhanced Fusion */}
                                 <div
                                     style={{
                                         height: 'calc(var(--spacing) * 44)',
-                                        maskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)',
-                                        WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent 100%)'
+                                        maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
+                                        WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)'
                                     }}
                                     className="w-full relative overflow-hidden bg-zinc-900 group rounded-t-[2rem]"
                                 >
                                     <img
                                         src="/assets/images/Premium1.avif"
                                         alt="Premium Upgrade"
-                                        className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                                        className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
                                     />
+                                    {/* Fusion Overlays: Top, Bottom, and Sides */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/60 via-transparent to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-zinc-950/40 via-transparent to-zinc-950/40" />
                                 </div>
 
-                                <div className="p-8 pt-4 relative">
+                                <div className="p-8 pt-4 relative bg-zinc-950/40">
                                     {/* Decorative background glow behind text */}
                                     <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-64 h-32 bg-emerald-500/10 blur-[60px] -z-10 rounded-full" />
 
@@ -240,6 +236,9 @@ export function TenantSelector({ isCollapsed }: TenantSelectorProps) {
                                             </h2>
                                             <p className="text-zinc-400 text-sm font-medium">
                                                 Uso actual: <span className="text-emerald-400">{processedTenants.length}/{planLimit}</span> negocios
+                                            </p>
+                                            <p className="text-zinc-500 text-[11px] leading-relaxed max-w-[280px] mx-auto pt-1 line-clamp-3">
+                                                Gestiona múltiples negocios desde una misma cuenta y accede a herramientas avanzadas diseñadas para escalar tu éxito y potenciar tu crecimiento.
                                             </p>
                                         </div>
 
@@ -284,7 +283,7 @@ export function TenantSelector({ isCollapsed }: TenantSelectorProps) {
                                                 whileTap={{ scale: 0.98 }}
                                             >
                                                 <Button
-                                                    className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-lg rounded-2xl shadow-[0_10px_40px_-10px_rgba(16,185,129,0.4)] transition-all border-t border-white/30 relative overflow-hidden group hidden"
+                                                    className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-lg rounded-2xl transition-all border-t border-white/30 relative overflow-hidden group"
                                                     onClick={() => router.push("/settings/billing")}
                                                 >
                                                     <span className="relative z-10 flex items-center justify-center gap-2">
@@ -308,6 +307,21 @@ export function TenantSelector({ isCollapsed }: TenantSelectorProps) {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* 3. Top Border Beam Animated Layer (Visible over image) */}
+                            <div className="absolute inset-0 rounded-[2rem] pointer-events-none z-20"
+                                style={{
+                                    padding: '1.5px',
+                                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    WebkitMaskComposite: 'destination-out',
+                                    maskComposite: 'exclude',
+                                }}>
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                                    className="absolute inset-[-150%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_280deg,theme(colors.emerald.400)_360deg)] opacity-70"
+                                />
                             </div>
                         </DialogContent>
                     </Dialog>

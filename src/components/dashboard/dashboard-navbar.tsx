@@ -206,7 +206,7 @@ export function DashboardNavbar({
 
                         <div className="px-2 pb-2 space-y-2">
                             <Button
-                                className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl flex items-center justify-between px-4 group shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                                className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl hidden items-center justify-between px-4 group shadow-[0_0_20px_rgba(16,185,129,0.2)]"
                                 asChild
                             >
                                 <Link href="/dashboard/billing">
