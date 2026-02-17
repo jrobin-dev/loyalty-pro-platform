@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
+import { syncUserTenants } from "@/lib/limits"
 
 export async function getTenants(limit?: number) {
     try {
@@ -121,8 +122,12 @@ export async function updateTenantPlan(tenantId: string, plan: string) {
             data: { plan }
         })
 
+        // Sync businesses with the new plan limits
+        await syncUserTenants(tenant.ownerId)
+
         revalidatePath("/admin/tenants")
         revalidatePath("/admin")
+        revalidatePath("/dashboard") // Clear dashboard cache too
         return { success: true }
     } catch (error) {
         console.error("Error updating plan:", error)
@@ -151,11 +156,15 @@ export async function updateTenant(tenantId: string, inputData: { name?: string,
                     where: { id: tenant.ownerId },
                     data: { plan }
                 })
+
+                // Sync businesses with the new plan limits
+                await syncUserTenants(tenant.ownerId)
             }
         }
 
         revalidatePath("/admin/tenants")
         revalidatePath("/admin")
+        revalidatePath("/dashboard")
         return { success: true }
     } catch (error) {
         console.error("Error updating tenant:", error)

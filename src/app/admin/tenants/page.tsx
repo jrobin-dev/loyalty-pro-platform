@@ -42,7 +42,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Search, Filter, MoreVertical, Edit, Trash2, Ban, CheckCircle2, Zap, ChevronLeft, ChevronRight, RefreshCw, Download, Plus, LogIn } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getTenants, createTenant, updateTenantPlan, updateTenantStatus, updateTenant, deleteTenant } from "@/app/actions/admin-tenants"
+import { getTenants, createTenant, updateTenantStatus, updateTenant, deleteTenant } from "@/app/actions/admin-tenants"
 import { toast } from "sonner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -187,15 +187,6 @@ export default function TenantsPage() {
         setIsSubmitting(false)
     }
 
-    const onUpdatePlan = async (tenantId: string, newPlan: string) => {
-        const result = await updateTenantPlan(tenantId, newPlan)
-        if (result.success) {
-            toast.success("Plan actualizado")
-            fetchTenants()
-        } else {
-            toast.error("Error al actualizar plan")
-        }
-    }
 
     const onSuspendClick = (tenant: any) => {
         if (tenant.status === 'SUSPENDED') {
@@ -322,13 +313,13 @@ export default function TenantsPage() {
     const getPlanStyles = (plan: string = 'FREE') => {
         switch (plan.toUpperCase()) {
             case 'FREE':
-                return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20 hover:bg-zinc-500/20"
-            case 'STARTER':
-                return "bg-sky-500/15 text-sky-400 border-sky-500/20 hover:bg-sky-500/25 shadow-[0_0_15px_-3px_rgba(14,165,233,0.15)]"
-            case 'PRO':
                 return "bg-emerald-500/15 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/25 shadow-[0_0_15px_-3px_rgba(16,185,129,0.15)]"
-            case 'AGENCY':
+            case 'STARTER':
                 return "bg-violet-500/20 text-violet-400 border-violet-500/30 hover:bg-violet-500/30 shadow-[0_0_20px_-3px_rgba(139,92,246,0.2)]"
+            case 'PRO':
+                return "bg-amber-500/15 text-amber-500 border-amber-500/20 hover:bg-amber-500/25 shadow-[0_0_15px_-3px_rgba(245,158,11,0.15)]"
+            case 'AGENCY':
+                return "bg-cyan-500/15 text-cyan-400 border-cyan-500/20 hover:bg-cyan-500/25 shadow-[0_0_15px_-3px_rgba(34,211,238,0.15)]"
             default:
                 return "bg-muted/50 text-muted-foreground border-border hover:bg-muted"
         }
@@ -459,10 +450,10 @@ export default function TenantsPage() {
                                         // Colores para el filtro activo
                                         const activeColors = {
                                             'ALL': "bg-primary/20 text-primary border-primary/30",
-                                            'FREE': "bg-zinc-500/20 text-zinc-400 border-zinc-500/30",
-                                            'STARTER': "bg-sky-500/20 text-sky-400 border-sky-500/30",
-                                            'PRO': "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-                                            'AGENCY': "bg-violet-500/25 text-violet-400 border-violet-500/40"
+                                            'FREE': "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+                                            'STARTER': "bg-violet-500/25 text-violet-400 border-violet-500/40",
+                                            'PRO': "bg-amber-500/20 text-amber-400 border-amber-500/30",
+                                            'AGENCY': "bg-cyan-500/20 text-cyan-400 border-cyan-500/30"
                                         }[plan] || "bg-primary/20 text-primary border-primary/30"
 
                                         return (
@@ -549,46 +540,15 @@ export default function TenantsPage() {
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Badge
-                                                    variant="outline"
-                                                    className={cn(
-                                                        "cursor-pointer font-bold uppercase tracking-wider rounded-lg px-2 py-0.5 border-t-white/10 transition-all text-[10px]",
-                                                        getPlanStyles(tenant.owner?.plan)
-                                                    )}
-                                                >
-                                                    {tenant.owner?.plan || 'FREE'}
-                                                </Badge>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                <DropdownMenuLabel className="text-[10px] uppercase text-muted-foreground tracking-widest font-bold">Cambiar Plan</DropdownMenuLabel>
-                                                <DropdownMenuSeparator />
-                                                {['FREE', 'STARTER', 'PRO', 'AGENCY'].map((p) => (
-                                                    <DropdownMenuItem
-                                                        key={p}
-                                                        onClick={() => onUpdatePlan(tenant.id, p)}
-                                                        className="flex items-center gap-2 group cursor-pointer h-9 px-3"
-                                                    >
-                                                        <div className={cn(
-                                                            "w-2 h-2 rounded-full ring-1 ring-white/10 shadow-sm transition-transform group-hover:scale-125",
-                                                            p === 'FREE' ? 'bg-zinc-400' :
-                                                                p === 'STARTER' ? 'bg-sky-400' :
-                                                                    p === 'PRO' ? 'bg-emerald-400' : 'bg-violet-400'
-                                                        )} />
-                                                        <span className={cn(
-                                                            "text-[11px] font-bold uppercase tracking-wide",
-                                                            p === tenant.owner?.plan ? "text-primary" : "text-muted-foreground"
-                                                        )}>
-                                                            {p}
-                                                        </span>
-                                                        {p === tenant.owner?.plan && (
-                                                            <div className="ml-auto w-1 h-1 rounded-full bg-primary" />
-                                                        )}
-                                                    </DropdownMenuItem>
-                                                ))}
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        <Badge
+                                            variant="outline"
+                                            className={cn(
+                                                "font-bold uppercase tracking-wider rounded-lg px-2 py-0.5 border-t-white/10 transition-all text-[10px]",
+                                                getPlanStyles(tenant.owner?.plan)
+                                            )}
+                                        >
+                                            {tenant.owner?.plan || 'FREE'}
+                                        </Badge>
                                     </TableCell>
                                     <TableCell>
                                         <Badge variant={tenant.status === 'ACTIVE' ? 'default' : 'destructive'} className={cn(

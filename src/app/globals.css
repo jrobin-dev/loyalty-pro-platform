@@ -261,3 +261,12 @@
   /* Emerald green with transparency */
   color: inherit;
 }
+
+/* Custom Modal Overlay Background */
+@supports (color: color-mix(in lab, red, red)) {
+  .bg-black\/80 {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    background-color: lab(0 0 0 / 0.78);
+  }
+}

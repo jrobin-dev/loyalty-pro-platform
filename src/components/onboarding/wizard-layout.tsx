@@ -3,6 +3,9 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { useOnboardingStore } from "@/store/onboarding-store"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
+import { useUserProfile } from "@/hooks/use-user-profile"
 import Step0AccountInfo from "./steps/step-0-account-info"
 import Step1BusinessInfo from "./steps/step-1-business-info"
 import Step2StampType from "./steps/step-2-stamp-type"
@@ -16,8 +19,33 @@ import { OnboardingPreview } from "./onboarding-preview"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function WizardLayout() {
-    const { currentStep, totalSteps } = useOnboardingStore()
+    const { currentStep, totalSteps, setStep, updateData, data: onboardingData } = useOnboardingStore()
     const isLastStep = currentStep === totalSteps
+    const searchParams = useSearchParams()
+    const { profile, loading } = useUserProfile()
+    const isNewMode = searchParams.get('mode') === 'new'
+
+    // Handle initial state for mode=new
+    useEffect(() => {
+        if (isNewMode && profile) {
+            console.log("🛠️ Mode 'new' detected. Pre-filling data from profile.")
+
+            // Pre-fill email and owner info
+            updateData({
+                email: profile.email,
+                ownerName: `${profile.name || ''} ${profile.lastName || ''}`.trim(),
+                whatsapp: profile.phone?.split(' ').slice(1).join(' ') || onboardingData.whatsapp,
+                country: profile.phone?.split(' ')[0] || onboardingData.country,
+                // We use a dummy password or flag to indicate it's an existing user
+                password: 'ALREADY_AUTHENTICATED'
+            })
+
+            // If we are at the beginning, skip account creation
+            if (currentStep === 1) {
+                setStep(2)
+            }
+        }
+    }, [isNewMode, profile])
 
     const renderStep = () => {
         switch (currentStep) {
@@ -27,7 +55,11 @@ export default function WizardLayout() {
             case 4: return <Step3StampsRequired />
             case 5: return <Step4RewardDescription />
             case 6: return <Step4Branding />
-            case 7: return <Step5OwnerInfo />
+            case 7: {
+                // If in new mode, we can skip OwnerInfo if we already have it
+                // or just let them confirm it. Let's let them confirm it.
+                return <Step5OwnerInfo />
+            }
             case 8: return <Step6LogoUpload />
             case 9: return <Step7Final />
             default: return <Step0AccountInfo />

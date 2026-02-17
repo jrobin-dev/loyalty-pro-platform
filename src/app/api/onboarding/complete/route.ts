@@ -73,12 +73,37 @@ export async function POST(request: NextRequest) {
         console.log('✅ User identified:', userId)
 
         // Step 2: Create or Update User in Prisma (Upsert)
+        // If user exists, we get their current plan. If not, default to FREE.
+        const existingPrismaUser = await prisma.user.findUnique({
+            where: { email: body.email },
+            include: { _count: { select: { tenants: true } } }
+        })
+
+        const planLimits: Record<string, number> = {
+            'FREE': 1,
+            'STARTER': 1,
+            'PRO': 3,
+            'AGENCY': 10
+        }
+
+        const currentPlan = existingPrismaUser?.plan || 'FREE'
+        const tenantCount = existingPrismaUser?._count.tenants || 0
+        const limit = planLimits[currentPlan.toUpperCase()] || 1
+
+        if (tenantCount >= limit) {
+            console.log(`❌ Plan limit reached for ${body.email}: ${tenantCount}/${limit}`)
+            return NextResponse.json({
+                success: false,
+                error: `Has alcanzado el límite de negocios para tu plan ${currentPlan} (${limit}). Por favor, mejora tu plan para continuar.`
+            }, { status: 403 })
+        }
+
         const prismaUser = await prisma.user.upsert({
             where: { email: body.email },
             update: {
-                id: userId, // Ensure ID sync if needed (though email is unique)
+                id: userId,
                 role: 'BUSINESS_OWNER',
-                plan: 'FREE' // New users/onboarding default to FREE
+                // Don't update plan here, keep current one if user exists
             },
             create: {
                 id: userId,
@@ -90,19 +115,22 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        console.log('✅ Prisma user upserted:', prismaUser.id)
+        console.log('✅ Prisma user upserted:', prismaUser.id, 'Plan:', prismaUser.plan)
 
         // Step 3: Create Tenant (Business)
-        const slug = body.businessName
+        const slugBase = body.businessName
             .toLowerCase()
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '') // Remove accents
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-+|-+$/g, '')
 
+        // Ensure unique slug even if names are similar
+        const uniqueSlug = `${slugBase}-${Math.random().toString(36).substring(2, 7)}`
+
         const tenant = await prisma.tenant.create({
             data: {
-                slug: `${slug}-${Date.now()}`, // Ensure uniqueness
+                slug: uniqueSlug,
                 name: body.businessName,
                 category: body.category,
                 ownerId: userId,

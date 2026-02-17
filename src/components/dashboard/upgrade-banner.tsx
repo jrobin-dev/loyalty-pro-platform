@@ -41,21 +41,21 @@ export function UpgradeProBanner() {
                         <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
                             <Zap size={16} className="text-emerald-500 fill-emerald-500" />
                         </div>
-                        <span className="font-bold text-sm text-foreground dark:text-white tracking-tight">¡Mejora a Pro!</span>
+                        <span className="font-semibold text-sm text-foreground dark:text-white tracking-tight">Mejora a Pro</span>
                     </div>
                 </div>
 
                 <p className="text-[11px] text-muted-foreground dark:text-zinc-400 leading-relaxed font-medium">
-                    Pásate a Pro y eleva tu experiencia hoy mismo.
+                    Eleva tu experiencia y desbloquea funciones exclusivas.
                 </p>
 
                 <div className="flex items-center gap-2">
                     <Button
                         size="sm"
-                        className="h-8 px-3 text-[10px] font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 cursor-pointer shadow-none"
+                        className="h-8 px-3 text-[10px] font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/20 cursor-pointer shadow-none rounded-lg"
                     >
                         <Zap size={10} className="mr-1 fill-emerald-500" />
-                        Actualizar
+                        Ver planes
                     </Button>
                     <button className="text-[10px] font-bold text-muted-foreground hover:text-foreground dark:text-zinc-500 dark:hover:text-white transition-colors px-1 cursor-pointer">
                         Saber más

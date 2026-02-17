@@ -11,6 +11,7 @@ import { useUserProfile } from "@/hooks/use-user-profile";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { useLanguage } from "@/contexts/language-context";
 import Link from "next/link";
 import {
     DropdownMenu,
@@ -38,34 +39,29 @@ interface DashboardNavbarProps {
     onOpenMobileSidebar: () => void;
 }
 
-import { useLanguage } from "@/contexts/language-context"; // Ensure this matches
-
-// Internal component for language toggle to use the hook
-function LanguageToggle() {
-    const { language, setLanguage } = useLanguage()
-    return (
-        <>
-            <button
-                onClick={(e) => { e.preventDefault(); setLanguage('es') }}
-                className={cn(
-                    "px-2 py-1 text-xs font-bold rounded-md transition-all",
-                    language === 'es' ? "bg-emerald-500 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
-                )}
-            >
-                ES
-            </button>
-            <button
-                onClick={(e) => { e.preventDefault(); setLanguage('en') }}
-                className={cn(
-                    "px-2 py-1 text-xs font-bold rounded-md transition-all",
-                    language === 'en' ? "bg-emerald-500 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
-                )}
-            >
-                EN
-            </button>
-        </>
-    )
-}
+// Fixed Internal component for language toggle
+const LanguageToggle = ({ currentLanguage, onSelect }: { currentLanguage: string, onSelect: (l: any) => void }) => (
+    <>
+        <button
+            onClick={(e) => { e.preventDefault(); onSelect('es') }}
+            className={cn(
+                "px-2 py-1 text-xs font-bold rounded-md transition-all",
+                currentLanguage === 'es' ? "bg-emerald-500 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
+            )}
+        >
+            ES
+        </button>
+        <button
+            onClick={(e) => { e.preventDefault(); onSelect('en') }}
+            className={cn(
+                "px-2 py-1 text-xs font-bold rounded-md transition-all",
+                currentLanguage === 'en' ? "bg-emerald-500 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
+            )}
+        >
+            EN
+        </button>
+    </>
+)
 
 export function DashboardNavbar({
     isCollapsed,
@@ -76,6 +72,7 @@ export function DashboardNavbar({
     const pathname = usePathname();
     const { profile } = useUserProfile();
     const { theme, setTheme } = useTheme();
+    const { language, setLanguage } = useLanguage()
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -83,6 +80,8 @@ export function DashboardNavbar({
         await supabase.auth.signOut();
         router.push("/login");
     };
+
+
 
 
 
@@ -158,8 +157,15 @@ export function DashboardNavbar({
                                 <span className="text-sm font-bold text-white leading-none">
                                     {(profile?.name && profile?.lastName) ? `${profile.name} ${profile.lastName}` : (profile?.name || "Usuario")}
                                 </span>
-                                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider mt-1">
-                                    {profile?.role === "SUPER_ADMIN" ? "Admin" : "FREE"}
+                                <span className={cn(
+                                    "text-[10px] font-bold uppercase tracking-wider mt-1",
+                                    profile?.role === "SUPER_ADMIN" ? "text-emerald-500" :
+                                        profile?.plan === "AGENCY" ? "text-cyan-400" :
+                                            profile?.plan === "PRO" ? "text-amber-500" :
+                                                profile?.plan === "STARTER" ? "text-violet-400" :
+                                                    "text-emerald-500"
+                                )}>
+                                    {profile?.role === "SUPER_ADMIN" ? "Admin" : (profile?.plan || "FREE")}
                                 </span>
                             </div>
                             <Avatar className="h-9 w-9 border-2 border-emerald-500/20 ring-2 ring-black group-hover:border-emerald-500/50 transition-all">
@@ -191,7 +197,10 @@ export function DashboardNavbar({
                         <div className="lg:hidden px-4 pb-3 mb-2 border-b border-white/5 flex items-center justify-between">
                             <span className="text-xs font-medium text-zinc-400">Idioma</span>
                             <div className="flex bg-white/5 rounded-lg p-0.5 border border-white/10">
-                                <LanguageToggle />
+                                <LanguageToggle
+                                    currentLanguage={language}
+                                    onSelect={setLanguage}
+                                />
                             </div>
                         </div>
 

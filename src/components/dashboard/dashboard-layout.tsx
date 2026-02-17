@@ -6,15 +6,25 @@ import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useUserProfile } from "@/hooks/use-user-profile"
-import { SuspendedScreen } from "@/components/dashboard/suspended-alert"
-import { LanguageProvider } from "@/contexts/language-context"
-import { TenantProvider } from "@/contexts/tenant-context"
+import { SuspendedLock } from "@/components/dashboard/suspended-lock"
+import { TenantProvider, useTenant } from "@/contexts/tenant-context"
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <TenantProvider>
+            <DashboardInnerLayout>{children}</DashboardInnerLayout>
+        </TenantProvider>
+    )
+}
+
+function DashboardInnerLayout({ children }: { children: React.ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [isCollapsed, setIsCollapsed] = useState(false)
     const { profile, loading } = useUserProfile()
+    const { activeTenant } = useTenant()
     const router = useRouter()
+
+    const isSuspended = activeTenant?.enforcedStatus === 'SUSPENDED'
 
     useEffect(() => {
         if (!loading && !profile) {
@@ -46,49 +56,45 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )
     }
 
-    if (!profile) {
-        return null // Evitar flash de contenido mientras se redirecciona
-    }
-
-    if (profile?.tenants && profile.tenants.length > 0) {
-        if (profile.tenants[0].status === 'SUSPENDED') {
-            return <SuspendedScreen />
-        }
-    }
+    if (!profile) return null
 
     return (
-        <LanguageProvider>
-            <TenantProvider>
-                <div className="min-h-screen bg-background text-foreground relative font-sans">
-                    <div className="bg-noise" />
+        <div className="min-h-screen bg-background text-foreground relative font-sans">
+            <div className="bg-noise" />
 
-                    <Sidebar
-                        isOpen={sidebarOpen}
-                        setIsOpen={setSidebarOpen}
-                        isCollapsed={isCollapsed}
-                        toggleCollapse={toggleCollapse}
-                    />
+            <Sidebar
+                isOpen={sidebarOpen}
+                setIsOpen={setSidebarOpen}
+                isCollapsed={isCollapsed}
+                toggleCollapse={toggleCollapse}
+            />
 
+            <div className={cn(
+                "min-h-screen flex flex-col transition-all duration-300 ease-in-out",
+                isCollapsed ? "md:ml-20" : "md:ml-64"
+            )}>
+                <DashboardNavbar
+                    isCollapsed={isCollapsed}
+                    isOpen={sidebarOpen}
+                    toggleCollapse={toggleCollapse}
+                    onOpenMobileSidebar={() => setSidebarOpen(true)}
+                />
+
+                <main className="flex-1 p-4 md:p-8 w-full max-w-[1600px] mx-auto relative">
                     <div className={cn(
-                        "min-h-screen flex flex-col transition-all duration-300 ease-in-out",
-                        isCollapsed ? "md:ml-20" : "md:ml-64"
+                        "space-y-8 animate-in fade-in duration-500",
+                        isSuspended && "blur-sm pointer-events-none select-none opacity-50 transition-all duration-700"
                     )}>
-                        {/* DashboardNavbar sin props según la versión manual del usuario */}
-                        <DashboardNavbar
-                            isCollapsed={isCollapsed}
-                            isOpen={sidebarOpen}
-                            toggleCollapse={toggleCollapse}
-                            onOpenMobileSidebar={() => setSidebarOpen(true)}
-                        />
-
-                        <main className="flex-1 p-4 md:p-8 w-full max-w-[1600px] mx-auto">
-                            <div className="space-y-8 animate-in fade-in duration-500">
-                                {children}
-                            </div>
-                        </main>
+                        {children}
                     </div>
-                </div>
-            </TenantProvider>
-        </LanguageProvider>
+
+                    {isSuspended && (
+                        <SuspendedLock tenantName={activeTenant?.name} />
+                    )}
+                </main>
+            </div>
+        </div>
     )
 }
+
+

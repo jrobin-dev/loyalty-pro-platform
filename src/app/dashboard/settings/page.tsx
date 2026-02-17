@@ -12,9 +12,10 @@ export default function SettingsPage() {
     const { profile } = useUserProfile()
     const { settings, loading, updateTenant, updateBranding, updateLoyaltyProgram } = useTenantSettings()
 
-    // Primary tenant is the first one created (index 0)
-    const isPrimaryTenant = profile?.tenants && profile.tenants.length > 0
-        ? profile.tenants[0].id === settings?.tenant.id
+    // Account tab should ONLY be visible in the first business (primary)
+    // to avoid redundancy in multi-tenant setup.
+    const isPrimaryTenant = profile?.tenants && profile.tenants.length > 0 && settings?.tenant?.id
+        ? profile.tenants[0].id === settings.tenant.id
         : true
 
     if (loading) {

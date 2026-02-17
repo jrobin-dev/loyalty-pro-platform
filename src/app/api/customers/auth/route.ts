@@ -11,6 +11,22 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Faltan datos' }, { status: 400 })
         }
 
+        // 0. Check Tenant Status (Security Guard)
+        const tenant = await prisma.tenant.findUnique({
+            where: { id: tenantId },
+            select: { status: true, ownerId: true }
+        })
+
+        if (!tenant) {
+            return NextResponse.json({ error: 'Negocio no encontrado' }, { status: 404 })
+        }
+
+        if (tenant.status === 'SUSPENDED') {
+            return NextResponse.json({
+                error: 'Este negocio está suspendido. Contacta al administrador para reactivarlo.'
+            }, { status: 403 })
+        }
+
         // 1. Find or Create User (Global identity)
         // Note: In a real app we'd use Supabase Auth here too, but for this "Fast Track" customer view we simulate quick access
         // or we create a user record if it doesn't exist.

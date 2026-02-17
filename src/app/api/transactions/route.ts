@@ -17,6 +17,13 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Cliente no válido' }, { status: 404 })
         }
 
+        // 1.1 Check Tenant Status (Security Guard)
+        if (customer.tenant?.status === 'SUSPENDED') {
+            return NextResponse.json({
+                error: 'Este negocio está suspendido. Las transacciones están deshabilitadas.'
+            }, { status: 403 })
+        }
+
         // 2. Calculate logic
         let newCurrentStamps = customer.currentStamps
         let newTotalStamps = customer.totalStamps
