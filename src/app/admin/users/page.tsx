@@ -46,11 +46,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getAdminUsers, updateUserAdmin, deleteUserAdmin, sendBulkInvitations } from "@/app/actions/admin-users"
 import { toast } from "sonner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 
 const ITEMS_PER_PAGE = 15
 
 export default function UsersPage() {
+    const router = useRouter()
     // Data State
     const [users, setUsers] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
@@ -490,6 +492,9 @@ export default function UsersPage() {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                                                <DropdownMenuItem onClick={() => router.push(`/admin/users/${user.id}`)}>
+                                                    <UserCheck className="mr-2 h-4 w-4" /> Ver Perfil
+                                                </DropdownMenuItem>
                                                 <DropdownMenuItem onClick={() => window.open(`mailto:${user.email}`)}>
                                                     <Mail className="mr-2 h-4 w-4" /> Enviar Correo
                                                 </DropdownMenuItem>

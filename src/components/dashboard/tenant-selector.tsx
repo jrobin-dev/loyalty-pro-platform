@@ -284,7 +284,7 @@ export function TenantSelector({ isCollapsed }: TenantSelectorProps) {
                                                 whileTap={{ scale: 0.98 }}
                                             >
                                                 <Button
-                                                    className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-lg rounded-2xl shadow-[0_10px_40px_-10px_rgba(16,185,129,0.4)] transition-all border-t border-white/30 relative overflow-hidden group"
+                                                    className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-lg rounded-2xl shadow-[0_10px_40px_-10px_rgba(16,185,129,0.4)] transition-all border-t border-white/30 relative overflow-hidden group hidden"
                                                     onClick={() => router.push("/settings/billing")}
                                                 >
                                                     <span className="relative z-10 flex items-center justify-center gap-2">

@@ -92,3 +92,29 @@ export async function sendBulkInvitations(emails: string[], role: string, plan: 
         return { success: false, error: "Error al enviar las invitaciones" }
     }
 }
+
+export async function getAdminUserDetails(userId: string) {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            include: {
+                tenants: {
+                    include: {
+                        _count: {
+                            select: { customers: true }
+                        },
+                        loyalty: true,
+                        branding: true
+                    }
+                }
+            }
+        })
+
+        if (!user) return { success: false, error: "Usuario no encontrado" }
+
+        return { success: true, data: user }
+    } catch (error) {
+        console.error("Error fetching user details:", error)
+        return { success: false, error: "Error al obtener los detalles del usuario" }
+    }
+}
