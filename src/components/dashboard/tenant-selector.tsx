@@ -309,18 +309,16 @@ export function TenantSelector({ isCollapsed }: TenantSelectorProps) {
                                 </div>
                             </div>
 
-                            {/* 3. Top Border Beam Animated Layer (Visible over image) */}
-                            <div className="absolute inset-0 rounded-[2rem] pointer-events-none z-20"
-                                style={{
-                                    padding: '1.5px',
-                                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                                    WebkitMaskComposite: 'destination-out',
-                                    maskComposite: 'exclude',
-                                }}>
+                            {/* 3. Border Beam Layer (Always on top) */}
+                            <div className="absolute inset-0 rounded-[2rem] pointer-events-none z-30 overflow-hidden">
+                                <div className="absolute inset-[1.5px] rounded-[2rem] border border-white/10 z-10" />
                                 <motion.div
                                     animate={{ rotate: 360 }}
                                     transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                                    className="absolute inset-[-150%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_280deg,theme(colors.emerald.400)_360deg)] opacity-70"
+                                    style={{
+                                        background: "conic-gradient(from 0deg, transparent 0deg, transparent 280deg, #10b981 360deg)",
+                                    }}
+                                    className="absolute inset-[-150%] opacity-80"
                                 />
                             </div>
                         </DialogContent>
