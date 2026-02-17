@@ -270,3 +270,18 @@
     background-color: lab(0 0 0 / 0.78);
   }
 }
+
+/* Custom Overrides */
+@media (min-width: 48rem) {
+  .md\:-m-10 {
+    margin: calc(var(--spacing) * -8);
+  }
+}
+
+.bg-black {
+  background-color: #0a0a0a;
+}
+
+.bg-zinc-950 {
+  background-color: lab(3 0 0);
+}

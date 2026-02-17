@@ -148,6 +148,7 @@ export function BusinessSettingsForm({ settings, onSaveTenant, onSaveBranding }:
                                     value={logoUrl}
                                     onChange={setLogoUrl}
                                     onRemove={() => setLogoUrl("")}
+                                    bucket="avatars"
                                     className="h-full min-h-[140px] lg:max-h-[162px]"
                                 />
                             </div>

@@ -87,3 +87,78 @@ export async function postComment(lessonId: string, content: string, parentId?: 
         return { success: false, error: "Error al publicar comentario" }
     }
 }
+// --- PROGRESS & RATINGS ---
+
+export async function toggleLessonProgress(lessonId: string, completed: boolean = true) {
+    try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return { success: false, error: "No autenticado" }
+
+        if (completed) {
+            await prisma.academyProgress.upsert({
+                where: { userId_lessonId: { userId: user.id, lessonId } },
+                update: { completed: true },
+                create: { userId: user.id, lessonId, completed: true }
+            })
+        } else {
+            await prisma.academyProgress.deleteMany({
+                where: { userId: user.id, lessonId }
+            })
+        }
+
+        revalidatePath("/dashboard/academy/[slug]", "page")
+        return { success: true }
+    } catch (error) {
+        console.error("Error toggling progress:", error)
+        return { success: false, error: "Error al actualizar progreso" }
+    }
+}
+
+export async function rateCourse(courseId: string, rating: number, comment?: string) {
+    try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return { success: false, error: "No autenticado" }
+
+        await prisma.academyRating.upsert({
+            where: { userId_courseId: { userId: user.id, courseId } },
+            update: { rating, comment },
+            create: { userId: user.id, courseId, rating, comment }
+        })
+
+        revalidatePath("/dashboard/academy/[slug]", "page")
+        return { success: true }
+    } catch (error) {
+        console.error("Error rating course:", error)
+        return { success: false, error: "Error al calificar curso" }
+    }
+}
+
+export async function getCourseUserStatus(courseId: string) {
+    try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return { success: false }
+
+        const progress = await prisma.academyProgress.findMany({
+            where: { userId: user.id, lesson: { courseId } },
+            select: { lessonId: true }
+        })
+
+        const rating = await prisma.academyRating.findUnique({
+            where: { userId_courseId: { userId: user.id, courseId } }
+        })
+
+        return {
+            success: true,
+            data: {
+                completedLessonIds: progress.map(p => p.lessonId),
+                rating: rating?.rating || 0
+            }
+        }
+    } catch (error) {
+        console.error("Error fetching user status:", error)
+        return { success: false }
+    }
+}

@@ -66,11 +66,23 @@ export default function Step8Final() {
             if (!response.ok) throw new Error(result.error || 'Error al guardar configuración')
 
             if (result.session) {
+                console.log('🔐 Setting session for autologin...')
                 const supabase = createClient()
-                await supabase.auth.setSession({
+
+                // Set the session and verify it
+                const { error: sessionError } = await supabase.auth.setSession({
                     access_token: result.session.access_token,
                     refresh_token: result.session.refresh_token
                 })
+
+                if (sessionError) {
+                    console.error('❌ Session persistence error:', sessionError)
+                    throw new Error("No se pudo iniciar sesión automáticamente. Por favor, intenta entrar manualmente.")
+                }
+
+                // Small delay to allow cookies to settle
+                await new Promise(resolve => setTimeout(resolve, 800))
+                console.log('✅ Session persistent and verified')
             }
 
             setIsSaved(true)
@@ -85,10 +97,26 @@ export default function Step8Final() {
         }
     }
 
-    const goToDashboard = () => {
-        reset()
-        router.push('/dashboard')
-        router.refresh()
+    const goToDashboard = async () => {
+        setIsLoading(true)
+        try {
+            reset()
+            // Final check of session status before navigating
+            const supabase = createClient()
+            const { data: { session } } = await supabase.auth.getSession()
+
+            console.log('🚀 Navigating to dashboard...', session ? 'Session found' : 'No session!')
+
+            router.push('/dashboard')
+            // Using a full refresh only if push doesn't seem to trigger the layout update
+            setTimeout(() => {
+                router.refresh()
+            }, 500)
+        } catch (err) {
+            router.push('/dashboard')
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     if (showCelebration) {

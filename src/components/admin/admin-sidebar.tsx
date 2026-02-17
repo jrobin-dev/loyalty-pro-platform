@@ -13,7 +13,8 @@ import {
     ChevronLeft,
     ChevronRight,
     Loader2,
-    Shield
+    Shield,
+    GraduationCap
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -69,6 +70,7 @@ export function AdminSidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }:
         { icon: LayoutDashboard, label: "Vista General", href: "/admin" },
         { icon: Store, label: "Negocios", href: "/admin/tenants" },
         { icon: Users, label: "Usuarios Globales", href: "/admin/users" },
+        { icon: GraduationCap, label: "Academia", href: "/admin/academy" },
         { icon: Megaphone, label: "Banners", href: "/admin/banners" },
         { icon: BarChart3, label: "Ingresos", href: "/admin/revenue" },
         { icon: Settings, label: "Configuración", href: "/admin/settings" },

@@ -124,7 +124,11 @@ model AcademyCourse {
   imageUrl    String?
   published   Boolean  @default(false)
   
+  instructorName String?
+  instructorBio  String?
+  
   lessons     AcademyLesson[]
+  ratings     AcademyRating[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -141,8 +145,10 @@ model AcademyLesson {
   videoId     String   // ID or URL
   duration    String?
   order       Int      @default(0)
+  resources   Json?    // Array of { title, url }
   
   comments    AcademyComment[]
+  progress    AcademyProgress[]
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -166,6 +172,29 @@ model AcademyComment {
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model AcademyProgress {
+  id        String   @id @default(uuid())
+  lessonId  String
+  lesson    AcademyLesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  userId    String   // Supabase Auth ID
+  completed Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, lessonId])
+}
+
+model AcademyRating {
+  id        String   @id @default(uuid())
+  courseId  String
+  course    AcademyCourse @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  userId    String   // Supabase Auth ID
+  rating    Int      @default(5) // 1-5 stars
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, courseId])
 }
 
 model Notification {
